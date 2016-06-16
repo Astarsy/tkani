@@ -13,49 +13,32 @@ class AppController{
         $strs=explode('/',$request);
 		array_shift($strs);
 
-		$c_n=ucfirst($strs[0].'Controller');
-		if($strs[0]=='')$this->createDefaults();
-		else{
-	        if(!class_exists($c_n))$this->createError();
-	        else{
-	            $rc=new ReflectionClass($c_n);
-	            array_shift($strs);
-	            if(empty($strs))$this->createError();
-	            else{
-		            $m_n=$strs[0].'Method';
-		            if(!$rc->hasMethod($m_n))$this->createError();
-		            else{
-		            	$this->_method=$rc->getMethod($strs[0].'Method');
-		            	$this->_controller=$rc->newInstance();
-		            	array_shift($strs);	            
-		            }
-		        }
-	        }
-	        $ks=$vs=array();
-	        if(!empty($strs[0])){
-	            for($i=0,$c=count($strs);$i<$c;$i++){
-	            if($strs[$i]!='')$ks[]=$strs[$i];
-	            else continue;
-	            $i++;
-	            if($i>=count($strs))break;
-	            $vs[]=$strs[$i];
-	            }
-	            if(count($ks)>count($vs))$vs[]='';
-	            $this->_args=array_combine($ks,$vs);
-	        }
-	    }
-	}
-
-	protected function createDefaults(){
-		$rc=new ReflectionClass('DefaultController');
-        $this->_controller=$rc->newInstance();
-        $this->_method=$rc->getMethod('defaultMethod');
-	}
-
-	protected function createError(){
-		$rc=new ReflectionClass('DefaultController');
-        $this->_controller=$rc->newInstance();
-        $this->_method=$rc->getMethod('errorMethod');
+		$c_n=isset($strs[0])?ucfirst($strs[0].'Controller'):'DefaultController';
+		if(class_exists($c_n)){
+			$rc=new ReflectionClass($c_n);
+			array_shift($strs);
+		}else $rc=new ReflectionClass('DefaultController');
+		$m_n=isset($strs[0])?$strs[0].'Method':'Method';
+		if($rc->hasMethod($m_n)){
+			$this->_method=$rc->getMethod($m_n);
+			array_shift($strs);
+		}else{
+			$rc=new ReflectionClass('DefaultController');
+			$this->_method=$rc->getMethod('errorMethod');
+		}
+		$this->_controller=$rc->newInstance();
+        $ks=$vs=array();
+        if(!empty($strs[0])){
+            for($i=0,$c=count($strs);$i<$c;$i++){
+            if($strs[$i]!='')$ks[]=$strs[$i];
+            else continue;
+            $i++;
+            if($i>=count($strs))break;
+            $vs[]=$strs[$i];
+            }
+            if(count($ks)>count($vs))$vs[]='';
+            $this->_args=array_combine($ks,$vs);
+        }	    
 	}
 
 	public function render($t_n){

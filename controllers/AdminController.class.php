@@ -5,7 +5,8 @@ class AdminController{
         //проверить права
         echo'Permitions for '.get_class($this).' -> Ok';
     }
-    public function mainMethod(){
+    public function Method(){
+        // gladkov.loc/admin
         $fc=AppController::getInstance();
         $fc->setContent($fc->render('admin_main.twig.html'));
     }
