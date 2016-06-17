@@ -1,5 +1,9 @@
 <?php
 namespace Globals{
+	const DB_NAME='gladkovdb';
+	const DB_USER='gladkov';
+	const DB_PASS='lk08d16ex4';
+
 	function clearStr($str){
 		return trim(strip_tags($str));
 	}
