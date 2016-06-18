@@ -41,10 +41,11 @@ class AppController{
         }	    
 	}
 
-	public function render($t_n){
+	public function render($t_n,$arg_arr){
 		$loader=new Twig_Loader_Filesystem('templates');
-		$twig=new Twig_Environment($loader);
-		return $twig->render($t_n);
+		if(Globals\DEBUG)$twig=new Twig_Environment($loader,array('debug'=>true));
+		else $twig=new Twig_Environment($loader);
+		return $twig->render($t_n,$arg_arr);
 	}
 
 	public function getContent(){

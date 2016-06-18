@@ -1,10 +1,6 @@
 <?php
-class AdminController{
+class AdminController extends BaseController{
     //Контроллер Админки
-    public function __construct(){
-        //проверить права
-        echo'Permitions for '.get_class($this).' -> Ok';
-    }
     public function Method(){
         // gladkov.loc/admin
         $fc=AppController::getInstance();

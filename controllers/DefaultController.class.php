@@ -1,17 +1,6 @@
 <?php
-class DefaultController{
+class DefaultController extends BaseController{
     //Контроллер поумолчанию, выводит основной контент
-    protected static $_pdo;
-    public static function getPDO(){
-        if(!isset(self::$_pdo)){            
-            self::$_pdo=new PDO(
-                'mysql:host=localhost;charset=utf8;dbname='.Globals\DB_NAME,
-                Globals\DB_USER,
-                Globals\DB_PASS);
-            self::$_pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-        }
-        return self::$_pdo;
-    }
     public function errorMethod(){
         // запрос несуществующего метода Любого контроллера
         $fc=AppController::getInstance();
@@ -20,7 +9,7 @@ class DefaultController{
     public function Method(){
         // gladkov.loc
         $fc=AppController::getInstance();
-        $fc->setContent($fc->render('index.twig.html'));
+        $fc->setContent($fc->render('index.twig.html',array('logger'=>$this->_logger,)));
     }
     public function goodMethod(){
         // gladkov.loc/good/3
@@ -35,14 +24,16 @@ class DefaultController{
     // !!! ОТЛАДКА
     public function createdbMethod(){
         // !!! ОТЛАДКА создаёт НОВУЮ БД по запосам из файла create.sql
+        header('Content-Type:text/plain;');
         echo'Создание НОВОЙ БД '.Globals\DB_NAME;
-        $db=self::getPDO();
+        $db=(new DB())->getPDO();
         $file=file_get_contents('create.sql');
         $sqlarr=explode(";",$file);
 
         foreach($sqlarr as $sql){
             if(empty($sql))continue;
             try{
+                echo $sql;
                 $db->query($sql);
             }catch(PDOException $e){
                 echo $e;
