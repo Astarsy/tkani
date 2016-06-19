@@ -66,6 +66,42 @@ class DB{
         }
         return false;
     }
+    public function createUser($user){
+        $user->slug=$this->_pdo->quote($user->slug);
+        $user->name=$this->_pdo->quote($user->name);
+        $user->mail=$this->_pdo->quote($user->mail);
+        $user->mobile=$this->_pdo->quote($user->mobile);
+        $user->alt_mail=$this->_pdo->quote($user->alt_mail);
+        $user->zip=$this->_pdo->quote($user->zip);
+        $user->street=$this->_pdo->quote($user->street);
+        $user->city=$this->_pdo->quote($user->city);
+        $user->country=$this->_pdo->quote($user->country);
+        $user->job_title=$this->_pdo->quote($user->job_title);
+        $sql="INSERT
+                INTO users(
+                    slug,
+                    name,
+                    mail,
+                    mobile,
+                    zip,
+                    street,
+                    city,
+                    country
+                )VALUES(
+                    $user->slug,
+                    $user->name,
+                    $user->mail,
+                    $user->mobile,
+                    $user->zip,
+                    $user->street,
+                    $user->city,
+                    (SELECT id FROM countries WHERE name=$user->country))";
+        try{
+            //die('<br>'.$sql);
+            $this->_pdo->exec($sql);
+        }catch(PDOException $e){die('<br>Исключение '.$e->getCode());}
+        return true;
+    }
     public function createTestDB(){
         // Creates a test database
         $file=file_get_contents('create.sql');

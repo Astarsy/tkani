@@ -31,29 +31,12 @@ class Logger{
     }
     protected function login($mail,$passwd){
         // tries loging user in
-        $udstrs=self::getUserRegistrationData($mail,$passwd);
+        $udstrs=RegistrationDataStorage::getUserRegistrationData($mail,$passwd);
         if(false===$udstrs)return;
         list(,$s_pass_hesh,$s,$i)=$udstrs;
-        if($s_pass_hesh!==self::getHesh($passwd,$s,$i))return;
+        if($s_pass_hesh!==RegistrationDataStorage::getHesh($passwd,$s,$i))return;
         $user=DB::getInstance()->getUserByMail($mail);
         $_SESSION[Globals\USER_SESNAME]=json_encode($user);
-    }
-    public static function getUserRegistrationData($mail){
-        //Получает из хранилища данные п-ля
-        //возвращает массив строк mail,pass_hash,salt,iters
-        //либо false        
-        //В данной версии учетные записи хранятся в файле
-        if($mail==='')return false;
-        if(!is_file(USERS_FILENAME)){
-            echo'Файл не найден '.USERS_FILENAME;// ОТЛАДКА!!!
-            exit;
-        }
-        $users=file(USERS_FILENAME);
-        foreach($users as $user){
-            $strs=explode(':',$user);
-            if($strs[0]==$mail)return $strs;
-        }
-        return false;
     }
     public function getUser(){
         //Возвращает объект с данными профиля п-ля
@@ -71,10 +54,5 @@ class Logger{
     protected function clearPW($pw){
         //Очищает и возвращает Password
         return Globals\clearPassword($pw);
-    }
-    public static function getHesh($p,$s,$its){
-        $str=$p;
-        for($i=0;$i<$its;$i++)$str=sha1($str.$s);
-        return $str;
     }
 }
