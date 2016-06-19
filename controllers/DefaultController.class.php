@@ -26,21 +26,7 @@ class DefaultController extends BaseController{
         // !!! ОТЛАДКА создаёт НОВУЮ БД по запосам из файла create.sql
         header('Content-Type:text/plain;');
         echo'Создание НОВОЙ БД '.Globals\DB_NAME;
-        $db=(new DB())->getPDO();
-        $file=file_get_contents('create.sql');
-        $sqlarr=explode(";",$file);
-
-        foreach($sqlarr as $sql){
-            if(empty($sql))continue;
-            try{
-                echo $sql;
-                $db->query($sql);
-            }catch(PDOException $e){
-                echo $e;
-                exit;
-            }
-        }
-        echo'->Ok';
+        if(DB::getInstance()->createTestDB())echo'->Ok';
         exit;
     }
 }

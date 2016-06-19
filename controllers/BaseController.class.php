@@ -5,7 +5,7 @@ abstract class BaseController{
     public function __construct(){
         //проверить права для Всего Контроллера
         $this->_logger=new Logger();
-        $this->_db=new DB;
+        $this->_db=DB::getInstance();
         $un=$this->_logger->getUserName();
         if(empty($permit=$this->_db->getPermition($un,$this)))$permit='access denied';
         echo'Permitions for user '.$un.' on '.get_class($this).' -> '.$permit;    
