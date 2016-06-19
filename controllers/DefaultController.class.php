@@ -21,12 +21,13 @@ class DefaultController extends BaseController{
         $fc=AppController::getInstance();
         $fc->setContent($fc->render('show_cath.twig.html'));
     }
-    // !!! ОТЛАДКА
-    public function createdbMethod(){
-        // !!! ОТЛАДКА создаёт НОВУЮ БД по запосам из файла create.sql
-        header('Content-Type:text/plain;');
-        echo'Создание НОВОЙ БД '.Globals\DB_NAME;
-        if(DB::getInstance()->createTestDB())echo'->Ok';
-        exit;
+    public function cabinetMethod(){
+        // gladkov.loc/cath/3
+        $fc=AppController::getInstance();
+        $user=$this->_logger->getUser();
+        $cabinet=new Cabinet;
+        $fc->setContent($fc->render('cabinet.twig.html',array(
+            'user'=>$user,
+            )));
     }
 }

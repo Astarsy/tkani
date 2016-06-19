@@ -71,7 +71,8 @@ INSERT INTO subjects(id,slug,name)
 		;
 INSERT INTO permitions(id,slug,user_id,subject_id,code)
 	VALUES
-		(1,'d_permit_1',1,1,7),
-		(2,'d_permit_2',2,1,5),
-		(3,'d_permit_3',4,2,6)
+		(1,'d_permit_1',1,1,6),
+		(2,'d_permit_2',1,2,3),
+		(3,'d_permit_3',2,1,5),
+		(4,'d_permit_4',4,2,4)
 		;

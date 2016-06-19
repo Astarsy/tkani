@@ -6,8 +6,8 @@ namespace Globals{
 	const DB_PASS='lk08d16ex4';
 	const USER_SESNAME='user_data';
 	define('USERS_FILENAME','.htpasswd');//учетные данные поль-лей
-	function clearStr($str){
-		return trim(strip_tags($str));
+	function clearStr($str,$len=200){
+		return substr(trim(strip_tags($str)),0,$len);
 	}
 
 	function clearInt($i){
@@ -30,5 +30,12 @@ namespace Globals{
     function clearPassword($pw){
         //Очищает и возвращает Password
         return substr(trim(strip_tags($pw)),0,100);
+    }
+    function clearPhone($p){
+        //Возвращает очищенный phone или false
+        $p=clearStr($p,20);
+        //'/^\+7\(\d{3,4}\)\d{2,3}-\d{2}-\d{2}$/'
+        if(preg_match('/^([\d,\(,\),\+,-]){6,30}$/',$p))return $p;
+        return false;
     }
 }

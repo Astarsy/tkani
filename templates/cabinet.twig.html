@@ -1,0 +1,11 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Кабинет пользователя{% endblock %}
+{% block content %}
+<h2>Кабинет пользователя</h2>
+{% if user.name!='guest' %}
+	{% include 'profile_form.html' %}
+{% else %}
+	{% include 'register_form.html' %}
+{% endif %}
+{% endblock %}

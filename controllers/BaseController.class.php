@@ -7,7 +7,9 @@ abstract class BaseController{
         $this->_logger=new Logger();
         $this->_db=DB::getInstance();
         $un=$this->_logger->getUserName();
-        if(empty($permit=$this->_db->getPermition($un,$this)))$permit='access denied';
+        if(empty($permit=$this->_db->getPermition($un,$this))){
+            die('access denied');
+        }
         echo'Permitions for user '.$un.' on '.get_class($this).' -> '.$permit;    
     }
 }
