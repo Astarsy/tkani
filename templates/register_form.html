@@ -1,25 +1,25 @@
 <form class='register' method='post'>
-	<div>
+	<div class='{{classes.mail}}'>
 		<label for='mail'>e-mail</label>
 		<input type='text' name='mail'>
 	</div>
-	<div>
-		<label for='pass1'>пароль</label>
-		<input type='password' name='pass1'>
+	<div class='{{classes.password}}'>
+		<label for='password'>пароль</label>
+		<input type='password' name='password'>
 	</div>
-	<div>
-		<label for='pass2'>повторите пароль</label>
-		<input type='password' name='pass2'>
+	<div class='{{classes.password}}'>
+		<label for='password2'>повторите пароль</label>
+		<input type='password' name='password2'>
 	</div>
-	<div>
+	<div class='{{classes.alt_mail}}'>
 		<label for='alt_mail'>запасной e-mail</label>
 		<input type='text' name='alt_mail'>
 	</div>
-	<div>
+	<div class='{{classes.name}}'>
 		<label for='name'>Имя</label>
 		<input type='text' name='name'>
 	</div>
-	<div>
+	<div class='{{classes.gender}}'>
 		<label>Пол</label>
 		<label>
 			<input id='male' type='radio' name='gender' value='0' checked>мужской
@@ -28,38 +28,38 @@
 			<input id='female' type='radio' name='gender' value='1'>женский
 		</label>
 	</div>
-	<div>
+	<div class='{{classes.mobile}}'>
 		<label for='mobile'>Мобильный телефон</label>
 		<input type='text' name='mobile'>
 	</div>
-	<div>
+	<div class='{{classes.tel}}'>
 		<label for='tel'>Рабочий телефон</label>
 		<input type='text' name='tel'>
 	</div>
-	<div>
+	<div class='{{classes.fax}}'>
 		<label for='fax'>Факс</label>
 		<input type='text' name='fax'>
 	</div>
-	<div>
+	<div class='{{classes.zip}}'>
 		<label for='zip'>Почтовый индекс</label>
 		<input type='text' name='zip'>
 	</div>
-	<div>
+	<div class='{{classes.tel}}'>
 		<label for='street'>Улица</label>
 		<input type='text' name='street'>
 	</div>
-	<div>
+	<div class='{{classes.street}}'>
 		<label for='city'>Город</label>
 		<input type='text' name='city'>
 	</div>
-	<div>
+	<div class='{{classes.country}}'>
 		<label for='country'>Страна</label>
 		<select name='country'>
 			<option selected>Россия</option>
 			<option>USA</option>
 		</select>
 	</div>
-	<div>
+	<div class='{{classes.job_title}}'>
 		<label for='job_title'>Занимаемая должность</label>
 		<input type='text' name='job_title'>
 	</div>

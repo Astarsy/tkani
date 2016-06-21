@@ -22,7 +22,7 @@ class DB{
     public function getUserByName($name){
         // Returms Object of user or false
         $name=$this->_pdo->quote($name);
-        $sql="SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title FROM users WHERE name=$name";
+        $sql="SELECT slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title FROM users WHERE name=$name";
         try{
             $res=$this->_pdo->query($sql);
         }catch(PDOException $e){
@@ -70,6 +70,7 @@ class DB{
         $user->slug=$this->_pdo->quote($user->slug);
         $user->name=$this->_pdo->quote($user->name);
         $user->mail=$this->_pdo->quote($user->mail);
+        $user->gender=(bool)$user->gender;
         $user->mobile=$this->_pdo->quote($user->mobile);
         $user->alt_mail=$this->_pdo->quote($user->alt_mail);
         $user->zip=$this->_pdo->quote($user->zip);

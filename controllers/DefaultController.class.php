@@ -28,6 +28,7 @@ class DefaultController extends BaseController{
         $cabinet=new Cabinet;
         $fc->setContent($fc->render('cabinet.twig.html',array(
             'user'=>$user,
+            'classes'=>$cabinet->getForm()->getClasses(),
             )));
     }
 }

@@ -13,7 +13,7 @@ CREATE TABLE users(
 				mail VARCHAR(40) NOT NULL UNIQUE,
 				alt_mail VARCHAR(40) NULL,
 				gender BOOLEAN NOT NULL DEFAULT false,
-				mobile VARCHAR(30) NULL,
+				mobile VARCHAR(30) NOT NULL,
 				tel VARCHAR(30) NULL,
 				fax VARCHAR(30) NULL,
 				zip VARCHAR(20),

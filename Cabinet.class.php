@@ -3,49 +3,58 @@ class Cabinet{
 	// Отвечает за профиль п-ля, обрабатывает POST от форм:
 	//-для guest- форма регистрации register_form.html
 	//-для залогиненного- форма профиля п-ля profile_form.html
-	protected function getSlug(){
-		$slug='u'.time();
-		return $slug;
-	}
-	protected function clearPassword(){
-		if(!(isset($_POST['pass1'])&isset($_POST['pass2'])))die('Нет полей паролей');
-		$p1=Globals\clearPassword($_POST['pass1']);
-		$p2=Globals\clearPassword($_POST['pass2']);
-		if(empty($p1)||empty($p2))die('Не заполнены поля паролей');
-		if($p1!==$p1)die('Пароли не совпадают');
-		return $p1;
-	}
-	protected function clearValue($val,$prop){
-		return Globals\clearStr($val);//!!! ОТЛАДКА
-	}
+	protected $_form;
 	public function __construct()
 	{
+		$this->_form=new CabinetForm(array(
+			'name'=>true,
+			'alt_mail'=>true,
+			'tel'=>true,
+			'fax'=>true,
+			'zip'=>true,
+			'street'=>true,
+			'city'=>true,
+			'country'=>true,
+			'job_title'=>true,
+			));
 		if($_SERVER['REQUEST_METHOD']=='POST'){
 			if(isset($_POST['profile'])){
 				die('Сохраняю профиль');
-			}elseif (isset($_POST['register'])) {
+			}elseif(isset($_POST['register'])){
 				//регистрация поль-ля
 				$user=DB::getInstance()->getUserByName('guest');
-				unset($user->id);
-				unset($user->slug);
+				$user->password='';
 				$rc=new ReflectionObject($user);
 				$props=$rc->getProperties();
 				foreach($props as $prop){
-					if(!isset($_POST[$prop->name]))die('Не все данные получены в Кабинете: '.$prop);
-					else{
-						$prop->setAccessible(true);
-						$prop->setValue($user,$this->clearValue($_POST[$prop->name],$prop));
-					}
+					$prop->setAccessible(true);
+					$clean_val=$this->_form->createFormField($prop->name);
+					$prop->setValue($user,$clean_val);
 				}
-				$user->slug=$this->getSlug();
-				$user->password=$this->clearPassword();
-				if(	empty($user->slug)||
-					empty($user->mail)||
-					empty($user->password))die('Инвалидные поля'.var_dump($user));
-				// всё проверено, сохранять в файл и в БД
-				if(!RegistrationDataStorage::saveUserRegistrationData($user->mail,$user->password))die('Не удалось создать пользователя');
-				if(!DB::getInstance()->createUser($user))die('Не удалось сохранить профиль');
+				if(empty($this->_form->getClasses())){
+					//инвалидных полей нет, Сохранять
+					header('Content-Type:text/plain;');
+					echo"\r\nСохраняю:";
+					var_dump($user);
+					exit;
+					//if(!RegistrationDataStorage::saveUserRegistrationData($user->mail,$user->password))die('Не удалось создать пользователя');
+					//if(!DB::getInstance()->createUser($user))die('Не удалось сохранить профиль');
+				}
+				//есть инвалидные поля, не сохранять
+				//var_dump($this->_form->getClasses());
 			}
 		}
+	}
+	public function getForm(){
+		return $this->_form;
+	}
+}
+class CabinetForm extends Form{
+	public function passwordValidator($n){
+		if(!(isset($_POST['password'])&&isset($_POST['password2'])))die('Нет полей паролей');
+		$p1=Globals\clearPassword($_POST['password']);
+		$p2=Globals\clearPassword($_POST['password2']);
+		if(empty($p1)||empty($p2)||($p1!==$p2))$this->_classes[$n]='err';
+		return $p1;
 	}
 }
