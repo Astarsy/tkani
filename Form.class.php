@@ -16,6 +16,9 @@ class Form{
 	public function getClasses(){
 		return $this->_classes;
 	}
+	public function getFields(){
+		return $this->_fields;
+	}
 	public function getFieldValue($n){
 		if(!isset($this->_fields[$n]))die('Нет такого свойства '.$n);
 		return $this->_fields[$n];

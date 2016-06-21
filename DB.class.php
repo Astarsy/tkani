@@ -66,6 +66,16 @@ class DB{
         }
         return false;
     }
+    public function getCountries(){
+        //Возвращает массив всех стран
+        $sql="SELECT name FROM countries";
+        try{
+            $res=$this->_pdo->query($sql);
+        }catch(PDOException $e){die($e);}
+        $arr=array();
+        while($r=$res->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
+        return $arr;
+    }
     public function createUser($user){
         $user->slug=$this->_pdo->quote($user->slug);
         $user->name=$this->_pdo->quote($user->name);

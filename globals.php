@@ -23,8 +23,8 @@ namespace Globals{
 	}	  
 	function clearMail($mail){
 	    //Очищает и возвращает Mail или false
-	    $res=substr(trim(strip_tags($mail)),0,100);
-	    if(preg_match('/^.{1,30}@{1}.{1,20}\.{1}.{1,5}$/',$res))return $res;
+	    $res=clearStr($mail,55);
+	    if(preg_match('/^.{1,30}@{1}.{1,20}\.{1}.{1,3}$/',$res))return $res;
 	    else return false;
 	}
     function clearPassword($pw){
@@ -35,7 +35,7 @@ namespace Globals{
         //Возвращает очищенный phone или false
         $p=clearStr($p,20);
         //'/^\+7\(\d{3,4}\)\d{2,3}-\d{2}-\d{2}$/'
-        if(preg_match('/^([\d,\(,\),\+,-]){6,30}$/',$p))return $p;
+        if(preg_match('/^([\d,?\(,?\),? ,\+,-]){6,30}$/',$p))return $p;
         return false;
     }
 }

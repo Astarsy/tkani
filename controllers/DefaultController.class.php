@@ -4,6 +4,7 @@ class DefaultController extends BaseController{
     public function errorMethod(){
         // запрос несуществующего метода Любого контроллера
         $fc=AppController::getInstance();
+        echo $_SERVER['REQUEST_URI'];
         $fc->setContent($fc->render('error.twig.html'));
     }
     public function Method(){
@@ -26,9 +27,13 @@ class DefaultController extends BaseController{
         $fc=AppController::getInstance();
         $user=$this->_logger->getUser();
         $cabinet=new Cabinet;
+        $countries=DB::getInstance()->getCountries();
+        //var_dump($countries);exit;
         $fc->setContent($fc->render('cabinet.twig.html',array(
             'user'=>$user,
             'classes'=>$cabinet->getForm()->getClasses(),
+            'fields'=>$cabinet->getForm()->getFields(),
+            'countries'=>$countries,
             )));
     }
 }
