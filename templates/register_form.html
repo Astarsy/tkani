@@ -2,6 +2,9 @@
 	<div class='{{classes.mail}}'>
 		<label for='mail'>e-mail</label>
 		<input type='text' name='mail'  value='{{fields.mail}}'>
+		{% if msgs.mail %}
+		<div class='msg'>{{msgs.mail}}</div>
+		{% endif %}
 	</div>
 	<div class='{{classes.password}}'>
 		<label for='password'>пароль</label>
@@ -14,6 +17,9 @@
 	<div class='{{classes.alt_mail}}'>
 		<label for='alt_mail'>запасной e-mail</label>
 		<input type='text' name='alt_mail' value='{{fields.alt_mail}}'>
+		{% if msgs.alt_mail %}
+		<div class='msg'>{{msgs.alt_mail}}</div>
+		{% endif %}
 	</div>
 	<div class='{{classes.name}}'>
 		<label for='name'>Имя</label>

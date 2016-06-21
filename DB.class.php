@@ -19,17 +19,6 @@ class DB{
         }
         return self::$_instance;
     }
-    public function getUserByName($name){
-        // Returms Object of user or false
-        $name=$this->_pdo->quote($name);
-        $sql="SELECT slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title FROM users WHERE name=$name";
-        try{
-            $res=$this->_pdo->query($sql);
-        }catch(PDOException $e){
-            die($e);
-        }
-        return $res->fetch(PDO::FETCH_OBJ);
-    }
     public function getUserByMail($mail){
         // Returms Object of user or false
         $mail=$this->_pdo->quote($mail);
@@ -41,13 +30,13 @@ class DB{
         }
         return $res->fetch(PDO::FETCH_OBJ);
     }
-    public function getPermition($un,$obj){
+    public function getPermition($um,$obj){
         //возвращает code если у $un есть права на $obj
         //объекты доступные п-лю gues доступны всем
         //права данного п-ля и guest суммируются
         $subj=$this->_pdo->quote(get_class($obj));
-        $un=$this->_pdo->quote($un);
-        $sql="SELECT code FROM permitions WHERE user_id IN(SELECT id FROM users WHERE name IN ($un,'guest'))AND subject_id=(SELECT id FROM subjects WHERE name=$subj);";
+        $um=$this->_pdo->quote($um);
+        $sql="SELECT code FROM permitions WHERE user_id IN(SELECT id FROM users WHERE mail IN ($um,''))AND subject_id=(SELECT id FROM subjects WHERE name=$subj);";
         try{
             //echo $sql;
             $res=$this->_pdo->query($sql);
@@ -76,10 +65,11 @@ class DB{
         while($r=$res->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
         return $arr;
     }
-    public function createUser($user){
+    public function saveUser($user){
+        //Создаёт или обновляет профиль п-ля
+        $user->mail=$this->_pdo->quote($user->mail);
         $user->slug=$this->_pdo->quote($user->slug);
         $user->name=$this->_pdo->quote($user->name);
-        $user->mail=$this->_pdo->quote($user->mail);
         $user->gender=(bool)$user->gender;
         $user->mobile=$this->_pdo->quote($user->mobile);
         $user->alt_mail=$this->_pdo->quote($user->alt_mail);
@@ -88,7 +78,17 @@ class DB{
         $user->city=$this->_pdo->quote($user->city);
         $user->country=$this->_pdo->quote($user->country);
         $user->job_title=$this->_pdo->quote($user->job_title);
-        $sql="INSERT
+        if(empty($this->getUserByMail()))$sql=$this->getInsertUserSql($user);
+        else return $this->getUpdateUserSql($user);
+        try{
+            //die('<br>'.$sql);
+            $this->_pdo->exec($sql);
+        }catch(PDOException $e){die('<br>Исключение '.$e->getCode());}
+        return true;
+    }
+    protected function getInsertUserSql($user){
+        //Создаёт профиль п-ля
+        return "INSERT
                 INTO users(
                     slug,
                     name,
@@ -106,12 +106,28 @@ class DB{
                     $user->zip,
                     $user->street,
                     $user->city,
+                    (SELECT id FROM countries WHERE name=$user->country))";        
+    }
+    protected function getUpdateUserSql($user){
+        //Создаёт профиль п-ля
+        return "UPDATE users SET(
+                    slug,
+                    name,
+                    mail,
+                    mobile,
+                    zip,
+                    street,
+                    city,
+                    country
+                )VALUES(
+                    $user->slug,
+                    $user->name,
+                    $user->mail,
+                    $user->mobile,
+                    $user->zip,
+                    $user->street,
+                    $user->city,
                     (SELECT id FROM countries WHERE name=$user->country))";
-        try{
-            //die('<br>'.$sql);
-            $this->_pdo->exec($sql);
-        }catch(PDOException $e){die('<br>Исключение '.$e->getCode());}
-        return true;
     }
     public function createTestDB(){
         // Creates a test database

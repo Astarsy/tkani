@@ -26,13 +26,14 @@ class DefaultController extends BaseController{
         // gladkov.loc/cath/3
         $fc=AppController::getInstance();
         $user=$this->_logger->getUser();
-        $cabinet=new Cabinet;
+        $cabinet=new Cabinet($user);
         $countries=DB::getInstance()->getCountries();
-        //var_dump($countries);exit;
+        //var_dump($user);exit;
         $fc->setContent($fc->render('cabinet.twig.html',array(
             'user'=>$user,
             'classes'=>$cabinet->getForm()->getClasses(),
             'fields'=>$cabinet->getForm()->getFields(),
+            'msgs'=>$cabinet->getForm()->getMsgs(),
             'countries'=>$countries,
             )));
     }

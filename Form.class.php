@@ -8,9 +8,11 @@ class Form{
 	protected $_fields;
 	protected $_free_fields;
 	protected $_classes;
+	protected $_msgs;
 	public function __construct($arr=array()){
 		$this->_fields=array();
 		$this->_classes=array();
+		$this->_msgs=array();
 		$this->_free_fields=$arr;
 	}
 	public function getClasses(){
@@ -18,6 +20,9 @@ class Form{
 	}
 	public function getFields(){
 		return $this->_fields;
+	}
+	public function getMsgs(){
+		return $this->_msgs;
 	}
 	public function getFieldValue($n){
 		if(!isset($this->_fields[$n]))die('Нет такого свойства '.$n);

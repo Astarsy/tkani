@@ -6,10 +6,10 @@ abstract class BaseController{
         //проверить права для Всего Контроллера
         $this->_logger=new Logger();
         $this->_db=DB::getInstance();
-        $un=$this->_logger->getUserName();
-        if(empty($permit=$this->_db->getPermition($un,$this))){
+        $user=$this->_logger->getUser();
+        if(empty($permit=$this->_db->getPermition($user->mail,$this))){
             die('access denied');
         }
-        echo'Permitions for user '.$un.' on '.get_class($this).' -> '.$permit;    
+        echo'Permitions for user '.$user->name.' on '.get_class($this).' -> '.$permit;    
     }
 }
