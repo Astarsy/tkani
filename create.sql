@@ -16,9 +16,9 @@ CREATE TABLE users(
 				mobile VARCHAR(30) NOT NULL,
 				tel VARCHAR(30) NULL,
 				fax VARCHAR(30) NULL,
-				zip VARCHAR(20),
-				street VARCHAR(100),
-				city VARCHAR(80),
+				zip VARCHAR(20) NULL,
+				street VARCHAR(100) NULL,
+				city VARCHAR(80) NULL,
 				country INT NULL,
 				job_title VARCHAR(80) NULL,
 				FOREIGN KEY(country) REFERENCES countries(id)
@@ -53,10 +53,10 @@ INSERT INTO countries(id,slug,name)
 		;
 INSERT INTO users(id,slug,name,mail,mobile,zip,street,city,country)
 	VALUES
-		(1,'d_user_0000','John Smith','john@smith.loc','+8 888 888 88 88','400088','Happy st.','NY',2),
-		(2,'d_user_0001','Вася Пупкин','v@pk.loc','+7-34-988-888-88-00','400089','переулок Богатый дом 888 корпус 7-А кватрира 8','Длиннющееназваниекакаготонеизвестногогорода',1),
+		(1,'d_user_0000','John Smith','john@smith.loc','+8 888 888 88 88','400088','Happy st.','NY',3),
+		(2,'d_user_0001','Вася Пупкин','v@pk.loc','+7-34-988-888-88-00','400089','переулок Богатый дом 888 корпус 7-А кватрира 8','Длиннющееназваниекакаготонеизвестногогорода',2),
 		(3,'d_user_0002',NULL,'anonim@user.loc',NULL,NULL,NULL,NULL,NULL),
-		(4,'d_user_0004','guest','',NULL,NULL,NULL,NULL,NULL)
+		(4,'d_user_0004','guest','',NULL,NULL,NULL,NULL,2)
 		;
 INSERT INTO salers(id,slug,title,logo,respons_person)
 	VALUES

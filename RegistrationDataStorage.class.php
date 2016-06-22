@@ -21,7 +21,7 @@ class RegistrationDataStorage{
     public static function saveUserRegistrationData($m,$p){
         //Сохраняет новую ючетную запись в хранилище
         //В данной версии учетные записи хранятся в файле
-        if($this->getUserRegistrationData($m))return false;
+        if(self::getUserRegistrationData($m))return false;
         $s=rand(0,getrandMax());
         $i=rand(2,20);
         $h=self::getHesh($p,$s,$i);

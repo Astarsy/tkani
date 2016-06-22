@@ -28,8 +28,9 @@ class DefaultController extends BaseController{
         $user=$this->_logger->getUser();
         $cabinet=new Cabinet($user);
         $countries=DB::getInstance()->getCountries();
-        //var_dump($user);exit;
+        $fn=get_class($cabinet->getForm()).'.html';
         $fc->setContent($fc->render('cabinet.twig.html',array(
+            'form_name'=>$fn,
             'user'=>$user,
             'classes'=>$cabinet->getForm()->getClasses(),
             'fields'=>$cabinet->getForm()->getFields(),

@@ -1,0 +1,72 @@
+<h3>Профиль пользователя {{user.name}}</h3>
+<h4>e-mail {{user.mail}}</h4>
+<form class='profile' method='post'>
+	<div class='{{classes.alt_mail}}'>
+		<label for='alt_mail'>запасной e-mail</label>
+		<input type='text' name='alt_mail' value='{{fields.alt_mail}}'>
+		{% if msgs.alt_mail %}
+		<div class='msg'>{{msgs.alt_mail}}</div>
+		{% endif %}
+	</div>
+	<div class='{{classes.name}}'>
+		<label for='name'>Имя</label>
+		<input type='text' name='name' value='{{fields.name}}'>
+	</div>
+	<div class='{{classes.gender}}'>
+		<label>Пол</label>
+		<label>
+			<input id='male' type='radio' name='gender' value='0'
+				{% if fields.gender==0 %}
+					checked
+				{% endif %}>мужской
+		</label>
+		<label>
+			<input id='female' type='radio' name='gender' value='1'
+				{% if fields.gender==1 %}
+					checked
+				{% endif %}>женский
+		</label>
+	</div>
+	<div class='{{classes.mobile}}'>
+		<label for='mobile'>Мобильный телефон</label>
+		<input type='text' name='mobile' value='{{fields.mobile}}'>
+	</div>
+	<div class='{{classes.tel}}'>
+		<label for='tel'>Рабочий телефон</label>
+		<input type='text' name='tel' value='{{fields.tel}}'>
+	</div>
+	<div class='{{classes.fax}}'>
+		<label for='fax'>Факс</label>
+		<input type='text' name='fax' value='{{fields.fax}}'>
+	</div>
+	<div class='{{classes.zip}}'>
+		<label for='zip'>Почтовый индекс</label>
+		<input type='text' name='zip' value='{{fields.zip}}'>
+	</div>
+	<div class='{{classes.tel}}'>
+		<label for='street'>Улица</label>
+		<input type='text' name='street' value='{{fields.street}}'>
+	</div>
+	<div class='{{classes.street}}'>
+		<label for='city'>Город</label>
+		<input type='text' name='city' value='{{fields.city}}'>
+	</div>
+	<div class='{{classes.country}}'>
+		<label for='country'>Страна</label>
+		<select name='country'>
+		{% for key,country in countries %}
+			<option
+			{% if key==fields.country %}
+				selected
+			{% endif %}>{{country}}</option>
+		{% endfor %}
+		</select>
+	</div>
+	<div class='{{classes.job_title}}'>
+		<label for='job_title'>Занимаемая должность</label>
+		<input type='text' name='job_title' value='{{fields.job_title}}'>
+	</div>
+	<div>
+		<button name='profile'>Сохранить</button>
+	</div>
+</form>

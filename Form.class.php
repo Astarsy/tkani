@@ -2,18 +2,44 @@
 class Form{
 	//Отвечает за извлечение из $_POST, валидацию
 	//и хранение полей и их класса ошибки.
-	//Конструктор принимает список необязательных полей.
+	//Конструктор принимает массив полей для обхода,
+	//где true-обязательные, false- мгут быть не заполнены,
+	//поля отсутств. в массиве и присутв. в мoдели
+	//пропускаются.
 	//Валидатор поумолчанию- defaultValidator- строковой.
 	//Имя кастомного- fieldnameValidator
-	protected $_fields;
-	protected $_free_fields;
-	protected $_classes;
-	protected $_msgs;
-	public function __construct($arr=array()){
-		$this->_fields=array();
-		$this->_classes=array();
-		$this->_msgs=array();
-		$this->_free_fields=$arr;
+	protected $_fields=array();
+	protected $_used_fields=array();
+	protected $_classes=array();
+	protected $_msgs=array();
+	public function __construct($user,$arr){
+		$this->_used_fields=$arr;
+	}
+	public function processForm($user){
+		//обрабатывает форму, возвращает false или
+		//текст ошибки
+		$rc=new ReflectionObject($user);
+		$props=$rc->getProperties();
+		foreach($props as $prop){
+			$prop->setAccessible(true);
+			if(!isset($this->_used_fields[$prop->name]))continue;
+			$clean_val=$this->createFormField($prop->name);
+			$prop->setValue($user,$clean_val);
+		}
+		if(empty($this->_classes)){
+			//инвалидных полей нет, Сохранять
+			// header('Content-Type:text/plain;');
+			// echo"\r\nСохраняю:";
+			// die(var_dump($user));
+			if($res=$this->save($user))die($res);
+		}
+		//если есть инвалидные поля- не сохранять
+		//var_dump($this->_fields);exit;
+		else return 'Инвалидные поля';
+	}
+	protected function save($user){
+		//требутся перегрузить этот метод
+		return'НЕ ПЕРЕГРУЖЕН МЕТОД Form::save';
 	}
 	public function getClasses(){
 		return $this->_classes;
@@ -48,7 +74,7 @@ class Form{
 			return false;
 		}
 		$c_str=Globals\clearStr($_POST[$n]);
-		if($c_str==''&&(!isset($this->_free_fields[$n]))){
+		if($c_str==''&&$this->_used_fields[$n]){
 			$this->_classes[$n]='err';
 			return false;
 		}
