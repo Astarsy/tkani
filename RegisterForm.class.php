@@ -4,6 +4,14 @@ class RegisterForm extends Form{
 		parent::__construct($user,$arr);
 		$user->password='';
 	}
+	protected function processOver(){
+		//вызывается только при удачном сохрании перед
+		//перенаправлением
+		//отправить e-mail для подтверждения
+	}
+	protected function redirect($m,$u){
+		parent::redirect('Вы успешно зарегистрированы. На указанный Вами e-mail отправлено письмо, содержащее ссылку для подтверждения.','/registercomplete');
+	}
 	protected function save($user){
 		//сохраняет профиль и рег.данные
 		//возвращает false в вл.успеха или текст ошибки

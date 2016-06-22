@@ -1,7 +1,8 @@
 <?php 
 class AppController{
 	static protected $_instance;
-	protected $_content,$_controller,$_method,$_args;
+	protected $_content,$_controller,$_method;
+	protected $_args=array();
 
 	static public function getInstance(){
 		if(!(self::$_instance instanceof self))self::$_instance=new self();
@@ -10,7 +11,8 @@ class AppController{
 
 	protected function __construct(){
 		$request=Globals\clearStr($_SERVER['REQUEST_URI']);
-        $strs=explode('/',$request);
+		$pices=explode('?',$request);
+        $strs=explode('/',$pices[0]);
 		array_shift($strs);
 
 		$c_n=isset($strs[0])?ucfirst($strs[0].'Controller'):'DefaultController';

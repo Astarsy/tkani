@@ -23,7 +23,6 @@ class Cabinet{
 					'country'=>false,
 					'job_title'=>false,
 					));
-			//$user->password='';
 		}else{
 			$this->_form=new ProfileForm($user,array(
 					'name'=>false,
@@ -42,8 +41,7 @@ class Cabinet{
 		if($_SERVER['REQUEST_METHOD']=='POST'&&(isset($_POST['register'])||isset($_POST['profile']))){
 			//сохранение Изменений в профиле текущего п-ля
 			//или регистрация Нового п-ля
-			if(empty($res=$this->_form->processForm($user)))header('Location:'.$_SERVER['REQUEST_URI']);
-			else echo($res);
+			if($res=$this->_form->processForm($user))echo($res);
 		}
 	}
 	public function getForm(){

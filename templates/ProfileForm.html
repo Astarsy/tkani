@@ -1,6 +1,6 @@
 <h3>Профиль пользователя {{user.name}}</h3>
 <h4>e-mail {{user.mail}}</h4>
-<form class='profile' method='post'>
+<form action='/cabinet' class='profile' method='post'>
 	<div class='{{classes.alt_mail}}'>
 		<label for='alt_mail'>запасной e-mail</label>
 		<input type='text' name='alt_mail' value='{{fields.alt_mail}}'>

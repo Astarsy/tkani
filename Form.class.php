@@ -31,11 +31,23 @@ class Form{
 			// header('Content-Type:text/plain;');
 			// echo"\r\nСохраняю:";
 			// die(var_dump($user));
-			if($res=$this->save($user))die($res);
+			if($res=$this->save($user))return $res;
+			//состояние $user сохранено
+			$this->pracessOver();
+			$this->redirect();
 		}
 		//если есть инвалидные поля- не сохранять
 		//var_dump($this->_fields);exit;
 		else return 'Инвалидные поля';
+	}
+	protected function processOver(){
+		//вызывается только при удачном сохрании перед
+		//перенаправлением
+	}
+	protected function redirect($msg,$uri){
+		//перенаправление после успешной обработки данных
+		$msg=base64_encode(convert_uuencode($msg));
+		header('Location:'.$uri.'?msg='.$msg);
 	}
 	protected function save($user){
 		//требутся перегрузить этот метод

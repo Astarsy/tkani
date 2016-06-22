@@ -10,6 +10,6 @@ abstract class BaseController{
         if(empty($permit=$this->_db->getPermition($user->mail,$this))){
             die('access denied');
         }
-        echo'Permitions for user '.$user->name.' on '.get_class($this).' -> '.$permit;    
+        //echo'Permitions for user '.$user->name.' on '.get_class($this).' -> '.$permit;    
     }
 }

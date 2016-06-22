@@ -22,7 +22,7 @@ class DB{
     public function getUserByMail($mail){
         // Returms Object of user or false
         $mail=$this->_pdo->quote($mail);
-        $sql="SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title FROM users WHERE mail=$mail";
+        $sql="SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active FROM users WHERE mail=$mail";
         try{
             $res=$this->_pdo->query($sql);
         }catch(PDOException $e){
@@ -76,30 +76,15 @@ class DB{
         try{
             $stmt=$this->_pdo->prepare(
             "INSERT
-                INTO users(
-                    slug,
-                    name,
-                    mail,
-                    mobile,
-                    zip,
-                    street,
-                    city,
-                    country,
-                    job_title
-                )VALUES(
-                    :slug,
-                    :name,
-                    :mail,
-                    :mobile,
-                    :zip,
-                    :street,
-                    :city,
-                    (SELECT id FROM countries WHERE name=:country),
-                    :job_title)");
+                INTO users(slug,name,mail,alt_mail,mobile,tel,fax,zip,street,city,country,job_title)
+                VALUES(:slug,:name,:mail,:alt_mail,:mobile,:tel,:fax,:zip,:street,:city,(SELECT id FROM countries WHERE name=:country),:job_title)");
             $stmt->bindParam(':slug', $user->slug, PDO::PARAM_STR);
             $stmt->bindParam(':name', $user->name, PDO::PARAM_STR);
             $stmt->bindParam(':mail', $user->mail, PDO::PARAM_STR);
+            $stmt->bindParam(':alt_mail', $user->alt_mail, PDO::PARAM_STR);
             $stmt->bindParam(':mobile', $user->mobile, PDO::PARAM_STR);
+            $stmt->bindParam(':tel', $user->tel, PDO::PARAM_STR);
+            $stmt->bindParam(':fax', $user->fax, PDO::PARAM_STR);
             $stmt->bindParam(':zip', $user->zip, PDO::PARAM_STR);
             $stmt->bindParam(':street', $user->street, PDO::PARAM_STR);
             $stmt->bindParam(':city', $user->city, PDO::PARAM_STR);
@@ -116,7 +101,10 @@ class DB{
             $stmt=$this->_pdo->prepare(
             "UPDATE users SET
                     name=:name,
+                    alt_mail=:alt_mail,
                     mobile=:mobile,
+                    tel=:tel,
+                    fax=:fax,
                     zip=:zip,
                     street=:street,
                     city=:city,
@@ -124,7 +112,10 @@ class DB{
                     job_title=:job_title
                 WHERE mail=:mail");
             $stmt->bindParam(':name', $user->name, PDO::PARAM_STR);
+            $stmt->bindParam(':alt_mail', $user->alt_mail, PDO::PARAM_STR);
             $stmt->bindParam(':mobile', $user->mobile, PDO::PARAM_STR);
+            $stmt->bindParam(':tel', $user->tel, PDO::PARAM_STR);
+            $stmt->bindParam(':fax', $user->fax, PDO::PARAM_STR);
             $stmt->bindParam(':zip', $user->zip, PDO::PARAM_STR);
             $stmt->bindParam(':street', $user->street, PDO::PARAM_STR);
             $stmt->bindParam(':city', $user->city, PDO::PARAM_STR);

@@ -21,6 +21,7 @@ CREATE TABLE users(
 				city VARCHAR(80) NULL,
 				country INT NULL,
 				job_title VARCHAR(80) NULL,
+				active BOOLEAN NOT NULL DEFAULT false,
 				FOREIGN KEY(country) REFERENCES countries(id)
 				);
 CREATE TABLE salers(
@@ -51,12 +52,12 @@ INSERT INTO countries(id,slug,name)
 		(2,'d_country_0002','Russia'),
 		(3,'d_country_0003','USA')
 		;
-INSERT INTO users(id,slug,name,mail,mobile,zip,street,city,country)
+INSERT INTO users(id,slug,name,mail,mobile,zip,street,city,country,active)
 	VALUES
-		(1,'d_user_0000','John Smith','john@smith.loc','+8 888 888 88 88','400088','Happy st.','NY',3),
-		(2,'d_user_0001','Вася Пупкин','v@pk.loc','+7-34-988-888-88-00','400089','переулок Богатый дом 888 корпус 7-А кватрира 8','Длиннющееназваниекакаготонеизвестногогорода',2),
-		(3,'d_user_0002',NULL,'anonim@user.loc',NULL,NULL,NULL,NULL,NULL),
-		(4,'d_user_0004','guest','',NULL,NULL,NULL,NULL,2)
+		(1,'d_user_0000','John Smith','john@smith.loc','+8 888 888 88 88','400088','Happy st.','NY',3,true),
+		(2,'d_user_0001','Вася Пупкин','v@pk.loc','+7-34-988-888-88-00','400089','переулок Богатый дом 888 корпус 7-А кватрира 8','Длиннющееназваниекакаготонеизвестногогорода',2,true),
+		(3,'d_user_0002',NULL,'anonim@user.loc',NULL,NULL,NULL,NULL,NULL,false),
+		(4,'d_user_0004','guest','',NULL,NULL,NULL,NULL,2,true)
 		;
 INSERT INTO salers(id,slug,title,logo,respons_person)
 	VALUES
