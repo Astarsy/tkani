@@ -4,6 +4,7 @@ class Cabinet{
 	//-для guest- форма регистрации register_form.html
 	//-для залогиненного- форма профиля п-ля profile_form.html
 	protected $_form;
+	public $err_msg;
 	public function __construct($user)
 	{
 		if($user->mail==''){
@@ -41,7 +42,7 @@ class Cabinet{
 		if($_SERVER['REQUEST_METHOD']=='POST'&&(isset($_POST['register'])||isset($_POST['profile']))){
 			//сохранение Изменений в профиле текущего п-ля
 			//или регистрация Нового п-ля
-			if($res=$this->_form->processForm($user))echo($res);
+			$this->_form->processForm($user);
 		}
 	}
 	public function getForm(){

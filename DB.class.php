@@ -66,6 +66,19 @@ class DB{
         while($r=$res->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
         return $arr;
     }
+    public function saveRegSlugHesh($user,$hesh){
+        //Создаёт запись в reg_heshes
+        $r_t=time();
+        try{
+            $stmt=$this->_pdo->prepare(
+            "INSERT INTO reg_heshes(hesh,user_slug,reg_time)
+                VALUES(:hesh,:slug,:r_t)");
+            $stmt->bindParam(':hesh',$hesh,PDO::PARAM_STR);
+            $stmt->bindParam(':slug',$user->slug,PDO::PARAM_INT);
+            $stmt->bindParam(':r_t',$r_t,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+    }
     public function saveUser($user){
         //Создаёт или обновляет профиль п-ля
         if(empty($this->getUserByMail($user->mail)))return $this->insertUser($user);
@@ -93,8 +106,10 @@ class DB{
             $stmt->bindParam(':job_title', $user->job_title, PDO::PARAM_STR);
             $stmt->execute();
         }catch(PDOException $e){die('<br>Исключение '.$e->getCode().'<br>'.$e);}
+        //TODO: создать хэш для активации ЗДЕСЬ
         return true;
     }
+    //TODO: создать метод для активации ЗДЕСЬ
     protected function updateUser($user){
         //Обновляет профиль п-ля
         try{
@@ -125,6 +140,41 @@ class DB{
             $stmt->execute();
         }catch(PDOException $e){die('<br>Исключение '.$e->getCode().'<br>'.$e);}
         return true;
+    }
+    public function activateUser($hesh,$slug_hesh){
+        //Активация п-ля
+        //алгоритм проверки:
+        //  если есть такой хеш и хеш slug-ов свпадает- Ок
+        //возвращает false или сообщение об ошибке
+        if(!($user_slug=$this->getUserSlugByRegHesh($hesh)))return 'нет п-ля';
+        $saved_slug_hesh=RegistrationDataStorage::getHesh($user_slug,1,1);
+        if($saved_slug_hesh!=$slug_hesh)return 'хеши не совпадают';
+        try{
+            $del_stmt=$this->_pdo->prepare(
+            "DELETE FROM reg_heshes WHERE user_slug=:slug");
+            $del_stmt->bindParam(':slug', $user_slug, PDO::PARAM_STR);
+            $up_stmt=$this->_pdo->prepare("UPDATE users SET active=true WHERE slug=:slug");
+            $up_stmt->bindParam(':slug', $user_slug, PDO::PARAM_STR);
+            $this->_pdo->beginTransaction();
+            $del_stmt->execute();
+            $up_stmt->execute();
+            $this->_pdo->commit();
+        }catch(PDOException $e){
+            $this->_pdo->rollBack();
+            return $e;
+        }
+    }
+    protected function getUserSlugByRegHesh($reg_hesh){
+        //возвращает slug по reg_hesh или false
+        try{
+            $stmt=$this->_pdo->prepare("SELECT user_slug FROM reg_heshes WHERE hesh=:reg_hesh");
+            $stmt->bindParam(':reg_hesh', $reg_hesh, PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){
+            die($e);
+            return false;
+        }
+        return $stmt->fetch(PDO::FETCH_OBJ)->user_slug;
     }
     public function createTestDB(){
         // Creates a test database

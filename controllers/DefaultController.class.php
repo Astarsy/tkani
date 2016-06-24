@@ -7,6 +7,7 @@ class DefaultController extends BaseController{
         //echo $_SERVER['REQUEST_URI'];
         $fc->setContent($fc->render('error.twig.html'));
     }
+
     public function Method(){
         // gladkov.loc
         $fc=AppController::getInstance();
@@ -47,6 +48,36 @@ class DefaultController extends BaseController{
             'fields'=>$cabinet->getForm()->getFields(),
             'msgs'=>$cabinet->getForm()->getMsgs(),
             'countries'=>$countries,
+            )));
+    }
+    public function forgetMethod(){
+        $fc=AppController::getInstance();
+        if(isset($_GET['msg']))$msg=Msg::decode($_GET['msg']);
+        else $msg=false;
+        if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['fgtml'])){
+            //нажата кнопка Отправить Хэш
+            $mail=Globals\clearMail($_POST['fgtml']);
+            if($mail!=''){
+                $user=DB::getPDO()->getUserByMail($mail);
+                if(!empty($user)){
+                    //TODO: отправлять mail Здесь
+                }
+            }
+            header('Location:/registercomplete?msg='.Msg::encode('На указанный Вами e-mail отправлено письмо, содержащее ссылку для восстановление пароля.'));
+        }
+        $fc->setContent($fc->render('forget_password.twig.html',array(
+            'msg'=>$msg,
+            )));
+    }
+    public function confirmMethod(){
+        //подтверждение регистрации
+        $fc=AppController::getInstance();
+        $recived_hesh=array_keys($fc->getArgs())[0];
+        $recived_slug_hesh=$fc->getArgs()[$recived_hesh];
+        $res=DB::getInstance()->activateUser($recived_hesh,$recived_slug_hesh);
+        die($res);
+        $fc->setContent($fc->render('confirm.twig.html',array(
+            'res'=>$res,
             )));
     }
 }

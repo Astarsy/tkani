@@ -4,17 +4,32 @@ class RegisterForm extends Form{
 		parent::__construct($user,$arr);
 		$user->password='';
 	}
-	protected function processOver(){
+	protected function processOver($user){
 		//вызывается только при удачном сохрании перед
 		//перенаправлением
-		//отправить e-mail для подтверждения
+		$hesh=RegistrationDataStorage::getHesh(openssl_random_pseudo_bytes(5),1,1);
+		//отправить e-mail с хэшем для подтверждения
+		if($res=$this->mailToUser($user,$hesh))return $res;
+		//раз всё Ок, сохранить хеш
+		if($res=DB::getInstance()->saveRegSlugHesh($user,$hesh))return $res;
+	}
+	protected function mailToUser($user,$hesh){
+		//отправить e-mail с хэшем для подтверждения
+		
+		$slug_hesh=RegistrationDataStorage::getHesh($user->slug,1,1);
+		$headers='From:Интернет магазин '.$_SERVER['HTTP_HOST'].' <'.MAIL.'>'."\r\n";
+        $headers.='Content-type:text/html;charset=utf-8;'."\r\n";
+        $ref='http://'.$_SERVER['HTTP_HOST'].'/confirm/'.$hesh.'/'.$slug_hesh;
+        $msg='Для подтверждения регистрации на сайте '.$_SERVER['HTTP_HOST'].' нажмите на кнопке '."<a href='$ref'>КНОПКА</a>";
+        echo('Отправка e-mail.<br>Кому: '.$user->mail.'<br>От: '.MAIL.'<br>Текст: '.$msg);
+		//if(!mail($user->mail,'Регистрация на сайте '.$_SERVER['HTTP_HOST'],$msg,$headers))return('Не удалось отправить майл заказчику.');
 	}
 	protected function redirect($m,$u){
-		parent::redirect('Вы успешно зарегистрированы. На указанный Вами e-mail отправлено письмо, содержащее ссылку для подтверждения.','/registercomplete');
+		//parent::redirect('Вы успешно зарегистрированы. На указанный Вами e-mail отправлено письмо, содержащее ссылку для подтверждения.','/registercomplete');
 	}
 	protected function save($user){
 		//сохраняет профиль и рег.данные
-		//возвращает false в вл.успеха или текст ошибки
+		//возвращает false в cл.успеха или текст ошибки
 		if($res=$this->saveRegData($user))return $res;
 		return $this->saveProfile($user);
 	}

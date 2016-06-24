@@ -31,22 +31,25 @@ class Form{
 			// header('Content-Type:text/plain;');
 			// echo"\r\nСохраняю:";
 			// die(var_dump($user));
-			if($res=$this->save($user))return $res;
+			if($res=$this->save($user)){
+				$this->msgs[]=$res;
+				return;
+			}
 			//состояние $user сохранено
-			$this->pracessOver();
-			$this->redirect();
+			$this->_msgs[]=$this->processOver($user);
+			$this->redirect(implode(' ',$this->_msgs),$_SERVER['REQUEST_URI']);
 		}
 		//если есть инвалидные поля- не сохранять
 		//var_dump($this->_fields);exit;
 		else return 'Инвалидные поля';
 	}
-	protected function processOver(){
+	protected function processOver($user){
 		//вызывается только при удачном сохрании перед
 		//перенаправлением
 	}
 	protected function redirect($msg,$uri){
 		//перенаправление после успешной обработки данных
-		$msg=base64_encode(convert_uuencode($msg));
+		$msg=Msg::encode($msg);
 		header('Location:'.$uri.'?msg='.$msg);
 	}
 	protected function save($user){
@@ -60,7 +63,7 @@ class Form{
 		return $this->_fields;
 	}
 	public function getMsgs(){
-		return $this->_msgs;
+		return implode(' ',$this->_msgs);
 	}
 	public function getFieldValue($n){
 		if(!isset($this->_fields[$n]))die('Нет такого свойства '.$n);

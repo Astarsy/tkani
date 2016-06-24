@@ -1,6 +1,7 @@
 <?php
 namespace Globals{
 	const DEBUG=true;
+	define('MAIL','reg@'.$_SERVER['HTTP_HOST']);
 	const DB_NAME='gladkovdb';
 	const DB_USER='gladkov';
 	const DB_PASS='lk08d16ex4';

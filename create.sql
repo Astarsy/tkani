@@ -46,6 +46,13 @@ CREATE TABLE permitions(
 				FOREIGN KEY(user_id) REFERENCES users(id),
 				FOREIGN KEY(subject_id) REFERENCES subjects(id)
 				);
+CREATE TABLE reg_heshes(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				hesh CHAR(40) NOT NULL UNIQUE,
+				user_slug VARCHAR(20) NOT NULL UNIQUE,
+				reg_time INT NOT NULL UNIQUE,
+				FOREIGN KEY(user_slug) REFERENCES users(slug)
+				);
 INSERT INTO countries(id,slug,name)
 	VALUES
 		(1,'d_country_0001','Espana'),
