@@ -23,14 +23,6 @@ class DefaultController extends BaseController{
         $fc=AppController::getInstance();
         $fc->setContent($fc->render('show_cath.twig.html'));
     }
-    public function registercompleteMethod(){
-        $fc=AppController::getInstance();
-        if(isset($_GET['msg']))$msg=convert_uudecode(base64_decode($_GET['msg']));
-        else $msg=false;
-        $fc->setContent($fc->render('registercomplete.twig.html',array(
-            'msg'=>$msg,
-            )));   
-    }
     public function cabinetMethod(){
         // gladkov.loc/cath/3
         $fc=AppController::getInstance();
@@ -69,6 +61,15 @@ class DefaultController extends BaseController{
             'msg'=>$msg,
             )));
     }
+    // public function registercompleteMethod(){
+    //     $fc=AppController::getInstance();
+    //     if(isset($_GET['msg']))$msg=convert_uudecode(base64_decode($_GET['msg']));
+    //     else $msg=false;
+    //     $fc->setContent($fc->render('msg.twig.html',array(
+    //         'title'=>'Вы успешно зарегистрированы',
+    //         'msg'=>$msg,
+    //         )));   
+    // }
     public function confirmMethod(){
         //подтверждение регистрации
         $fc=AppController::getInstance();
@@ -79,5 +80,16 @@ class DefaultController extends BaseController{
         $fc->setContent($fc->render('confirm.twig.html',array(
             'res'=>$res,
             )));
+    }
+    public function msgMethod(){
+        //выводит сообщение: glagkov.loc/msg/title_text/message_text
+        $fc=AppController::getInstance();
+        $title=array_keys($fc->getArgs())[0];
+        $msg=Msg::decode($fc->getArgs()[$title]);
+        $title=Msg::decode($title);
+        $fc->setContent($fc->render('msg.twig.html',array(
+            'title'=>$title,
+            'msg'=>$msg,
+            )));   
     }
 }

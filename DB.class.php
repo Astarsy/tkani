@@ -146,9 +146,9 @@ class DB{
         //алгоритм проверки:
         //  если есть такой хеш и хеш slug-ов свпадает- Ок
         //возвращает false или сообщение об ошибке
-        if(!($user_slug=$this->getUserSlugByRegHesh($hesh)))return 'нет п-ля';
+        if(!($user_slug=$this->getUserSlugByRegHesh($hesh)))return 'Пользователь не найден.';
         $saved_slug_hesh=RegistrationDataStorage::getHesh($user_slug,1,1);
-        if($saved_slug_hesh!=$slug_hesh)return 'хеши не совпадают';
+        if($saved_slug_hesh!=$slug_hesh)return 'Неверный код активации.';
         try{
             $del_stmt=$this->_pdo->prepare(
             "DELETE FROM reg_heshes WHERE user_slug=:slug");
@@ -174,7 +174,8 @@ class DB{
             die($e);
             return false;
         }
-        return $stmt->fetch(PDO::FETCH_OBJ)->user_slug;
+        if($res=$stmt->fetch(PDO::FETCH_OBJ))return $res->user_slug;
+        else return false;
     }
     public function createTestDB(){
         // Creates a test database

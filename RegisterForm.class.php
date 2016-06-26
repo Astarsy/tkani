@@ -22,10 +22,10 @@ class RegisterForm extends Form{
         $ref='http://'.$_SERVER['HTTP_HOST'].'/confirm/'.$hesh.'/'.$slug_hesh;
         $msg='Для подтверждения регистрации на сайте '.$_SERVER['HTTP_HOST'].' нажмите на кнопке '."<a href='$ref'>КНОПКА</a>";
         echo('Отправка e-mail.<br>Кому: '.$user->mail.'<br>От: '.MAIL.'<br>Текст: '.$msg);
-		//if(!mail($user->mail,'Регистрация на сайте '.$_SERVER['HTTP_HOST'],$msg,$headers))return('Не удалось отправить майл заказчику.');
+		if(!mail($user->mail,'Регистрация на сайте '.$_SERVER['HTTP_HOST'],$msg,$headers))return('Не удалось отправить майл заказчику.');
 	}
-	protected function redirect($m,$u){
-		//parent::redirect('Вы успешно зарегистрированы. На указанный Вами e-mail отправлено письмо, содержащее ссылку для подтверждения.','/registercomplete');
+	protected function redirect($t,$m,$u){
+		parent::redirect('Успешная регистрация','Вы успешно зарегистрированы. На указанный Вами e-mail отправлено письмо, содержащее ссылку для подтверждения електронного адреса.','/msg');
 	}
 	protected function save($user){
 		//сохраняет профиль и рег.данные
@@ -49,12 +49,21 @@ class RegisterForm extends Form{
 		if(!(isset($_POST['password'])&&isset($_POST['password2'])))die('Нет полей паролей');
 		$p1=Globals\clearPassword($_POST['password']);
 		$p2=Globals\clearPassword($_POST['password2']);
-		if(empty($p1)||empty($p2)||($p1!==$p2))$this->_classes[$n]='err';
+		if(empty($p1)||empty($p2)){
+			$this->_classes[$n]='err';
+			$this->_msgs[$n]='Не заполнены поля паролей.';
+		}elseif($p1!==$p2){
+			$this->_classes[$n]='err';
+			$this->_msgs[$n]='Пароли не совпадают.';
+		}
 		return $p1;
 	}
 	public function mobileValidator($n){
 		$c_ph=Globals\clearPhone($_POST[$n]);
-		if($c_ph==false&&$this->_used_fields[$n])$this->_classes[$n]='err';
+		if($c_ph==false&&$this->_used_fields[$n]){
+			$this->_classes[$n]='err';
+			$this->_msgs[$n]='Необходимо указать номер мобильного телефона.';
+		}
 		return $c_ph;
 	}
 	public function mailValidator($n){
@@ -65,7 +74,7 @@ class RegisterForm extends Form{
 		}
 		if(false!==RegistrationDataStorage::getUserRegistrationData($c_mail)){
 			$this->_classes[$n]='err';
-			$this->_msgs[$n]='e-mail уже используется';
+			$this->_msgs[$n]='Указанный e-mail уже используется.';
 		}
 		return $c_mail;
 	}

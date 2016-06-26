@@ -10,7 +10,7 @@ class AppController{
 	}
 
 	protected function __construct(){
-		$request=Globals\clearStr($_SERVER['REQUEST_URI']);
+		$request=Globals\clearStr($_SERVER['REQUEST_URI'],1000);
 		$pices=explode('?',$request);
         $strs=explode('/',$pices[0]);
 		array_shift($strs);

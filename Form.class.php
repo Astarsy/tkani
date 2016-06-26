@@ -37,7 +37,7 @@ class Form{
 			}
 			//состояние $user сохранено
 			$this->_msgs[]=$this->processOver($user);
-			$this->redirect(implode(' ',$this->_msgs),$_SERVER['REQUEST_URI']);
+			$this->redirect('Регистрация пользователя',implode(' ',$this->_msgs),$_SERVER['REQUEST_URI']);
 		}
 		//если есть инвалидные поля- не сохранять
 		//var_dump($this->_fields);exit;
@@ -47,10 +47,13 @@ class Form{
 		//вызывается только при удачном сохрании перед
 		//перенаправлением
 	}
-	protected function redirect($msg,$uri){
+	protected function redirect($title,$msg,$uri){
 		//перенаправление после успешной обработки данных
+		$title=Msg::encode($title);
 		$msg=Msg::encode($msg);
-		header('Location:'.$uri.'?msg='.$msg);
+		$h='Location:'.$uri.'/'.$title.'/'.$msg;
+		print_r($h);
+		header($h);
 	}
 	protected function save($user){
 		//требутся перегрузить этот метод

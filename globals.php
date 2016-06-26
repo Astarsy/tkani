@@ -7,6 +7,7 @@ namespace Globals{
 	const DB_PASS='lk08d16ex4';
 	const USER_SESNAME='user_data';
 	define('USERS_FILENAME','.htpasswd');//учетные данные поль-лей
+    
 	function clearStr($str,$len=200){
 		return substr(trim(strip_tags($str)),0,$len);
 	}

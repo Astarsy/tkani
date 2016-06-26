@@ -16,7 +16,7 @@ class ProfileForm extends RegisterForm{
 			$this->_fields[$prop->name]=$prop->getValue($user);
 		}		
 	}
-	protected function redirect($m,$u){
-		Form::redirect('успешно сохранен','/cabinet');
+	protected function redirect($t,$m,$u){
+		Form::redirect('Изменения сохранены','Изменения в Вашем профиле успешно сохранены.','/msg');
 	}
 }
