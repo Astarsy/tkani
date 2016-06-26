@@ -42,6 +42,40 @@ class DefaultController extends BaseController{
             'countries'=>$countries,
             )));
     }
+    public function restoreMethod(){
+        //ссылка с кодом подтверждения восстановления пароля
+        $fc=AppController::getInstance();
+        if(!isset(array_keys($fc->getArgs())[0]))header('Location:/error');
+        $u_m=array_keys($fc->getArgs())[0];
+        if(!isset($fc->getArgs()[$u_m]))header('Location:/error');
+        $res_u_h=$fc->getArgs()[$u_m];
+        $user_mail=Msg::decodeSecret($u_m);
+        if($user_mail=='')header('Location:/error');
+        $user=DB::getInstance()->getUserByMail($user_mail);
+        if(!$user)header('Location:/error');
+        $user_slug_hesh=RegistrationDataStorage::getHesh($user->slug,1,1);
+        // echo('true hesh:'.$user_slug_hesh.'<br>');
+        // echo('resived h:'.$res_u_h);exit;
+        if($user_slug_hesh!=$res_u_h)header('Location:/error');
+        //всё сошлось, вывести форму для ввода нового пароля,
+        //или принять данные формы ввода нового пароля
+        $msg='Пожалуйста, дважды введите новый пароль.';
+        if($_SERVER['REQUEST_METHOD']=='POST'){
+            if(!isset($_POST['np1'])||!isset($_POST['np2']))header('Location:/error');
+            $np1=Globals\clearPassword($_POST['np1']);
+            $np2=Globals\clearPassword($_POST['np2']);
+            if($np1==''||$np2=='')header('Location:'.$_SERVER['REQUEST_URI']);
+            if($np1!==$np2)$msg='Введённые пароли не совпадают. Пожалуйста, введите одинаковые значения.';
+            else{
+                //принятые данные корректны,сменить пароль и уйти
+                
+                header('Location:/msg/'.Msg::encode('Восстановление пароля').'/'.Msg::encode('Пароль успешно изменён. Вы можете войти на сайт используя свои e-mail и пароль.'));
+            }
+        }
+        $fc->setContent($fc->render('enter_new_passwd.twig.html',array(
+            'msg'=>$msg,
+            )));
+    }
     public function forgetMethod(){
         //ссылка Забыл Пароль
         //выводит форму/принимает e-mail, проверяет,
