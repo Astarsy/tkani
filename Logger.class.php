@@ -35,7 +35,7 @@ class Logger{
         if(empty($this->_user))die('Нет такого п-ля guest');
 
     }
-    protected function logout(){
+    public function logout(){
         session_destroy();
         unset($_SESSION[Globals\USER_SESNAME]);
         $this->setGuest();

@@ -24,7 +24,7 @@ class DefaultController extends BaseController{
         $fc->setContent($fc->render('show_cath.twig.html'));
     }
     public function cabinetMethod(){
-        // gladkov.loc/cath/3
+        // gladkov.loc/cabinet
         $fc=AppController::getInstance();
         if(isset($_GET['msg']))$msg=convert_uudecode(base64_decode($_GET['msg']));
         else $msg=false;
@@ -43,33 +43,40 @@ class DefaultController extends BaseController{
             )));
     }
     public function forgetMethod(){
+        //ссылка Забыл Пароль
+        //выводит форму/принимает e-mail, проверяет,
+        //отправляет письмо с кодом-ссылкой для ввода
+        //нового пароля
+        //если это не Гость- Разлогинить и выгнать
+        $user=$this->_logger->getUser();
+        if($user->name!='guest'){
+            $this->_logger->logout();
+            header('Location: /error');
+        }
         $fc=AppController::getInstance();
-        if(isset($_GET['msg']))$msg=Msg::decode($_GET['msg']);
-        else $msg=false;
         if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['fgtml'])){
             //нажата кнопка Отправить Хэш
             $mail=Globals\clearMail($_POST['fgtml']);
             if($mail!=''){
-                $user=DB::getPDO()->getUserByMail($mail);
+                $user=DB::getInstance()->getUserByMail($mail);
                 if(!empty($user)){
-                    //TODO: отправлять mail Здесь
+                    //отправлять mail c ссылкой вида:
+                    //  /restore/user_mail/user_slug_hesh
+                    $u_m=Msg::encodeSecret($user->mail);
+                    $s_h=RegistrationDataStorage::getHesh($user->slug,1,1);
+                    $ref='http://'.$_SERVER['HTTP_HOST'].'/restore/'.$u_m.'/'.$s_h;
+                    $msg="Для восстановления пароля на сайте ".$_SERVER['HTTP_HOST']." нажмите на кнопке <a href='$ref'>КНОПКА</a> Если кнопка не работает, скпируйте ссылку ниже и перейдите по ней вставив текст ссылки в адресную строку браузера. $ref";
+                    $res=Msg::sendMail($user->mail,$msg);
+                    if($res)header('Locatioin:/msg/'.Msg::encode('Отправка письма').'/'.Msg::encode('Возникли затруднения при отправке письма. '.$res));
                 }
             }
-            header('Location:/registercomplete?msg='.Msg::encode('На указанный Вами e-mail отправлено письмо, содержащее ссылку для восстановление пароля.'));
+            //это сообщения выводится в любом случае после нажатия на кнопке Отправить, для конспирации
+            header( 'Location:/msg/'.
+                    Msg::encode('Отправлено письмо').'/'.
+                    Msg::encode('На указанный Вами e-mail отправлено письмо, содержащее ссылку для восстановление пароля.'));
         }
-        $fc->setContent($fc->render('forget_password.twig.html',array(
-            'msg'=>$msg,
-            )));
+        $fc->setContent($fc->render('forget_password.twig.html'));
     }
-    // public function registercompleteMethod(){
-    //     $fc=AppController::getInstance();
-    //     if(isset($_GET['msg']))$msg=convert_uudecode(base64_decode($_GET['msg']));
-    //     else $msg=false;
-    //     $fc->setContent($fc->render('msg.twig.html',array(
-    //         'title'=>'Вы успешно зарегистрированы',
-    //         'msg'=>$msg,
-    //         )));   
-    // }
     public function confirmMethod(){
         //подтверждение регистрации
         $fc=AppController::getInstance();
@@ -82,10 +89,13 @@ class DefaultController extends BaseController{
             )));
     }
     public function msgMethod(){
-        //выводит сообщение: glagkov.loc/msg/title_text/message_text
+        //выводит сообщение формата:
+        //glagkov.loc/msg/title_text/message_text
         $fc=AppController::getInstance();
-        $title=array_keys($fc->getArgs())[0];
-        $msg=Msg::decode($fc->getArgs()[$title]);
+        if(isset(array_keys($fc->getArgs())[0]))$title=array_keys($fc->getArgs())[0];
+        else $title='Сообщение';
+        if(isset($fc->getArgs()[$title]))$msg=Msg::decode($fc->getArgs()[$title]);
+        else $msg='Отсутствует текст сообщения...';
         $title=Msg::decode($title);
         $fc->setContent($fc->render('msg.twig.html',array(
             'title'=>$title,

@@ -14,15 +14,11 @@ class RegisterForm extends Form{
 		if($res=DB::getInstance()->saveRegSlugHesh($user,$hesh))return $res;
 	}
 	protected function mailToUser($user,$hesh){
-		//отправить e-mail с хэшем для подтверждения
-		
+		//отправить e-mail с хэшем для подтверждения	
 		$slug_hesh=RegistrationDataStorage::getHesh($user->slug,1,1);
-		$headers='From:Интернет магазин '.$_SERVER['HTTP_HOST'].' <'.MAIL.'>'."\r\n";
-        $headers.='Content-type:text/html;charset=utf-8;'."\r\n";
         $ref='http://'.$_SERVER['HTTP_HOST'].'/confirm/'.$hesh.'/'.$slug_hesh;
         $msg='Для подтверждения регистрации на сайте '.$_SERVER['HTTP_HOST'].' нажмите на кнопке '."<a href='$ref'>КНОПКА</a>";
-        echo('Отправка e-mail.<br>Кому: '.$user->mail.'<br>От: '.MAIL.'<br>Текст: '.$msg);
-		if(!mail($user->mail,'Регистрация на сайте '.$_SERVER['HTTP_HOST'],$msg,$headers))return('Не удалось отправить майл заказчику.');
+        return Msg::sendMail($user->mail,$msg);
 	}
 	protected function redirect($t,$m,$u){
 		parent::redirect('Успешная регистрация','Вы успешно зарегистрированы. На указанный Вами e-mail отправлено письмо, содержащее ссылку для подтверждения електронного адреса.','/msg');
