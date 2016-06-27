@@ -27,6 +27,7 @@ class DB{
             $res=$this->_pdo->query($sql);
         }catch(PDOException $e){
             die($e);
+            return false;
         }
         return $res->fetch(PDO::FETCH_OBJ);
     }
@@ -68,6 +69,7 @@ class DB{
     }
     public function saveRegSlugHesh($user,$hesh){
         //Создаёт запись в reg_heshes
+        //returns fasle/error
         $r_t=time();
         try{
             $stmt=$this->_pdo->prepare(
@@ -77,20 +79,20 @@ class DB{
             $stmt->bindParam(':slug',$user->slug,PDO::PARAM_INT);
             $stmt->bindParam(':r_t',$r_t,PDO::PARAM_INT);
             $stmt->execute();
-        }catch(PDOException $e){die($e);}
+        }catch(PDOException $e){return $e;}
     }
     public function saveUser($user){
         //Создаёт или обновляет профиль п-ля
         if(empty($this->getUserByMail($user->mail)))return $this->insertUser($user);
         else return $this->updateUser($user);
     }
-    protected function insertUser($user){
-        //Создаёт профиль п-ля
+    public function insertUser($user){
+        //Создаёт профиль п-ля returns true/false
         try{
             $stmt=$this->_pdo->prepare(
             "INSERT
-                INTO users(slug,name,mail,alt_mail,mobile,tel,fax,zip,street,city,country,job_title)
-                VALUES(:slug,:name,:mail,:alt_mail,:mobile,:tel,:fax,:zip,:street,:city,(SELECT id FROM countries WHERE name=:country),:job_title)");
+                INTO users(slug,name,mail,alt_mail,mobile,tel,fax,zip,street,city,country,job_title,active)
+                VALUES(:slug,:name,:mail,:alt_mail,:mobile,:tel,:fax,:zip,:street,:city,(SELECT id FROM countries WHERE name=:country),:job_title,false)");
             $stmt->bindParam(':slug', $user->slug, PDO::PARAM_STR);
             $stmt->bindParam(':name', $user->name, PDO::PARAM_STR);
             $stmt->bindParam(':mail', $user->mail, PDO::PARAM_STR);
@@ -105,13 +107,14 @@ class DB{
             $stmt->bindParam(':mail', $user->mail, PDO::PARAM_STR);
             $stmt->bindParam(':job_title', $user->job_title, PDO::PARAM_STR);
             $stmt->execute();
-        }catch(PDOException $e){die('<br>Исключение '.$e->getCode().'<br>'.$e);}
-        //TODO: создать хэш для активации ЗДЕСЬ
+        }catch(PDOException $e){
+            //die('<br>Исключение '.$e->getCode().'<br>'.$e);
+            return false;
+        }
         return true;
     }
-    //TODO: создать метод для активации ЗДЕСЬ
     protected function updateUser($user){
-        //Обновляет профиль п-ля
+        //Обновляет профиль п-ля returns true/false
         try{
             $stmt=$this->_pdo->prepare(
             "UPDATE users SET
@@ -138,7 +141,7 @@ class DB{
             $stmt->bindParam(':mail', $user->mail, PDO::PARAM_STR);
             $stmt->bindParam(':job_title', $user->job_title, PDO::PARAM_STR);
             $stmt->execute();
-        }catch(PDOException $e){die('<br>Исключение '.$e->getCode().'<br>'.$e);}
+        }catch(PDOException $e){die('<br>Исключение '.$e->getCode().'<br>'.$e);return false;}
         return true;
     }
     public function activateUser($hesh,$slug_hesh){

@@ -7,38 +7,42 @@ class RegisterForm extends Form{
 	protected function processOver($user){
 		//вызывается только при удачном сохрании перед
 		//перенаправлением
+		//возвращает false/error
 		$hesh=RegistrationDataStorage::getHesh(openssl_random_pseudo_bytes(5),1,1);
+		//сохранить хеш
+		if($res=DB::getInstance()->saveRegSlugHesh($user,$hesh))return $res;
 		//отправить e-mail с хэшем для подтверждения
 		if($res=$this->mailToUser($user,$hesh))return $res;
-		//раз всё Ок, сохранить хеш
-		if($res=DB::getInstance()->saveRegSlugHesh($user,$hesh))return $res;
 	}
 	protected function mailToUser($user,$hesh){
-		//отправить e-mail с хэшем для подтверждения	
+		//отправяет e-mail с хэшем для подтверждения
+		//возвращает false/error
 		$slug_hesh=RegistrationDataStorage::getHesh($user->slug,1,1);
         $ref='http://'.$_SERVER['HTTP_HOST'].'/confirm/'.$hesh.'/'.$slug_hesh;
         $msg='Для подтверждения регистрации на сайте '.$_SERVER['HTTP_HOST'].' нажмите на кнопке '."<a href='$ref'>КНОПКА</a>";
         return Msg::sendMail($user->mail,$msg);
 	}
 	protected function redirect($t,$m,$u){
-		parent::redirect('Успешная регистрация','Вы успешно зарегистрированы. На указанный Вами e-mail отправлено письмо, содержащее ссылку для подтверждения електронного адреса.','/msg');
+		parent::redirect('Успешная регистрация','Вы успешно зарегистрированы. На указанный Вами e-mail отправлено письмо, содержащее ссылку для подтверждения электронного адреса.','/msg');
 	}
 	protected function save($user){
 		//сохраняет профиль и рег.данные
-		//возвращает false в cл.успеха или текст ошибки
-		if($res=$this->saveRegData($user))return $res;
-		return $this->saveProfile($user);
+		//возвращает false/error
+		if($res=$this->createProfile($user))return $res;
+		return $this->createRegData($user);
 	}
-	protected function saveRegData($user){
-		//сохраняет рег.данные возвращает
-		//false в вл.успеха или текст ошибки
+	protected function createRegData($user){
+		//creates a new user register date
+		//returns false/error
 		if(!RegistrationDataStorage::saveUserRegistrationData($user->mail,$user->password))return'Регистрационные данные не сохранены';
 		return false;
 	}
-	protected function saveProfile($user){
-		//сохраняет профиль возвращает
-		//false в вл.успеха или текст ошибки
-		if(!DB::getInstance()->saveUser($user))return'Не удалось сохранить профиль';
+	protected function createProfile($user){
+		//creates a new user profile
+		//returns false/error
+		$db=DB::getInstance();
+		if($db->getUserByMail($user->mail))return 'Не удалось сохранить профиль. Пожалуйста, обратись в службу технической поддержки.';
+		if(!$db->insertUser($user))return 'Не удалось сохранить профиль т.к. произошла ошибка.';
 		return false;
 	}
 	public function passwordValidator($n){

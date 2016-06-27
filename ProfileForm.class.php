@@ -17,6 +17,6 @@ class ProfileForm extends RegisterForm{
 		}		
 	}
 	protected function redirect($t,$m,$u){
-		Form::redirect('Изменения сохранены','Изменения в Вашем профиле успешно сохранены.','/msg');
+		Form::redirect('Изменения сохранены','Изменения в Вашем профиле успешно сохранены.',$_SERVER['REQUEST_URI']);
 	}
 }

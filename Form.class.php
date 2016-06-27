@@ -31,10 +31,7 @@ class Form{
 			// header('Content-Type:text/plain;');
 			// echo"\r\nСохраняю:";
 			// die(var_dump($user));
-			if($res=$this->save($user)){
-				$this->msgs[]=$res;
-				return;
-			}
+			if($res=$this->save($user))Msg::error($res);
 			//состояние $user сохранено
 			$this->_msgs[]=$this->processOver($user);
 			$this->redirect('Регистрация пользователя',implode(' ',$this->_msgs),$_SERVER['REQUEST_URI']);

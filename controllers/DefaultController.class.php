@@ -26,8 +26,19 @@ class DefaultController extends BaseController{
     public function cabinetMethod(){
         // gladkov.loc/cabinet
         $fc=AppController::getInstance();
-        if(isset($_GET['msg']))$msg=convert_uudecode(base64_decode($_GET['msg']));
-        else $msg=false;
+
+        if(isset(array_keys($fc->getArgs())[0]))$title=array_keys($fc->getArgs())[0];
+        else $title='Сообщение';
+        if(isset($fc->getArgs()[$title]))$msg=Msg::decode($fc->getArgs()[$title]);
+        else $msg='Отсутствует текст сообщения...';
+        $title=Msg::decode($title);
+
+        if(isset(array_keys($fc->getArgs())[0]))$title=array_keys($fc->getArgs())[0];
+        else $title='Сообщение';
+        if(isset($fc->getArgs()[$title]))$msg=Msg::decode($fc->getArgs()[$title]);
+        else $msg='';
+        $title=Msg::decode($title);
+
         $user=$this->_logger->getUser();
         $cabinet=new Cabinet($user);
         $countries=DB::getInstance()->getCountries();
@@ -68,7 +79,7 @@ class DefaultController extends BaseController{
             if($np1!==$np2)$msg='Введённые пароли не совпадают. Пожалуйста, введите одинаковые значения.';
             else{
                 //принятые данные корректны,сменить пароль и уйти
-                
+                if(!RegistrationDataStorage::changeUserRegistrationData($user->mail,$np1))header('Location:/msg/'.Msg::encode('Восстановление пароля').'/'.Msg::encode('Не удалось сменить пароль. Пожалуйста, обратитесь в службу технической поддержки. Приносим извенения за неудобства.'));
                 header('Location:/msg/'.Msg::encode('Восстановление пароля').'/'.Msg::encode('Пароль успешно изменён. Вы можете войти на сайт используя свои e-mail и пароль.'));
             }
         }
@@ -96,6 +107,8 @@ class DefaultController extends BaseController{
                 if(!empty($user)){
                     //отправлять mail c ссылкой вида:
                     //  /restore/user_mail/user_slug_hesh
+
+                    //TODO:конкатенировать хеш с паролем, иначе сслыка продолжит работать после смены пароля
                     $u_m=Msg::encodeSecret($user->mail);
                     $s_h=RegistrationDataStorage::getHesh($user->slug,1,1);
                     $ref='http://'.$_SERVER['HTTP_HOST'].'/restore/'.$u_m.'/'.$s_h;
