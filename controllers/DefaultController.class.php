@@ -126,13 +126,16 @@ class DefaultController extends BaseController{
     }
     public function confirmMethod(){
         //подтверждение регистрации
-        $fc=AppController::getInstance();
+        $fc=AppController::getInstance();        
+        if(!isset(array_keys($fc->getArgs())[0]))header('Location:/error');
         $recived_hesh=array_keys($fc->getArgs())[0];
+        if(!isset($fc->getArgs()[$recived_hesh]))header('Location:/error');
         $recived_slug_hesh=$fc->getArgs()[$recived_hesh];
         $res=DB::getInstance()->activateUser($recived_hesh,$recived_slug_hesh);
-        die($res);
-        $fc->setContent($fc->render('confirm.twig.html',array(
-            'res'=>$res,
+        if($res!==false)die($res);
+        $fc->setContent($fc->render('msg.twig.html',array(
+            'title'=>'Активация учетной записи',
+            'msg'=>'Подтверждение Вашего электронного адреса успешно выполнено. Ваша учетная запись активирована. Вы можете войти на сайт используя указзанный при регистрации электронный адрес и пароль.'
             )));
     }
     public function msgMethod(){

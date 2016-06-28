@@ -29,7 +29,7 @@ class RegisterForm extends Form{
 		//сохраняет профиль и рег.данные
 		//возвращает false/error
 		if($res=$this->createProfile($user))return $res;
-		return $this->createRegData($user);
+		if($res=$this->createRegData($user))return $res;
 	}
 	protected function createRegData($user){
 		//creates a new user register date

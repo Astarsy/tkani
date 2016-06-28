@@ -166,6 +166,7 @@ class DB{
             $this->_pdo->rollBack();
             return $e;
         }
+        return false;
     }
     protected function getUserSlugByRegHesh($reg_hesh){
         //возвращает slug по reg_hesh или false
