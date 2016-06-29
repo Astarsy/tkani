@@ -39,10 +39,10 @@ CREATE TABLE subjects(
 				);
 CREATE TABLE permitions(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				slug VARCHAR(20) NOT NULL UNIQUE,
 				code TINYINT(1) NOT NULL DEFAULT 4,
 				user_id INT NOT NULL,
 				subject_id INT NOT NULL,
+				UNIQUE KEY(user_id,subject_id),
 				FOREIGN KEY(user_id) REFERENCES users(id),
 				FOREIGN KEY(subject_id) REFERENCES subjects(id)
 				);
@@ -77,10 +77,10 @@ INSERT INTO subjects(id,slug,name)
 		(1,'d_subj_1','AdminController'),
 		(2,'d_subj_2','DefaultController')
 		;
-INSERT INTO permitions(id,slug,user_id,subject_id,code)
+INSERT INTO permitions(id,user_id,subject_id,code)
 	VALUES
-		(1,'d_permit_1',1,1,6),
-		(2,'d_permit_2',1,2,3),
-		(3,'d_permit_3',2,1,5),
-		(4,'d_permit_4',4,2,4)
+		(1,1,1,6),
+		(2,1,2,3),
+		(3,2,1,5),
+		(4,4,2,4)
 		;

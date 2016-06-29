@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html" charset="utf-8"></meta>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0" ></meta>
+	<title>{% block title %}{% endblock %} - Ткани</title>
+	<link rel="icon" href="favicon.png" type="image/png">
+	<link rel="shortcut icon" href="favicon.png" type="image/png">
+	<link rel="stylesheet" href="/css/admin.css" type="text/css">
+</head>
+<body>
+<p>Вы вошли как {{this._user.name}}</p>
+<h2>Администрирование сайта {{this.site}}</h2>
+<ul>
+    <li>
+        <a href='/admin'>Главное меню</a>
+    </li>
+    <li>
+        <a href='/admin/users'>Пользователи</a>
+    </li>
+    <li>
+        <a href='/admin/shops'>Магазины</a>
+    </li>
+</ul>
+{% block content %}{% endblock %}
+</body>
+</html>

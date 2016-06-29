@@ -1,0 +1,9 @@
+{% extends"admin/base.twig.html" %}
+{% block content %}
+<h3>Найти пользователя</h3>
+{{this.msg}}
+<form method='post'>
+    <label>e-mail<input type="text" name="mail" value='{{this.mail}}'></label>
+    <button type="submit" name="search">Найти</button>
+</form>
+{% endblock %}

@@ -17,7 +17,7 @@ namespace Globals{
 	}
 
 	function clearUInt($i){
-	    return abs(self::clearInt($i));
+	    return abs(clearInt($i));
 	}
 
 	function ucfirst($str,$coding='UTF-8'){

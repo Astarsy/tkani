@@ -3,9 +3,5 @@
 {% block title %}Главная{% endblock %}
 {% block content %}
 <h2>Главная страница!</h2>
-{% if logger!='guest' %}
-	{% include 'logger_out_form.html' %}
-{% else %}
-	{% include 'logger_in_form.html' %}
-{% endif %}
+{% include logger %}
 {% endblock %}

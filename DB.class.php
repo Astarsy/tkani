@@ -19,20 +19,33 @@ class DB{
         }
         return self::$_instance;
     }
-    public function getUserByMail($mail){
+    public function getUserByMail($mail,$fetch=PDO::FETCH_OBJ){
         // Returms Object of user or false
-        $mail=$this->_pdo->quote($mail);
-        $sql="SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active FROM users WHERE mail=$mail";
         try{
-            $res=$this->_pdo->query($sql);
+            $stmt=$this->_pdo->prepare("SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active FROM users WHERE mail=:mail");
+            $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
+            $stmt->execute();
         }catch(PDOException $e){
             die($e);
             return false;
         }
-        return $res->fetch(PDO::FETCH_OBJ);
+        return $stmt->fetch($fetch);
     }
-    public function getPermition($um,$obj){
-        //возвращает code если у $un есть права на $obj
+    public function getUserByMailFull($mail,$fetch=PDO::FETCH_OBJ){
+        // Returms Object of user or false
+        //дополнительно заполняет поля внешних ключей
+        try{
+            $stmt=$this->_pdo->prepare("SELECT users.id,users.slug,users.name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,countries.name as country,job_title,active FROM users LEFT JOIN countries ON countries.id=users.country WHERE mail=:mail");
+            $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){
+            die($e);
+            return false;
+        }
+        return $stmt->fetch($fetch);
+    }
+    public function getPermitions($um,$obj){
+        //возвращает code у $un права на $obj
         //объекты доступные п-лю gues доступны всем
         //права данного п-ля и guest суммируются
         $subj=$this->_pdo->quote(get_class($obj));
@@ -54,7 +67,7 @@ class DB{
             }
             return $permit;
         }
-        return false;
+        return 0;
     }
     public function getCountries(){
         //Возвращает массив всех стран
@@ -66,6 +79,30 @@ class DB{
         $arr[]='';
         while($r=$res->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
         return $arr;
+    }    
+    public function getAllPermitionsByMail($mail){
+        //Возвращает массив массивов прав п-ля
+        //в виде SubjectName=>Code
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT subjects.name as subject,code FROM permitions LEFT JOIN subjects ON subjects.id=permitions.subject_id LEFT JOIN users ON permitions.user_id=users.id WHERE users.mail=:mail");
+            $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+    public function getAllSubjects(){
+        //Возвращяет массив всех Subjects
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT name FROM subjects");
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $arr=array();
+        while($r=$stmt->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
+        return $arr;
+
     }
     public function saveRegSlugHesh($user,$hesh){
         //Создаёт запись в reg_heshes
@@ -143,6 +180,31 @@ class DB{
             $stmt->execute();
         }catch(PDOException $e){die('<br>Исключение '.$e->getCode().'<br>'.$e);return false;}
         return true;
+    }
+    public function setPermitions($u_id,$subj,$code){
+        //Устанавливает права для user($mail) на subj в виде $code
+        try{
+            $stmt=$this->_pdo->prepare("INSERT INTO permitions(user_id,subject_id,code)VALUES(1,(SELECT id FROM subjects WHERE name=:subj),:code)ON DUPLICATE KEY UPDATE code=:code");
+            $stmt->bindParam(':u_id', $u_id, PDO::PARAM_INT);
+            $stmt->bindParam(':subj', $subj, PDO::PARAM_STR);
+            $stmt->bindParam(':code', $code, PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){
+            die($e);
+        }     
+    }
+    public function setActiveByMail($mail,$active){
+        //Устонавливает флаг актовности по mail
+        //возвращает false или сообщение об ошибке
+        try{
+            $stmt=$this->_pdo->prepare("UPDATE users SET active=:active WHERE mail=:mail");
+            $stmt->bindParam(':mail', $mail, PDO::PARAM_STR);
+            $stmt->bindParam(':active', $active, PDO::PARAM_BOOL);
+            $stmt->execute();
+        }catch(PDOException $e){
+            return $e;
+        }
+        return false;
     }
     public function activateUser($hesh,$slug_hesh){
         //Активация п-ля

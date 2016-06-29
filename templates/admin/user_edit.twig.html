@@ -1,0 +1,29 @@
+{% extends"admin/base.twig.html" %}
+{% block content %}
+<h3>Редактировать пользователя {{this.user.name}}</h3>
+{{this.msg}}
+{% for key,prop in this.user %}
+<div>{{key}} - {{prop}}</div>
+{% endfor %}
+<h4>Права</h4>
+{% for permition in this.user_permitions %}
+<div>
+    {% for k,v in permition %}
+{{k}} - {{v}}{% if false==loop.last %},{% endif %}
+    {% endfor %}
+</div>
+{% endfor %}
+<form method='post'>
+<select name='subject'>
+{% for subj in this.subjects %}
+    <option {% if true==loop.first %}selected{% endif %}>{{subj}}</option>
+{% endfor %}
+</select>
+<label>code<input type="text" name="code"></label>
+<button name='permitions'>установить</button>
+</form>
+<h4>Активность</h4>
+<form method='post'>
+    <button name='active'>Активировати/Деактивировать</button>
+</form>
+{% endblock %}
