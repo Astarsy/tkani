@@ -10,7 +10,7 @@ class Logger{
     //инф-ю залогиненного п-ля помещает в сессию
     //в виде строке json
     protected $_user;
-    public function __construct(){        
+    public function __construct(){
         if(isset($_SESSION[Globals\USER_SESNAME])){
             $mail=$_SESSION[Globals\USER_SESNAME];
             $this->_user=DB::getInstance()->getUserByMail($mail);
@@ -48,6 +48,7 @@ class Logger{
         if($s_pass_hesh!==RegistrationDataStorage::getHesh($passwd,$s,$i))return;
         $user=DB::getInstance()->getUserByMail($mail);
         if($user==false)die('Не найден профиль для mail '.$mail);
+        if($user->active==0)Msg::message('Учетная запись не активна. Для активации учетной записи требуется подтверждение электронного адреса. Для этого пожалуйста, следуйте инструкциям в письме, отправленном по данному электронному адресу, либо воспользуйтесь ссылкой для восстановления пароля.');
         $_SESSION[Globals\USER_SESNAME]=$user->mail;
     }
     public function getUser(){

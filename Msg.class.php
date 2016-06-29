@@ -20,8 +20,8 @@ class Msg{
     }
     public static function message($text,$class=INFORM){
         // redirect to message page
-        if($class==INFORM)header('Location:/msg/'.self::encode(Сообщение).self::encode($text));
-        else header('Location:/msg/'.self::encode(Ошибка).'/'.self::encode($text).'/err');
+        if($class==INFORM)header('Location:/msg/'.self::encode('Сообщение').'/'.self::encode($text));
+        else header('Location:/msg/'.self::encode('Ошибка').'/'.self::encode($text).'/err');
         exit;
     }
     public static function sendMail($mail,$msg){

@@ -50,7 +50,7 @@ class DB{
         //права данного п-ля и guest суммируются
         $subj=$this->_pdo->quote(get_class($obj));
         $um=$this->_pdo->quote($um);
-        $sql="SELECT code FROM permitions WHERE user_id IN(SELECT id FROM users WHERE mail IN ($um,''))AND subject_id=(SELECT id FROM subjects WHERE name=$subj);";
+        $sql="SELECT code FROM permitions WHERE user_id IN(SELECT id FROM users WHERE mail IN ($um,'')AND active=1)AND subject_id=(SELECT id FROM subjects WHERE name=$subj);";
         try{
             //echo $sql;
             $res=$this->_pdo->query($sql);
@@ -85,12 +85,11 @@ class DB{
         //в виде SubjectName=>Code
         try{
             $stmt=$this->_pdo->prepare(
-            "SELECT subjects.name as subject,code FROM permitions LEFT JOIN subjects ON subjects.id=permitions.subject_id LEFT JOIN users ON permitions.user_id=users.id WHERE users.mail=:mail");
+            "SELECT subjects.name as subject,code FROM permitions LEFT JOIN subjects ON subjects.id=permitions.subject_id LEFT JOIN users ON permitions.user_id=users.id WHERE users.mail=:mail AND users.active=1");
             $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
             $stmt->execute();
         }catch(PDOException $e){die($e);}
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
     public function getAllSubjects(){
         //Возвращяет массив всех Subjects
@@ -184,7 +183,7 @@ class DB{
     public function setPermitions($u_id,$subj,$code){
         //Устанавливает права для user($mail) на subj в виде $code
         try{
-            $stmt=$this->_pdo->prepare("INSERT INTO permitions(user_id,subject_id,code)VALUES(1,(SELECT id FROM subjects WHERE name=:subj),:code)ON DUPLICATE KEY UPDATE code=:code");
+            $stmt=$this->_pdo->prepare("INSERT INTO permitions(user_id,subject_id,code)VALUES(:u_id,(SELECT id FROM subjects WHERE name=:subj),:code)ON DUPLICATE KEY UPDATE code=:code");
             $stmt->bindParam(':u_id', $u_id, PDO::PARAM_INT);
             $stmt->bindParam(':subj', $subj, PDO::PARAM_STR);
             $stmt->bindParam(':code', $code, PDO::PARAM_INT);

@@ -80,6 +80,8 @@ class DefaultController extends BaseController{
             else{
                 //принятые данные корректны,сменить пароль и уйти
                 if(!RegistrationDataStorage::changeUserRegistrationData($user->mail,$np1))header('Location:/msg/'.Msg::encode('Восстановление пароля').'/'.Msg::encode('Не удалось сменить пароль. Пожалуйста, обратитесь в службу технической поддержки. Приносим извенения за неудобства.'));
+                //пароль сменён, установить Активность, на случай восстановления НЕ Активным п-лем, т.к. он подтвердил эл адрес
+                DB::getInstance()->setActiveByMail($user->mail,1);
                 header('Location:/msg/'.Msg::encode('Восстановление пароля').'/'.Msg::encode('Пароль успешно изменён. Вы можете войти на сайт используя свои e-mail и пароль.'));
             }
         }
@@ -112,7 +114,7 @@ class DefaultController extends BaseController{
                     $u_m=Msg::encodeSecret($user->mail);
                     $s_h=RegistrationDataStorage::getHesh($user->slug,1,1);
                     $ref='http://'.$_SERVER['HTTP_HOST'].'/restore/'.$u_m.'/'.$s_h;
-                    $msg="Для восстановления пароля на сайте ".$_SERVER['HTTP_HOST']." нажмите на кнопке <a href='$ref'>КНОПКА</a> Если кнопка не работает, скпируйте ссылку ниже и перейдите по ней вставив текст ссылки в адресную строку браузера. $ref";
+                    $msg="Для восстановления пароля на сайте ".$_SERVER['HTTP_HOST']." нажмите на кнопке <a href='$ref'>КНОПКА</a>. Если кнопка не работает, скoпируйте ссылку ниже и перейдите по ней вставив текст ссылки в адресную строку браузера. $ref";
                     $res=Msg::sendMail($user->mail,$msg);
                     if($res)header('Locatioin:/msg/'.Msg::encode('Отправка письма').'/'.Msg::encode('Возникли затруднения при отправке письма. '.$res));
                 }
