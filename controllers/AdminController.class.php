@@ -37,8 +37,8 @@ class AdminController extends BaseController{
                 $subj=Globals\clearStr($_POST['subject']);
                 if($code>7||!in_array($subj, $this->subjects))die('Неожиданные значения полей');
                 $db->setPermitions($this->user['id'],$subj,$code);
-                //header('Location:'.$_SERVER['REQUESR_URI']);
-                //exit;
+                header('Location:'.$_SERVER['REQUESR_URI']);
+                exit;
             }
         }
         $fc->setContent($fc->render('admin/user_edit.twig.html',array(
