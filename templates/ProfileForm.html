@@ -1,6 +1,14 @@
 <h3>Профиль пользователя {{user.name}}</h3>
-<h4>e-mail {{user.mail}}</h4>
 <form action='/cabinet' class='profile' method='post'>
+<a href='/shop'>
+{% if user.shops>0 %}
+	Войти в магазин
+{% else %}
+	Открыть магазин
+{% endif %}
+</a>
+	<h4>Личные данные</h4>
+	<p>e-mail: {{user.mail}}</p>
 	<div class='{{classes.alt_mail}}'>
 		<label for='alt_mail'>запасной e-mail</label>
 		<input type='text' name='alt_mail' value='{{fields.alt_mail}}'>

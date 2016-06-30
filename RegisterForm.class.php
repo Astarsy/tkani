@@ -1,5 +1,5 @@
 <?php
-class RegisterForm extends Form{
+class RegisterForm extends CabinetForm{
 	public function __construct($user,$arr){
 		parent::__construct($user,$arr);
 		$user->password='';

@@ -1,0 +1,8 @@
+{% extends "base.twig.html" %}
+{% block title %}Редактирование магазина{% endblock %}
+{% block content %}
+<h2>Редактирование магазина</h2>
+{% for k,v in this.shop %}
+    <div>{{k}}-{{v}}</div>
+{% endfor %}
+{% endblock %}

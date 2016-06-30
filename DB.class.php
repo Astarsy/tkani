@@ -19,10 +19,42 @@ class DB{
         }
         return self::$_instance;
     }
+    public function addSalerRequest($user){
+        //Adds the saler request to the DB
+        //Up to 5 from one user
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT COUNT(id) FROM saler_requests WHERE user_id=:u_id");
+            $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
+            $stmt->execute();
+            if((int)($stmt->fetch(PDO::FETCH_NUM)[0])>=(int)(5))return;
+            unset($stmt);
+            $stmt=$this->_pdo->prepare(
+            "INSERT INTO saler_requests(user_id,reg_time)
+                VALUES(:u_id,:t)");
+            $t=time();
+            $stmt->bindParam(':t',$t,PDO::PARAM_INT);
+            $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+    }
+    public function getShopsOfUserById($u_id){
+        //Returns an array of arrays of shops
+        try{
+            $stmt=$this->_pdo->prepare("SELECT id,slug,title,logo,respons_person FROM shops WHERE respons_person=:u_id");
+            $stmt->bindParam(':u_id',$u_id,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){
+            die($e);
+        }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    }
     public function getUserByMail($mail,$fetch=PDO::FETCH_OBJ){
         // Returms Object of user or false
+        //Adds a shops fied, conteints count of shops
         try{
-            $stmt=$this->_pdo->prepare("SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active FROM users WHERE mail=:mail");
+            $stmt=$this->_pdo->prepare("SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active,(SELECT COUNT(id) FROM shops WHERE respons_person=(SELECT id FROM users WHERE mail=:mail))as shops FROM users WHERE mail=:mail");
             $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
             $stmt->execute();
         }catch(PDOException $e){

@@ -24,7 +24,7 @@ CREATE TABLE users(
 				active BOOLEAN NOT NULL DEFAULT false,
 				FOREIGN KEY(country) REFERENCES countries(id)
 				);
-CREATE TABLE salers(
+CREATE TABLE shops(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				slug VARCHAR(20) NOT NULL UNIQUE,
 				title VARCHAR(80) NOT NULL,
@@ -53,6 +53,12 @@ CREATE TABLE reg_heshes(
 				reg_time INT NOT NULL UNIQUE,
 				FOREIGN KEY(user_slug) REFERENCES users(slug)
 				);
+CREATE TABLE saler_requests(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				user_id INT NOT NULL,
+				reg_time INT NOT NULL,
+				FOREIGN KEY(user_id) REFERENCES users(id)
+				);
 INSERT INTO countries(id,slug,name)
 	VALUES
 		(1,'d_country_0001','Espana'),
@@ -66,9 +72,9 @@ INSERT INTO users(id,slug,name,mail,mobile,zip,street,city,country,active)
 		(3,'d_user_0002',NULL,'anonim@user.loc',NULL,NULL,NULL,NULL,NULL,false),
 		(4,'d_user_0004','guest','',NULL,NULL,NULL,NULL,2,true)
 		;
-INSERT INTO salers(id,slug,title,logo,respons_person)
+INSERT INTO shops(id,slug,title,logo,respons_person)
 	VALUES
-		(1,'d_saler_01','International Textile Inc.','logo_filename.png',1),
+		(1,'d_saler_01','International Textile Inc.','logo_filename.png',2),
 		(2,'d_saler_02','ООО Классные ткани лимитеддд',NULL,2),
 		(3,'d_saler_03','',NULL,3)
 		;
@@ -76,7 +82,8 @@ INSERT INTO subjects(id,slug,name)
 	VALUES
 		(1,'d_subj_1','AdminController'),
 		(2,'d_subj_2','DefaultController'),
-		(3,'d_subj_3','CabinetController')
+		(3,'d_subj_3','CabinetController'),
+		(4,'d_subj_4','ShopController')
 		;
 INSERT INTO permitions(id,user_id,subject_id,code)
 	VALUES
@@ -84,5 +91,6 @@ INSERT INTO permitions(id,user_id,subject_id,code)
 		(2,1,2,3),
 		(3,2,1,5),
 		(4,4,2,4),
-		(5,4,3,7)
+		(5,4,3,7),
+		(6,4,4,7)
 		;

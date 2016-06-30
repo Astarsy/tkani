@@ -17,9 +17,9 @@ class ProfileForm extends RegisterForm{
 		}		
 	}
 	protected function redirect($t,$m,$u){
-		Form::redirect('Изменения сохранены','Изменения в Вашем профиле успешно сохранены.',$_SERVER['REQUEST_URI']);
+		CabinetForm::redirect('Изменения сохранены','Изменения в Вашем профиле успешно сохранены.',$_SERVER['REQUEST_URI']);
 	}
 	protected function processOver($user){
-		Form::processOver($user);
+		CabinetForm::processOver($user);
 	}
 }
