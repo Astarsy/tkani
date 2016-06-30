@@ -25,8 +25,9 @@ class AppController{
 			$this->_method=$rc->getMethod($m_n);
 			array_shift($strs);
 		}else{
-			$rc=new ReflectionClass('DefaultController');
-			$this->_method=$rc->getMethod('errorMethod');
+			//$rc=new ReflectionClass('DefaultController');
+			//$this->_method=$rc->getMethod('errorMethod');
+            $this->_method=$rc->getMethod('Method');
 		}
 		$this->_controller=$rc->newInstance();
         $ks=$vs=array();

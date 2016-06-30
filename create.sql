@@ -75,12 +75,14 @@ INSERT INTO salers(id,slug,title,logo,respons_person)
 INSERT INTO subjects(id,slug,name)
 	VALUES
 		(1,'d_subj_1','AdminController'),
-		(2,'d_subj_2','DefaultController')
+		(2,'d_subj_2','DefaultController'),
+		(3,'d_subj_3','CabinetController')
 		;
 INSERT INTO permitions(id,user_id,subject_id,code)
 	VALUES
 		(1,1,1,6),
 		(2,1,2,3),
 		(3,2,1,5),
-		(4,4,2,4)
+		(4,4,2,4),
+		(5,4,3,7)
 		;

@@ -18,7 +18,7 @@ class RegisterForm extends Form{
 		//отправяет e-mail с хэшем для подтверждения
 		//возвращает false/error
 		$slug_hesh=RegistrationDataStorage::getHesh($user->slug,1,1);
-        $ref='http://'.$_SERVER['HTTP_HOST'].'/confirm/'.$hesh.'/'.$slug_hesh;
+        $ref='http://'.$_SERVER['HTTP_HOST'].'/cabinet/confirm/'.$hesh.'/'.$slug_hesh;
         $msg='Для подтверждения регистрации на сайте '.$_SERVER['HTTP_HOST'].' нажмите на кнопке '."<a href='$ref'>КНОПКА</a>";
         return Msg::sendMail($user->mail,$msg);
 	}
