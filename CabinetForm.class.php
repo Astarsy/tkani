@@ -49,7 +49,6 @@ class CabinetForm{
 		$title=Msg::encode($title);
 		$msg=Msg::encode($msg);
 		$h='Location:'.$uri.'/'.$title.'/'.$msg;
-		print_r($h);
 		header($h);
 	}
 	protected function save($user){

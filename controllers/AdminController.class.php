@@ -21,7 +21,7 @@ class AdminController extends BaseController{
         $this->user=$db->getUserByMailFull($mail,PDO::FETCH_ASSOC);
         if(!($this->user))die('Пользователь не найден по mail '.$mail);
         $this->subjects=$db->getAllSubjects();
-        $this->user_permitions=$db->getAllPermitionsByMail($mail);
+        //$this->user_permitions=$db->getAllPermitionsByMail($mail);
         if($_SERVER['REQUEST_METHOD']=='POST'){
             if(isset($_POST['active'])){
                 //Активировати/Деактивировать
@@ -30,16 +30,16 @@ class AdminController extends BaseController{
                 $db->setActiveByMail($mail,$this->user['active']);
                 header('Location:'.$_SERVER['REQUESR_URI']);
                 exit;
-            }elseif(isset($_POST['permitions'])){
-                //Установить права на Subject
-                if(!(isset($_POST['subject'])&&isset($_POST['code'])))die('Отсутствуют необходимые поля');
-                $code=Globals\clearUInt($_POST['code']);
-                $subj=Globals\clearStr($_POST['subject']);
-                if($code>7||!in_array($subj, $this->subjects))die('Неожиданные значения полей');
-                $db->setPermitions($this->user['id'],$subj,$code);
-                header('Location:'.$_SERVER['REQUESR_URI']);
-                exit;
-            }
+            }// elseif(isset($_POST['permitions'])){
+            //     //Установить права на Subject
+            //     if(!(isset($_POST['subject'])&&isset($_POST['code'])))die('Отсутствуют необходимые поля');
+            //     $code=Globals\clearUInt($_POST['code']);
+            //     $subj=Globals\clearStr($_POST['subject']);
+            //     if($code>7||!in_array($subj, $this->subjects))die('Неожиданные значения полей');
+            //     $db->setPermitions($this->user['id'],$subj,$code);
+            //     header('Location:'.$_SERVER['REQUESR_URI']);
+            //     exit;
+            // }
         }
         $fc->setContent($fc->render('admin/user_edit.twig.html',array(
             'this'=>$this

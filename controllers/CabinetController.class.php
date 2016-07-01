@@ -18,7 +18,7 @@ class CabinetController extends BaseController{
         $title=Msg::decode($title);
         $user=$this->_logger->getUser();
         $cabinet=new Cabinet($user);
-        $countries=DB::getInstance()->getCountries();
+        $countries=$this->_db->getCountries();
         $fn=get_class($cabinet->getForm()).'.html';
         $fc->setContent($fc->render('cabinet.twig.html',array(
             'msg'=>$msg,
@@ -39,7 +39,7 @@ class CabinetController extends BaseController{
         $res_u_h=$fc->getArgs()[$u_m];
         $user_mail=Msg::decodeSecret($u_m);
         if($user_mail=='')header('Location:/error');
-        $user=DB::getInstance()->getUserByMail($user_mail);
+        $user=$this->_db->getUserByMail($user_mail);
         if(!$user)header('Location:/error');
         $user_slug_hesh=RegistrationDataStorage::getHesh($user->slug,1,1);
         // echo('true hesh:'.$user_slug_hesh.'<br>');
@@ -58,7 +58,7 @@ class CabinetController extends BaseController{
                 //принятые данные корректны,сменить пароль и уйти
                 if(!RegistrationDataStorage::changeUserRegistrationData($user->mail,$np1))header('Location:/msg/'.Msg::encode('Восстановление пароля').'/'.Msg::encode('Не удалось сменить пароль. Пожалуйста, обратитесь в службу технической поддержки. Приносим извенения за неудобства.'));
                 //пароль сменён, установить Активность, на случай восстановления НЕ Активным п-лем, т.к. он подтвердил эл адрес
-                DB::getInstance()->setActiveByMail($user->mail,1);
+                $this->_db->setActiveByMail($user->mail,1);
                 header('Location:/msg/'.Msg::encode('Восстановление пароля').'/'.Msg::encode('Пароль успешно изменён. Вы можете войти на сайт используя свои e-mail и пароль.'));
             }
         }
@@ -82,7 +82,7 @@ class CabinetController extends BaseController{
             //нажата кнопка Отправить Хэш
             $mail=Globals\clearMail($_POST['fgtml']);
             if($mail!=''){
-                $user=DB::getInstance()->getUserByMail($mail);
+                $user=$this->_db->getUserByMail($mail);
                 if(!empty($user)){
                     //отправлять mail c ссылкой вида:
                     //  /restore/user_mail/user_slug_hesh
@@ -110,7 +110,7 @@ class CabinetController extends BaseController{
         $recived_hesh=array_keys($fc->getArgs())[0];
         if(!isset($fc->getArgs()[$recived_hesh]))header('Location:/error');
         $recived_slug_hesh=$fc->getArgs()[$recived_hesh];
-        $res=DB::getInstance()->activateUser($recived_hesh,$recived_slug_hesh);
+        $res=$this->_db->activateUser($recived_hesh,$recived_slug_hesh);
         if($res!==false)die($res);
         $fc->setContent($fc->render('msg.twig.html',array(
             'title'=>'Активация учетной записи',

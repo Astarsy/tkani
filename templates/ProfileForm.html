@@ -2,7 +2,9 @@
 <form action='/cabinet' class='profile' method='post'>
 <a href='/shop'>
 {% if user.shops>0 %}
-	Войти в магазин
+	{% if user.shops<2 %}Мой магазин
+	{% else %}Мои магазины
+	{% endif %}
 {% else %}
 	Открыть магазин
 {% endif %}

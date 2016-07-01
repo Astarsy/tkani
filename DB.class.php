@@ -38,6 +38,18 @@ class DB{
             $stmt->execute();
         }catch(PDOException $e){die($e);}
     }
+    public function getShopOfUser($u_id,$s_id){
+        //Returns the shop of the user as an array or false
+        try{
+            $stmt=$this->_pdo->prepare("SELECT id,slug,title,logo,respons_person FROM shops WHERE respons_person=:u_id AND id=:s_id");
+            $stmt->bindParam(':u_id',$u_id,PDO::PARAM_INT);
+            $stmt->bindParam(':s_id',$s_id,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){
+            return false;
+        }
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     public function getShopsOfUserById($u_id){
         //Returns an array of arrays of shops
         try{
@@ -48,7 +60,6 @@ class DB{
             die($e);
         }
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
     public function getUserByMail($mail,$fetch=PDO::FETCH_OBJ){
         // Returms Object of user or false
@@ -76,30 +87,60 @@ class DB{
         }
         return $stmt->fetch($fetch);
     }
-    public function getPermitions($um,$obj){
-        //возвращает code у $un права на $obj
-        //объекты доступные п-лю gues доступны всем
-        //права данного п-ля и guest суммируются
-        $subj=$this->_pdo->quote(get_class($obj));
-        $um=$this->_pdo->quote($um);
-        $sql="SELECT code FROM permitions WHERE user_id IN(SELECT id FROM users WHERE mail IN ($um,'')AND active=1)AND subject_id=(SELECT id FROM subjects WHERE name=$subj);";
+    protected function getSubjPermByName($subj){
+        //Returns a permition code for subject
+        //if there arn't- false
         try{
-            //echo $sql;
-            $res=$this->_pdo->query($sql);
-        }catch(PDOException $e){
-            echo $e;
-            exit;
-        }
-        $arr=$res->fetchall(PDO::FETCH_NUM);
-        //var_dump($arr);
-        if(!empty($arr)){
-            $permit=0;
-            foreach($arr as $row){
-                $permit|=$row[0];
-            }
-            return $permit;
-        }
-        return 0;
+            $stmt=$this->_pdo->prepare(
+            "SELECT code FROM subjects WHERE name=:name");
+            $stmt->bindParam(':name',$subj,PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $arr=$stmt->fetch(PDO::FETCH_ASSOC);
+        if(isset($arr['code']))return (int)($arr['code']);
+        else return false;
+    }
+    protected function isUserExistsById($u_id){
+        //Returns true/false if user are registered,
+        //excludes a 'guest' user
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT id FROM users WHERE id=:id AND name!='guest' AND active=true");
+            $stmt->bindParam(':id',$u_id,PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return !empty($stmt->fetch(PDO::FETCH_ASSOC));
+    }
+    protected function isUserSalerById($u_id){
+        //Returns true/false if user are saler
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT id FROM shops WHERE respons_person=(SELECT id FROM users WHERE id=:id AND active=true)");
+            $stmt->bindParam(':id',$u_id,PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return !empty($stmt->fetch(PDO::FETCH_ASSOC));
+    }
+    protected function isUserAdminById($u_id){
+        //Returns true/false if user are Admin
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT id FROM admins WHERE user_id=(SELECT id FROM users WHERE id=:id AND active=true)");
+            $stmt->bindParam(':id',$u_id,PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return !empty($stmt->fetch(PDO::FETCH_ASSOC));
+    }
+    public function getPermitions($u_id,$subj){
+        //возвращает true/false
+        $subj=get_class($subj);
+        $subj_perm=$this->getSubjPermByName($subj);
+        if($subj_perm===false)return false;
+        if($subj_perm===0)return true;
+        if($subj_perm===1&&$this->isUserExistsById($u_id))return true;
+        if($subj_perm<=3&&$this->isUserSalerById($u_id))return true;
+        if($subj_perm<=7&&$this->isUserAdminById($u_id))return true;
+        return false;
     }
     public function getCountries(){
         //Возвращает массив всех стран
@@ -112,17 +153,17 @@ class DB{
         while($r=$res->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
         return $arr;
     }    
-    public function getAllPermitionsByMail($mail){
-        //Возвращает массив массивов прав п-ля
-        //в виде SubjectName=>Code
-        try{
-            $stmt=$this->_pdo->prepare(
-            "SELECT subjects.name as subject,code FROM permitions LEFT JOIN subjects ON subjects.id=permitions.subject_id LEFT JOIN users ON permitions.user_id=users.id WHERE users.mail=:mail AND users.active=1");
-            $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
-            $stmt->execute();
-        }catch(PDOException $e){die($e);}
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    // public function getAllPermitionsByMail($mail){
+    //     //Возвращает массив массивов прав п-ля
+    //     //в виде SubjectName=>Code
+    //     try{
+    //         $stmt=$this->_pdo->prepare(
+    //         "SELECT subjects.name as subject,code FROM permitions LEFT JOIN subjects ON subjects.id=permitions.subject_id LEFT JOIN users ON permitions.user_id=users.id WHERE users.mail=:mail AND users.active=1");
+    //         $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
+    //         $stmt->execute();
+    //     }catch(PDOException $e){die($e);}
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
     public function getAllSubjects(){
         //Возвращяет массив всех Subjects
         try{
@@ -212,18 +253,18 @@ class DB{
         }catch(PDOException $e){die('<br>Исключение '.$e->getCode().'<br>'.$e);return false;}
         return true;
     }
-    public function setPermitions($u_id,$subj,$code){
-        //Устанавливает права для user($mail) на subj в виде $code
-        try{
-            $stmt=$this->_pdo->prepare("INSERT INTO permitions(user_id,subject_id,code)VALUES(:u_id,(SELECT id FROM subjects WHERE name=:subj),:code)ON DUPLICATE KEY UPDATE code=:code");
-            $stmt->bindParam(':u_id', $u_id, PDO::PARAM_INT);
-            $stmt->bindParam(':subj', $subj, PDO::PARAM_STR);
-            $stmt->bindParam(':code', $code, PDO::PARAM_INT);
-            $stmt->execute();
-        }catch(PDOException $e){
-            die($e);
-        }     
-    }
+    // public function setPermitions($u_id,$subj,$code){
+    //     //Устанавливает права для user($mail) на subj в виде $code
+    //     try{
+    //         $stmt=$this->_pdo->prepare("INSERT INTO permitions(user_id,subject_id,code)VALUES(:u_id,(SELECT id FROM subjects WHERE name=:subj),:code)ON DUPLICATE KEY UPDATE code=:code");
+    //         $stmt->bindParam(':u_id', $u_id, PDO::PARAM_INT);
+    //         $stmt->bindParam(':subj', $subj, PDO::PARAM_STR);
+    //         $stmt->bindParam(':code', $code, PDO::PARAM_INT);
+    //         $stmt->execute();
+    //     }catch(PDOException $e){
+    //         die($e);
+    //     }     
+    // }
     public function setActiveByMail($mail,$active){
         //Устонавливает флаг актовности по mail
         //возвращает false или сообщение об ошибке

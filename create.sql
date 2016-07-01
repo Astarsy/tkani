@@ -32,19 +32,16 @@ CREATE TABLE shops(
 				respons_person INT NOT NULL,
 				FOREIGN KEY(respons_person) REFERENCES users(id)
 				);
+CREATE TABLE admins(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				user_id INT NOT NULL UNIQUE,
+				FOREIGN KEY(user_id) REFERENCES users(id)
+				);
 CREATE TABLE subjects(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				slug VARCHAR(20) NOT NULL UNIQUE,
-				name VARCHAR(40) NOT NULL UNIQUE
-				);
-CREATE TABLE permitions(
-				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				code TINYINT(1) NOT NULL DEFAULT 4,
-				user_id INT NOT NULL,
-				subject_id INT NOT NULL,
-				UNIQUE KEY(user_id,subject_id),
-				FOREIGN KEY(user_id) REFERENCES users(id),
-				FOREIGN KEY(subject_id) REFERENCES subjects(id)
+				name VARCHAR(40) NOT NULL UNIQUE,
+				code TINYINT(1) NOT NULL
 				);
 CREATE TABLE reg_heshes(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -74,23 +71,17 @@ INSERT INTO users(id,slug,name,mail,mobile,zip,street,city,country,active)
 		;
 INSERT INTO shops(id,slug,title,logo,respons_person)
 	VALUES
-		(1,'d_saler_01','International Textile Inc.','logo_filename.png',2),
-		(2,'d_saler_02','ООО Классные ткани лимитеддд',NULL,2),
-		(3,'d_saler_03','',NULL,3)
+		(1,'d_shop_01','International Textile Inc.','logo_filename.png',2),
+		(2,'d_shop_02','ООО Классные ткани лимитеддд',NULL,2),
+		(3,'d_shop_03','',NULL,3)
 		;
-INSERT INTO subjects(id,slug,name)
-	VALUES
-		(1,'d_subj_1','AdminController'),
-		(2,'d_subj_2','DefaultController'),
-		(3,'d_subj_3','CabinetController'),
-		(4,'d_subj_4','ShopController')
+INSERT INTO admins(user_id)
+	VALUES(1)
 		;
-INSERT INTO permitions(id,user_id,subject_id,code)
+INSERT INTO subjects(id,slug,name,code)
 	VALUES
-		(1,1,1,6),
-		(2,1,2,3),
-		(3,2,1,5),
-		(4,4,2,4),
-		(5,4,3,7),
-		(6,4,4,7)
+		(1,'d_subj_1','AdminController',4),
+		(2,'d_subj_2','CabinetController',0),
+		(3,'d_subj_3','ShopController',2),
+		(4,'d_subj_4','DefaultController',0)
 		;
