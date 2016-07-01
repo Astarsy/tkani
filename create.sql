@@ -28,6 +28,7 @@ CREATE TABLE shops(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				slug VARCHAR(20) NOT NULL UNIQUE,
 				title VARCHAR(80) NOT NULL,
+				reg_time INT NOT NULL,
 				logo VARCHAR(40) NULL UNIQUE,
 				respons_person INT NOT NULL,
 				FOREIGN KEY(respons_person) REFERENCES users(id)
@@ -69,11 +70,11 @@ INSERT INTO users(id,slug,name,mail,mobile,zip,street,city,country,active)
 		(3,'d_user_0002',NULL,'anonim@user.loc',NULL,NULL,NULL,NULL,NULL,false),
 		(4,'d_user_0004','guest','',NULL,NULL,NULL,NULL,2,true)
 		;
-INSERT INTO shops(id,slug,title,logo,respons_person)
+INSERT INTO shops(id,slug,title,logo,respons_person,reg_time)
 	VALUES
-		(1,'d_shop_01','International Textile Inc.','logo_filename.png',2),
-		(2,'d_shop_02','ООО Классные ткани лимитеддд',NULL,2),
-		(3,'d_shop_03','',NULL,3)
+		(1,'d_shop_01','International Textile Inc.','logo_filename.png',2,1467396208),
+		(2,'d_shop_02','ООО Классные ткани лимитеддд',NULL,2,1467396308),
+		(3,'d_shop_03','',NULL,3,1467376208)
 		;
 INSERT INTO admins(user_id)
 	VALUES(1)

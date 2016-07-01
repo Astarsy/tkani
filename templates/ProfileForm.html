@@ -1,14 +1,12 @@
 <h3>Профиль пользователя {{user.name}}</h3>
 <form action='/cabinet' class='profile' method='post'>
-<a href='/shop'>
 {% if user.shops>0 %}
-	{% if user.shops<2 %}Мой магазин
-	{% else %}Мои магазины
+	{% if user.shops<2 %}<a href='/shop'>Мой магазин</a>
+	{% else %}<a href='/shop'>Мои магазины</a>
 	{% endif %}
 {% else %}
-	Открыть магазин
+	<a href='/cabinet/reg_shop'>Открыть магазин</a>
 {% endif %}
-</a>
 	<h4>Личные данные</h4>
 	<p>e-mail: {{user.mail}}</p>
 	<div class='{{classes.alt_mail}}'>

@@ -30,6 +30,18 @@ class CabinetController extends BaseController{
             'countries'=>$countries,
             )));
     }
+    public function reg_shopMethod(){
+        //Отправляет заявку на регистрацию п-ля как Продавца
+        $fc=AppController::getInstance();
+        if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['regiser_saler'])){
+            //Register button was pressed
+            //Add a request to DB
+            $this->_db->addSalerRequest($this->_user);
+            //TODO: Send meail to Admin
+            Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
+        }
+        $fc->setContent($fc->render('shop_register.twig.html',array('this'=>$this)));
+    }
     public function restoreMethod(){
         //ссылка с кодом подтверждения восстановления пароля
         $fc=AppController::getInstance();

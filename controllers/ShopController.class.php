@@ -9,17 +9,6 @@ class ShopController extends BaseController{
             //This is a Saler
             $template='shop/shops.twig.html';
             $this->shops=$this->_db->getShopsOfUserById($this->_user->id);
-        }else{
-            //This is't Saler
-            if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['regiser_saler'])){
-                //Register button was pressed
-                //Add a request to DB
-                $this->_db->addSalerRequest($this->_user);
-                //TODO: Send meail to Admin
-                Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
-            }
-            $template='shop/register.twig.html';
-        }
         $fc->setContent($fc->render($template,array('this'=>$this)));
     }
     public function editMethod(){
