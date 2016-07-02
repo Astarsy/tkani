@@ -40,7 +40,7 @@ class CabinetController extends BaseController{
             //TODO: Send meail to Admin
             Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
         }
-        $fc->setContent($fc->render('shop_register.twig.html',array('this'=>$this)));
+        $fc->setContent($fc->render('shop_register.twig.html'));
     }
     public function restoreMethod(){
         //ссылка с кодом подтверждения восстановления пароля

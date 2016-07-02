@@ -1,8 +1,8 @@
 <h3>Профиль пользователя {{user.name}}</h3>
 <form action='/cabinet' class='profile' method='post'>
 {% if user.shops>0 %}
-	{% if user.shops<2 %}<a href='/shop'>Мой магазин</a>
-	{% else %}<a href='/shop'>Мои магазины</a>
+	{% if user.shops<2 %}<a href='/saler'>Мой магазин</a>
+	{% else %}<a href='/saler'>Мои магазины</a>
 	{% endif %}
 {% else %}
 	<a href='/cabinet/reg_shop'>Открыть магазин</a>

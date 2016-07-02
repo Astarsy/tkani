@@ -83,6 +83,6 @@ INSERT INTO subjects(id,slug,name,code)
 	VALUES
 		(1,'d_subj_1','AdminController',4),
 		(2,'d_subj_2','CabinetController',0),
-		(3,'d_subj_3','ShopController',2),
+		(3,'d_subj_3','SalerController',2),
 		(4,'d_subj_4','DefaultController',0)
 		;
