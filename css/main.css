@@ -1,3 +1,4 @@
 body{background-color: #eee;width: 80%;margin: 0 auto}
-
+label{display: block}
+label>span{font-size: small;color:green;margin: 0 1em}
 .err{border: 1px solid red;}

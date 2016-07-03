@@ -253,18 +253,6 @@ class DB{
         }catch(PDOException $e){die('<br>Исключение '.$e->getCode().'<br>'.$e);return false;}
         return true;
     }
-    // public function setPermitions($u_id,$subj,$code){
-    //     //Устанавливает права для user($mail) на subj в виде $code
-    //     try{
-    //         $stmt=$this->_pdo->prepare("INSERT INTO permitions(user_id,subject_id,code)VALUES(:u_id,(SELECT id FROM subjects WHERE name=:subj),:code)ON DUPLICATE KEY UPDATE code=:code");
-    //         $stmt->bindParam(':u_id', $u_id, PDO::PARAM_INT);
-    //         $stmt->bindParam(':subj', $subj, PDO::PARAM_STR);
-    //         $stmt->bindParam(':code', $code, PDO::PARAM_INT);
-    //         $stmt->execute();
-    //     }catch(PDOException $e){
-    //         die($e);
-    //     }     
-    // }
     public function setActiveByMail($mail,$active){
         //Устонавливает флаг актовности по mail
         //возвращает false или сообщение об ошибке

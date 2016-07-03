@@ -46,7 +46,7 @@ class AppController{
 
 	public function render($t_n,$arg_arr=array()){
 		$loader=new Twig_Loader_Filesystem('templates');
-		if(Globals\DEBUG)$twig=new Twig_Environment($loader,array('debug'=>true));
+		if(Globals\DEBUG)$twig=new Twig_Environment($loader,array('debug'=>Globals\DEBUG));
 		else $twig=new Twig_Environment($loader);
 		return $twig->render($t_n,$arg_arr);
 	}

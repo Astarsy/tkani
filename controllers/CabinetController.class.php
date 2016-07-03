@@ -33,14 +33,26 @@ class CabinetController extends BaseController{
     public function reg_shopMethod(){
         //Отправляет заявку на регистрацию п-ля как Продавца
         $fc=AppController::getInstance();
+        $this->reg_form=new RegShopForm(array(
+            'title'=>true,'owner_form'=>true,'desc'=>false,'pub_phone'=>true,'pub_address'=>true,'payment'=>true,'shiping'=>true,'addition_info'=>false,
+            ));
         if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['regiser_saler'])){
             //Register button was pressed
+            $this->reg_form->validate();
             //Add a request to DB
-            $this->_db->addSalerRequest($this->_user);
+            //var_dump($this->reg_form->_err_fields);
+
+            //var_dump($this->payment_selected);
+            //$this->_db->addSalerRequest($this->_user);
             //TODO: Send meail to Admin
-            Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
+            //Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
         }
-        $fc->setContent($fc->render('shop_register.twig.html'));
+        $this->shiping=array('Самовывоз из магазина','Почта России','ТК Деловые Линии','ТК Байкал Сервис','EMS Почта');
+        $this->payment=array('Наличными, Курьеру при получении','Наложенный платёж','Банковский перевод','Перевод на карту','Яндкс Деньги','PayPall');
+        $this->owner_forms=array('Физ. лицо','ПБЮЛ','ЧП','ООО','ЗАО','ОАО','Иностранная фирма');
+        $fc->setContent($fc->render('shop_register.twig.html',array(
+            'this'=>$this,
+            )));
     }
     public function restoreMethod(){
         //ссылка с кодом подтверждения восстановления пароля
