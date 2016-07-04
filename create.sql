@@ -24,14 +24,44 @@ CREATE TABLE users(
 				active BOOLEAN NOT NULL DEFAULT false,
 				FOREIGN KEY(country) REFERENCES countries(id)
 				);
+CREATE TABLE payments(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				name VARCHAR(80) NOT NULL UNIQUE,
+				descr VARCHAR(400) NULL
+				);
+CREATE TABLE shipings(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				name VARCHAR(80) NOT NULL UNIQUE,
+				descr VARCHAR(400) NULL,
+				price INT NULL
+				);
+CREATE TABLE payments_of_shops(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				shop_id INT NOT NULL,
+				payment_id INT NOT NULL
+				);
+CREATE TABLE shipings_of_shops(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				shop_id INT NOT NULL,
+				shiping_id INT NOT NULL
+				);
 CREATE TABLE shops(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				slug VARCHAR(20) NOT NULL UNIQUE,
-				title VARCHAR(80) NOT NULL,
-				reg_time INT NOT NULL,
-				logo VARCHAR(40) NULL UNIQUE,
+				open_time INT NULL,
 				respons_person INT NOT NULL,
-				FOREIGN KEY(respons_person) REFERENCES users(id)
+				title VARCHAR(80) NOT NULL UNIQUE,
+				logo VARCHAR(40) NULL UNIQUE,
+				owner_form VARCHAR(20) NOT NULL,
+				descr VARCHAR(800) NULL,
+				pub_phone VARCHAR(30) NOT NULL,
+				pub_address VARCHAR(400) NOT NULL,
+				payments INT NOT NULL,				
+				shipings INT NOT NULL,
+				addition_info VARCHAR(800) NULL,
+				FOREIGN KEY(respons_person) REFERENCES users(id),
+				FOREIGN KEY(payments) REFERENCES payments_of_shops(shop_id),
+				FOREIGN KEY(shipings) REFERENCES shipings_of_shops(shop_id)
 				);
 CREATE TABLE admins(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -57,6 +87,19 @@ CREATE TABLE saler_requests(
 				reg_time INT NOT NULL,
 				FOREIGN KEY(user_id) REFERENCES users(id)
 				);
+
+INSERT INTO payments(id,name,descr)
+	VALUES
+		(1,'Наличными.','В магазине.'),
+		(2,'Наличными.','Курьеру при получении.'),
+		(3,'Перевод на карту.','Перевод любым способом на корту Сбербанка.')
+		;
+INSERT INTO shipings(id,name,descr,price)
+	VALUES
+		(1,'Самовывоз из магазина.','В магазине.'),
+		(2,'Почта России.','Бандероль, обычное отправление.',200),
+		(3,'ТК Деловые Линии.','Обычное отправление',400)
+		;
 INSERT INTO countries(id,slug,name)
 	VALUES
 		(1,'d_country_0001','Espana'),

@@ -19,17 +19,23 @@ class DB{
         }
         return self::$_instance;
     }
-    public function addSalerRequest($user){
-        //If there arn't,
-        //Adds the saler request to the DB
-        //Creates unactive Shop
+    public function getUserAddRegForm($user){
+        //Возвращает кол-во заявок на открытие Магазина у данного П-ля
         try{
             $stmt=$this->_pdo->prepare(
             "SELECT COUNT(id) FROM saler_requests WHERE user_id=:u_id");
             $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
             $stmt->execute();
-            if((int)($stmt->fetch(PDO::FETCH_NUM)[0])>=(int)(1))return;
-            unset($stmt);
+            return (int)($stmt->fetch(PDO::FETCH_NUM)[0]);
+        }catch(PDOException $e){die($e);}
+    }
+    public function addSalerRequest($user,$shop){
+        //If there arn't,
+        //Adds the saler request to the DB
+        //Creates unactive Shop
+        if(0!==$this->getUserAddRegForm($user))die('Заявка подана.');
+        $this->createUnactiveShop($user,$shop);
+        try{
             $stmt=$this->_pdo->prepare(
             "INSERT INTO saler_requests(user_id,reg_time)
                 VALUES(:u_id,:t)");

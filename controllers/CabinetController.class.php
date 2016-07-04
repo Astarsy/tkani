@@ -10,13 +10,14 @@ class CabinetController extends BaseController{
         if(isset($fc->getArgs()[$title]))$msg=Msg::decode($fc->getArgs()[$title]);
         else $msg='Отсутствует текст сообщения...';
         $title=Msg::decode($title);
-
         if(isset(array_keys($fc->getArgs())[0]))$title=array_keys($fc->getArgs())[0];
         else $title='Сообщение';
         if(isset($fc->getArgs()[$title]))$msg=Msg::decode($fc->getArgs()[$title]);
         else $msg='';
         $title=Msg::decode($title);
         $user=$this->_logger->getUser();
+        $user->add_reg_form=$this->_db->getUserAddRegForm($user);
+        print_r($user->add_reg_form);
         $cabinet=new Cabinet($user);
         $countries=$this->_db->getCountries();
         $fn=get_class($cabinet->getForm()).'.html';

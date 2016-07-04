@@ -19,6 +19,7 @@ class RegShopForm{
             $this->{$f_n}=$validator->invoke($this,$f_n,$rc);
         }
     }
+//TODO: Добавить валидатор для pub_phone
     public function paymentValidator($f_n,$rc){
         //орабатывает поле- массив, создаёт новое свойство в текущем экземпляре со значением в виде массива полученных значений.
         $arr_n=array();
