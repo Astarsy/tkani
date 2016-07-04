@@ -1,33 +1,11 @@
 <h3>Регистрация пользователя</h3>
 <form class='register' method='post'>
-	<div class='{{classes.mail}}'>
-		<label for='mail'>e-mail</label>
-		<input type='text' name='mail'  value='{{fields.mail}}'>
-		{% if msgs.mail %}
-		<div class='msg'>{{msgs.mail}}</div>
-		{% endif %}
-	</div>
-	<div class='{{classes.password}}'>
-		<label for='password'>пароль</label>
-		<input type='password' name='password'>
-	</div>
-	<div class='{{classes.password}}'>
-		<label for='password2'>повторите пароль</label>
-		<input type='password' name='password2'>
-	</div>
-	<div class='{{classes.alt_mail}}'>
-		<label for='alt_mail'>запасной e-mail</label>
-		<input type='text' name='alt_mail' value='{{fields.alt_mail}}'>
-		{% if msgs.alt_mail %}
-		<div class='msg'>{{msgs.alt_mail}}</div>
-		{% endif %}
-	</div>
-	<div class='{{classes.name}}'>
-		<label for='name'>Имя</label>
-		<input type='text' name='name' value='{{fields.name}}'>
-	</div>
-	<div class='{{classes.gender}}'>
-		<label>Пол</label>
+	<label class='{{classes.mail}}' for='mail'>e-mail<input type='text' name='mail'  value='{{fields.mail}}'></label>
+	<label class='{{classes.password}}' for='password'>пароль<input type='password' name='password'></label>
+	<label class='{{classes.password}}' for='password2'>повторите пароль<input type='password' name='password2'></label>
+	<label class='{{classes.alt_mail}}' for='alt_mail'>запасной e-mail<input type='text' name='alt_mail' value='{{fields.alt_mail}}'></label>
+	<label class='{{classes.name}}' for='name'>Имя<input type='text' name='name' value='{{fields.name}}'></label>
+	<label class='{{classes.gender}}'>Пол
 		<label>
 			<input id='male' type='radio' name='gender' value='0'
 				{% if fields.gender==0 %}
@@ -40,34 +18,14 @@
 					checked
 				{% endif %}>женский
 		</label>
-	</div>
-	<div class='{{classes.mobile}}'>
-		<label for='mobile'>Мобильный телефон</label>
-		<input type='text' name='mobile' value='{{fields.mobile}}'>
-	</div>
-	<div class='{{classes.tel}}'>
-		<label for='tel'>Рабочий телефон</label>
-		<input type='text' name='tel' value='{{fields.tel}}'>
-	</div>
-	<div class='{{classes.fax}}'>
-		<label for='fax'>Факс</label>
-		<input type='text' name='fax' value='{{fields.fax}}'>
-	</div>
-	<div class='{{classes.zip}}'>
-		<label for='zip'>Почтовый индекс</label>
-		<input type='text' name='zip' value='{{fields.zip}}'>
-	</div>
-	<div class='{{classes.tel}}'>
-		<label for='street'>Улица</label>
-		<input type='text' name='street' value='{{fields.street}}'>
-	</div>
-	<div class='{{classes.street}}'>
-		<label for='city'>Город</label>
-		<input type='text' name='city' value='{{fields.city}}'>
-	</div>
-	<div class='{{classes.country}}'>
-		<label for='country'>Страна</label>
-		<select name='country'>
+	</label>
+	<label class='{{classes.mobile}}' for='mobile'>Мобильный телефон<input type='text' name='mobile' value='{{fields.mobile}}'></label>
+	<label class='{{classes.tel}}' for='tel'>Рабочий телефон<input type='text' name='tel' value='{{fields.tel}}'></label>
+	<label class='{{classes.fax}}' for='fax'>Факс<input type='text' name='fax' value='{{fields.fax}}'></label>
+	<label class='{{classes.zip}} for='zip'>Почтовый индекс<input type='text' name='zip' value='{{fields.zip}}'></label>
+	<label class='{{classes.tel}}' for='street'>Улица<input type='text' name='street' value='{{fields.street}}'></label>
+	<label class='{{classes.street}}' for='city'>Город<input type='text' name='city' value='{{fields.city}}'></label>
+	<label class='{{classes.country}}' for='country'>Страна<select name='country'>
 		{% for key,country in countries %}
 			<option
 			{% if key==fields.country %}
@@ -75,12 +33,7 @@
 			{% endif %}>{{country}}</option>
 		{% endfor %}
 		</select>
-	</div>
-	<div class='{{classes.job_title}}'>
-		<label for='job_title'>Занимаемая должность</label>
-		<input type='text' name='job_title' value='{{fields.job_title}}'>
-	</div>
-	<div>
-		<button name='register'>Зарегистрировать</button>
-	</div>
+	</label>
+	<label class='{{classes.job_title}}' for='job_title'>Занимаемая должность<input type='text' name='job_title' value='{{fields.job_title}}'></label>
+	<button name='register'>Зарегистрировать</button>
 </form>
