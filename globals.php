@@ -9,7 +9,7 @@ namespace Globals{
 	define('USERS_FILENAME','.htpasswd');//учетные данные поль-лей
     
 	function clearStr($str,$len=200){
-		return substr(trim(strip_tags($str)),0,$len);
+		return (string)substr(trim(strip_tags($str)),0,$len);
 	}
 
 	function clearInt($i){

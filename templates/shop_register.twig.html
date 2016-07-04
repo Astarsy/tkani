@@ -6,29 +6,34 @@
 <p>Обратите внимание, что информация, введённая Вами в некоторые поля, будет доступна всем посетителям Вашего магазина. Такие поля помечены как 'публикуемые'.</p>
 <p>Также обратите внимание, что изменение содержения некоторых полей невозможно без обращения в службу поддержки, поэтому, ещё раз просим Вас внимательно вводить информацию.</p>
 <form method='post'>
-    <label class="{{this.reg_form._err_fields['title']}}">Название магазина<input type="text" name="title"><span>публикуемое</span></label>    
+    <label class="{{this.reg_form._err_fields['title']}}">Название магазина<input type="text" name="title" value="{{this.reg_form.title}}"><span>публикуемое</span></label>
 <label class="{{this.reg_form._err_fields['owner_form']}}" for='owner_form'>Форма собственности предприятия
         <select name='owner_form'>
-        {% for k,v in this.owner_forms %}
-            <option>{{v}}</option>
-        {% endfor %}
+{% for k,v in this.owner_forms %}
+{% if this.reg_form.owner_form==v %}
+    {% set ch='selected' %}
+{% else %}
+    {% set ch='' %}
+{% endif %}
+            <option {{ch}}>{{v}}</option>
+{% endfor %}
         </select></label>
-    <label class="{{this.reg_form._err_fields['desc']}}">Описание магазина<input type="text" name="desc"><span>публикуемое</span></label>
-    <label class="{{this.reg_form._err_fields['pub_phone']}}">Телефон для связи<input type="text" name="pub_phone"><span>публикуемое</span></label>
-    <label class="{{this.reg_form._err_fields['pub_address']}}">Адрес магазина или предприятия<input type="text" name="pub_address"><span>публикуемое</span></label>
+    <label class="{{this.reg_form._err_fields['desc']}}">Описание магазина<input type="text" name="desc" value="{{this.reg_form.desc}}"><span>публикуемое</span></label>
+    <label class="{{this.reg_form._err_fields['pub_phone']}}">Телефон для связи<input type="text" name="pub_phone" value="{{this.reg_form.pub_phone}}"><span>публикуемое</span></label>
+    <label class="{{this.reg_form._err_fields['pub_address']}}">Адрес магазина или предприятия<input type="text" name="pub_address" value="{{this.reg_form.pub_address}}"><span>публикуемое</span></label>
 <label class="{{this.reg_form._err_fields['payment']}}">Доступные способы оплаты<span>публикуемое</span>
     {% for k,v in this.payment %}
-    <label><input type="checkbox" name="payment[{{k}}]" value="{{v}}"{% if this.reg_form.payment_selected[k]==v %} checked{% endif %}>{{v}}</label>
+    <label><input type="checkbox" name="payment[{{k}}]" value="{{v}}"{% if this.reg_form.payment[k]==v %} checked{% endif %}>{{v}}</label>
     {% endfor %}
-    добавить<span>перечислите через запятую</span><input type="text" name="payment[addition]" value="{{this.reg_form.payment_selected['addition']}}">
+    добавить<span>перечислите через запятую</span><input type="text" name="payment[addition]" value="{{this.reg_form.payment['addition']}}">
 </label>
 <label class="{{this.reg_form._err_fields['shiping']}}">Доступные способы доставки<span>публикуемое</span>
     {% for k,v in this.shiping %}
-    <label><input type="checkbox" name="shiping[{{k}}]" value='{{v}}'{% if this.reg_form.shiping_selected[k]==v %} checked{% endif %}>{{v}}</label>
+    <label><input type="checkbox" name="shiping[{{k}}]" value='{{v}}'{% if this.reg_form.shiping[k]==v %} checked{% endif %}>{{v}}</label>
     {% endfor %}
-    добавить<span>перечислите через запятую</span><input type="text" name="shiping[addition]" value="{{this.reg_form.shiping_selected['addition']}}">
+    добавить<span>перечислите через запятую</span><input type="text" name="shiping[addition]" value="{{this.reg_form.shiping['addition']}}">
 </label>
-<label class="{{this.reg_form._err_fields['addition_info']}}">Дополнительная информация<input type="text" name="addition_info"><span>публикуемое</span></label>
+<label class="{{this.reg_form._err_fields['addition_info']}}">Дополнительная информация<input type="text" name="addition_info" value="{{this.reg_form.addition_info}}"><span>публикуемое</span></label>
     <button type='submit' name='regiser_saler'>Подать заявку</button>
 </form>
 {% endblock %}

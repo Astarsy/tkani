@@ -20,14 +20,15 @@ class DB{
         return self::$_instance;
     }
     public function addSalerRequest($user){
+        //If there arn't,
         //Adds the saler request to the DB
-        //Up to 5 from one user
+        //Creates unactive Shop
         try{
             $stmt=$this->_pdo->prepare(
             "SELECT COUNT(id) FROM saler_requests WHERE user_id=:u_id");
             $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
             $stmt->execute();
-            if((int)($stmt->fetch(PDO::FETCH_NUM)[0])>=(int)(5))return;
+            if((int)($stmt->fetch(PDO::FETCH_NUM)[0])>=(int)(1))return;
             unset($stmt);
             $stmt=$this->_pdo->prepare(
             "INSERT INTO saler_requests(user_id,reg_time)
