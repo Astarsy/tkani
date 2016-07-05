@@ -24,7 +24,7 @@ class RegShopForm{
         //орабатывает поле- массив, создаёт новое свойство в текущем экземпляре со значением в виде массива полученных значений.
         $arr_n=array();
         foreach($_POST[$f_n] as $k=>$v){
-            $arr_n[Globals\clearStr($k)]=Globals\clearStr($v);
+            $arr_n[Globals\clearStr($k)]=Globals\clearStr($v,400);
         }
         if(''==implode('',$arr_n))$this->_err_fields[$f_n]='err';
         return $arr_n;

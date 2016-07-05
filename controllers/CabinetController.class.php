@@ -16,7 +16,7 @@ class CabinetController extends BaseController{
         else $msg='';
         $title=Msg::decode($title);
         $user=$this->_logger->getUser();
-        $user->add_reg_form=$this->_db->getUserAddRegForm($user);
+        $user->add_reg_form=$this->_db->getUserAddRegFormCount($user);
         print_r($user->add_reg_form);
         $cabinet=new Cabinet($user);
         $countries=$this->_db->getCountries();
@@ -35,20 +35,24 @@ class CabinetController extends BaseController{
         //Отправляет заявку на регистрацию п-ля как Продавца
 //TODO: Т.к. данный Контроллер открыт для всех- закрыть проверкой этот метод
         $fc=AppController::getInstance();
+        if(!($this->_db->getPermitions($this->_user->id,'CabinetController/reg_shopMethod')))die('Недостаточно прав');
         $this->reg_form=new RegShopForm(array(
             'title'=>true,'owner_form'=>true,'desc'=>false,'pub_phone'=>true,'pub_address'=>true,'payment'=>true,'shiping'=>true,'addition_info'=>false,
             ));
         if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['regiser_saler'])){
             //Register button was pressed
             $this->reg_form->validate();
-            //Add a request to DB
-            $this->_db->addSalerRequest($this->_user,$this->reg_form);
-            //TODO: Send meail to Admin
-            //Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
+            if(empty($this->reg_form->_err_fields)){
+                //Add a request to DB
+                $this->_db->processSalerRequest($this->_user,$this->reg_form);
+                //TODO: Send meail to Admin
+                //Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
+            }
+            //есть ошибки
         }
-        $this->shiping=array('Самовывоз из магазина','Почта России','ТК Деловые Линии','ТК Байкал Сервис','EMS Почта');
-        $this->payment=array('Наличными курьеру при получении','Наложенный платёж','Банковский перевод','Перевод на карту','Яндкс Деньги','PayPall');
-        $this->owner_forms=array('Физ. лицо','ПБЮЛ','ЧП','ООО','ЗАО','ОАО','Иностранная фирма');
+        $this->shiping=$this->_db->getAllShipingNames();
+        $this->payment=$this->_db->getAllPaymentNames();
+        $this->owner_forms=$this->_db->getAllOwnerFormNames();
         $fc->setContent($fc->render('shop_register.twig.html',array(
             'this'=>$this,
             )));

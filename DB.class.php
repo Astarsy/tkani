@@ -19,7 +19,40 @@ class DB{
         }
         return self::$_instance;
     }
-    public function getUserAddRegForm($user){
+    public function getAllPaymentNames(){
+        //Ret all payment methods as numeric array
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT id,name FROM payments");
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $res=array();
+        while($r=$stmt->fetch(PDO::FETCH_NUM))$res[(int)($r[0])]=$r[1];
+        return $res;
+    }
+    public function getAllOwnerFormNames(){
+        //Ret all owner forms as numeric array
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT id,name FROM owner_forms");
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $res=array();
+        while($r=$stmt->fetch(PDO::FETCH_NUM))$res[(int)($r[0])]=$r[1];
+        return $res;
+    }
+    public function getAllShipingNames(){
+        //Ret all ship methods as numeric array
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT id,name FROM shipings");
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $res=array();
+        while($r=$stmt->fetch(PDO::FETCH_NUM))$res[(int)($r[0])]=$r[1];
+        return $res;
+    }
+    public function getUserAddRegFormCount($user){
         //Возвращает кол-во заявок на открытие Магазина у данного П-ля
         try{
             $stmt=$this->_pdo->prepare(
@@ -27,22 +60,6 @@ class DB{
             $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
             $stmt->execute();
             return (int)($stmt->fetch(PDO::FETCH_NUM)[0]);
-        }catch(PDOException $e){die($e);}
-    }
-    public function addSalerRequest($user,$shop){
-        //If there arn't,
-        //Adds the saler request to the DB
-        //Creates unactive Shop
-        if(0!==$this->getUserAddRegForm($user))die('Заявка подана.');
-        $this->createUnactiveShop($user,$shop);
-        try{
-            $stmt=$this->_pdo->prepare(
-            "INSERT INTO saler_requests(user_id,reg_time)
-                VALUES(:u_id,:t)");
-            $t=time();
-            $stmt->bindParam(':t',$t,PDO::PARAM_INT);
-            $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
-            $stmt->execute();
         }catch(PDOException $e){die($e);}
     }
     public function getShopOfUser($u_id,$s_id){
@@ -140,7 +157,6 @@ class DB{
     }
     public function getPermitions($u_id,$subj){
         //возвращает true/false
-        $subj=get_class($subj);
         $subj_perm=$this->getSubjPermByName($subj);
         if($subj_perm===false)return false;
         if($subj_perm===0)return true;
@@ -159,18 +175,7 @@ class DB{
         $arr[]='';
         while($r=$res->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
         return $arr;
-    }    
-    // public function getAllPermitionsByMail($mail){
-    //     //Возвращает массив массивов прав п-ля
-    //     //в виде SubjectName=>Code
-    //     try{
-    //         $stmt=$this->_pdo->prepare(
-    //         "SELECT subjects.name as subject,code FROM permitions LEFT JOIN subjects ON subjects.id=permitions.subject_id LEFT JOIN users ON permitions.user_id=users.id WHERE users.mail=:mail AND users.active=1");
-    //         $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
-    //         $stmt->execute();
-    //     }catch(PDOException $e){die($e);}
-    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // }
+    }
     public function getAllSubjects(){
         //Возвращяет массив всех Subjects
         try{
@@ -309,6 +314,64 @@ class DB{
         }
         if($res=$stmt->fetch(PDO::FETCH_OBJ))return $res->user_slug;
         else return false;
+    }
+    public function processSalerRequest($user,$shop){
+        //Обрабатывает запрос на создание Магазина, в рамках одной транзакции:
+    //1-проверить отсутствие заявок;
+        if(0!==$this->getUserAddRegFormCount($user))die('Заявка подана.');
+        //die($shop->payment['addition']);
+        if(isset($shop->payment['addition']))$p=$shop->payment['addition'];
+        else $p=NULL;
+        if(isset($shop->shiping['addition']))$s=$shop->shiping['addition'];
+        else $s=NULL;
+        try{        
+    //2-создать запись в Заявках;
+            $this->_pdo->beginTransaction();
+            $stmt=$this->_pdo->prepare("INSERT INTO saler_requests(user_id,reg_time,add_payment,add_shiping)
+            VALUES(:u_id,:t,:p,:s)");
+            $stmt->bindParam(':t',(time()),PDO::PARAM_INT);
+            $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
+            $stmt->bindParam(':p', $p, PDO::PARAM_STR);
+            $stmt->bindParam(':s', $s, PDO::PARAM_STR);
+            $stmt->execute();
+
+    //3-создать неактивный магазин;
+            $stmt=$this->_pdo->prepare("INSERT INTO shops(slug,open_time,respons_person,title,logo,owner_form,descr,pub_phone,pub_address,addition_info)
+            VALUES(:sl,NULL,:rp,:t,NULL,(SELECT id FROM owner_forms WHERE name=:of),:d,:pp,:pa,:ai)");
+            $sl='sh_'.time();
+            $stmt->bindParam(':sl',$sl,PDO::PARAM_STR);
+            $stmt->bindParam(':rp',$user->id,PDO::PARAM_STR);
+            $stmt->bindParam(':t',$shop->title,PDO::PARAM_STR);
+            $stmt->bindParam(':of',$shop->owner_form,PDO::PARAM_STR);
+            $stmt->bindParam(':d',$shop->desc,PDO::PARAM_STR);
+            $stmt->bindParam(':pp',$shop->pub_phone,PDO::PARAM_STR);
+            $stmt->bindParam(':pa',$shop->pub_address,PDO::PARAM_STR);
+            $stmt->bindParam(':ai',$shop->addition_info,PDO::PARAM_STR);
+            $stmt->execute();
+
+    //4-создать записи о сп-ах оплаты
+            $arr=array();
+            foreach($shop->payment as $pm)$arr[]=$this->_pdo->quote($pm);
+            $p_ns=implode(',',$arr);
+            $stmt=$this->_pdo->prepare("INSERT INTO payments_of_shops(shop_id,payment_id)
+            SELECT (SELECT id FROM shops WHERE slug=:s_sl),id FROM payments WHERE name IN($p_ns)");
+            $stmt->bindParam(':s_sl',$sl,PDO::PARAM_STR);
+            $stmt->execute();
+
+    //5-создать записи о сп-ах доставки
+            $arr=array();
+            foreach($shop->shiping as $sm)$arr[]=$this->_pdo->quote($sm);
+            $s_ns=implode(',',$arr);
+            $stmt=$this->_pdo->prepare("INSERT INTO shipings_of_shops(shop_id,shiping_id)
+            SELECT (SELECT id FROM shops WHERE slug=:s_sl),id FROM shipings WHERE name IN($s_ns)");
+            $stmt->bindParam(':s_sl',$sl,PDO::PARAM_STR);
+            $stmt->execute();
+
+            $this->_pdo->commit();
+        }catch(PDOException $e){
+            $this->_pdo->rollBack();
+            die($e);
+        }
     }
     public function createTestDB(){
         // Creates a test database
