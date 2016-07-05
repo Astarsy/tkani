@@ -5,8 +5,9 @@
 <p>Для регистрации в качестве продавца необходимо подать заявку. Пожалуйста, внимательно заполните приведённую ниже форму.</p>
 <p>Обратите внимание, что информация, введённая Вами в некоторые поля, будет доступна всем посетителям Вашего магазина. Такие поля помечены как 'публикуемые'.</p>
 <p>Также обратите внимание, что изменение содержения некоторых полей невозможно без обращения в службу поддержки, поэтому, ещё раз просим Вас внимательно вводить информацию.</p>
+{% if this.error!=false %}<div class='err'>{{this.error}}</div>{% endif %}
 <form method='post'>
-    <label class="{{this.reg_form._err_fields['title']}}">Название магазина<input type="text" name="title" value="{{this.reg_form.title}}"><span>публикуемое</span></label>
+    <label class="{{this.reg_form._err_fields['title']}}">Название магазина<input type="text" name="title" value="{{this.reg_form.title}}"><span>публикуемое</span><div>{{this.err_msgs['title']}}</div></label>
 <label class="{{this.reg_form._err_fields['owner_form']}}" for='owner_form'>Форма собственности предприятия
         <select name='owner_form'>
 {% for k,v in this.owner_forms %}
@@ -21,13 +22,13 @@
     <label class="{{this.reg_form._err_fields['desc']}}">Описание магазина<input type="text" name="desc" value="{{this.reg_form.desc}}"><span>публикуемое</span></label>
     <label class="{{this.reg_form._err_fields['pub_phone']}}">Телефон для связи<input type="text" name="pub_phone" value="{{this.reg_form.pub_phone}}"><span>публикуемое</span></label>
     <label class="{{this.reg_form._err_fields['pub_address']}}">Адрес магазина или предприятия<input type="text" name="pub_address" value="{{this.reg_form.pub_address}}"><span>публикуемое</span></label>
-<div class="{{this.reg_form._err_fields['payment']}}">Доступные способы оплаты<span>публикуемое</span>
+<div class="{{this.reg_form._err_fields['payment']}}">Доступные способы оплаты<span>публикуемое</span><div>{{this.err_msgs['payment']}}</div>
     {% for k,v in this.payment %}
     <label><input type="checkbox" name="payment[{{k}}]" value="{{v}}"{% if this.reg_form.payment[k]==v %} checked{% endif %}>{{v}}</label>
     {% endfor %}
     добавить<span>перечислите через запятую</span><input type="text" name="payment[addition]" value="{{this.reg_form.payment['addition']}}">
 </div>
-<div class="{{this.reg_form._err_fields['shiping']}}">Доступные способы доставки<span>публикуемое</span>
+<div class="{{this.reg_form._err_fields['shiping']}}">Доступные способы доставки<span>публикуемое</span><div>{{this.err_msgs['shiping']}}</div>
     {% for k,v in this.shiping %}
     <label><input type="checkbox" name="shiping[{{k}}]" value='{{v}}'{% if this.reg_form.shiping[k]==v %} checked{% endif %}>{{v}}</label>
     {% endfor %}

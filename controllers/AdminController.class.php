@@ -21,7 +21,6 @@ class AdminController extends BaseController{
         $this->user=$db->getUserByMailFull($mail,PDO::FETCH_ASSOC);
         if(!($this->user))die('Пользователь не найден по mail '.$mail);
         $this->subjects=$db->getAllSubjects();
-        //$this->user_permitions=$db->getAllPermitionsByMail($mail);
         if($_SERVER['REQUEST_METHOD']=='POST'){
             if(isset($_POST['active'])){
                 //Активировати/Деактивировать
@@ -30,16 +29,7 @@ class AdminController extends BaseController{
                 $db->setActiveByMail($mail,$this->user['active']);
                 header('Location:'.$_SERVER['REQUESR_URI']);
                 exit;
-            }// elseif(isset($_POST['permitions'])){
-            //     //Установить права на Subject
-            //     if(!(isset($_POST['subject'])&&isset($_POST['code'])))die('Отсутствуют необходимые поля');
-            //     $code=Globals\clearUInt($_POST['code']);
-            //     $subj=Globals\clearStr($_POST['subject']);
-            //     if($code>7||!in_array($subj, $this->subjects))die('Неожиданные значения полей');
-            //     $db->setPermitions($this->user['id'],$subj,$code);
-            //     header('Location:'.$_SERVER['REQUESR_URI']);
-            //     exit;
-            // }
+            }
         }
         $fc->setContent($fc->render('admin/user_edit.twig.html',array(
             'this'=>$this
@@ -59,6 +49,22 @@ class AdminController extends BaseController{
             header('Location:'.$_SERVER['REQUESR_URI']);
         }
         $fc->setContent($fc->render('admin/user_search.twig.html',array(
+            'this'=>$this
+            ,)));
+    }
+    public function requestsMethod(){
+        // Отображает непогашенные заявки на отк-е Магазина
+        $fc=AppController::getInstance();
+        $this->requests=$this->_db->getAllSalerRequests();
+        $this->requsts_count=(int)count($this->requests);
+        if($_SERVER['REQUEST_METHOD']=='POST'){
+            //Одобрение заявки
+            if(!isset($_POST['request_id']))die('Нет ожидаемого поля');
+            $id=Globals\clearUInt($_POST['request_id']);
+            if($err=$request=$this->_db->confirmSalerRequest($id))die($err);
+            header('Location:'.$_SERVER['REQUESR_URI']);
+        }
+        $fc->setContent($fc->render('admin/requests.twig.html',array(
             'this'=>$this
             ,)));
     }

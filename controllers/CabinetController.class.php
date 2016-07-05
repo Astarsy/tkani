@@ -16,8 +16,8 @@ class CabinetController extends BaseController{
         else $msg='';
         $title=Msg::decode($title);
         $user=$this->_logger->getUser();
-        $user->add_reg_form=$this->_db->getUserAddRegFormCount($user);
-        print_r($user->add_reg_form);
+        $user->add_reg_form_time=$this->_db->getUserAddRegFormTime($user);
+print_r($user->add_reg_form_time);
         $cabinet=new Cabinet($user);
         $countries=$this->_db->getCountries();
         $fn=get_class($cabinet->getForm()).'.html';
@@ -33,7 +33,6 @@ class CabinetController extends BaseController{
     }
     public function reg_shopMethod(){
         //Отправляет заявку на регистрацию п-ля как Продавца
-//TODO: Т.к. данный Контроллер открыт для всех- закрыть проверкой этот метод
         $fc=AppController::getInstance();
         if(!($this->_db->getPermitions($this->_user->id,'CabinetController/reg_shopMethod')))die('Недостаточно прав');
         $this->reg_form=new RegShopForm(array(
@@ -42,11 +41,12 @@ class CabinetController extends BaseController{
         if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['regiser_saler'])){
             //Register button was pressed
             $this->reg_form->validate();
+            if(!empty($this->reg_form->err_msgs))$this->err_msgs=$this->reg_form->err_msgs;
             if(empty($this->reg_form->_err_fields)){
                 //Add a request to DB
-                $this->_db->processSalerRequest($this->_user,$this->reg_form);
-                //TODO: Send meail to Admin
-                //Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
+                $this->error=$this->_db->processSalerRequest($this->_user,$this->reg_form);
+//TODO: Send mail to Admin
+                if(false===$this->error)Msg::message('Ваша заявка успешно зарегистрирована. Менеджер свяжется с Вами в ближайшее время.');
             }
             //есть ошибки
         }

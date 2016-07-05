@@ -5,10 +5,10 @@
 	{% else %}<a href='/saler'>Мои магазины</a>
 	{% endif %}
 {% else %}
-	{% if user.add_reg_form!=true %}
+	{% if user.add_reg_form_time==false %}
 	<a href='/cabinet/reg_shop'>Открыть магазин</a>
 	{% else %}
-	<p>Ваша заявка на открытие магазина находится на рассмотрении.</p>
+	<p>Ваша заявка на открытие магазина от {{user.add_reg_form_time|date("d.m.Y")}} находится на рассмотрении.</p>
 	{% endif %}
 {% endif %}
 	<h4>Личные данные</h4>

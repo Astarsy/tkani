@@ -52,11 +52,20 @@ class DB{
         while($r=$stmt->fetch(PDO::FETCH_NUM))$res[(int)($r[0])]=$r[1];
         return $res;
     }
-    public function getUserAddRegFormCount($user){
-        //Возвращает кол-во заявок на открытие Магазина у данного П-ля
+    public function getAllSalerRequests(){
+        //Ret all saler requests as ASSOC_ARRAY
         try{
             $stmt=$this->_pdo->prepare(
-            "SELECT COUNT(id) FROM saler_requests WHERE user_id=:u_id");
+            "SELECT saler_requests.id,user_id,users.name,reg_time,add_payment,add_shiping FROM saler_requests LEFT JOIN users ON users.id=user_id");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }catch(PDOException $e){die($e);}
+    }
+    public function getUserAddRegFormTime($user){
+        //Возвращает время подачи заявки на открытие Магазина у данного П-ля или false
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT reg_time FROM saler_requests WHERE user_id=:u_id");
             $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
             $stmt->execute();
             return (int)($stmt->fetch(PDO::FETCH_NUM)[0]);
@@ -89,7 +98,7 @@ class DB{
         // Returms Object of user or false
         //Adds a shops fied, conteints count of shops
         try{
-            $stmt=$this->_pdo->prepare("SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active,(SELECT COUNT(id) FROM shops WHERE respons_person=(SELECT id FROM users WHERE mail=:mail))as shops FROM users WHERE mail=:mail");
+            $stmt=$this->_pdo->prepare("SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active,(SELECT COUNT(id) FROM shops WHERE respons_person=(SELECT id FROM users WHERE mail=:mail) AND open_time!=NULL)as shops FROM users WHERE mail=:mail");
             $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
             $stmt->execute();
         }catch(PDOException $e){
@@ -315,11 +324,25 @@ class DB{
         if($res=$stmt->fetch(PDO::FETCH_OBJ))return $res->user_slug;
         else return false;
     }
+    public function getShopByTitle($name){
+        //Возвращает в виде массива Магазин или false
+        try{
+            $stmt=$this->_pdo->prepare("SELECT id,slug,open_time,respons_person,title,logo,owner_form,descr,pub_phone,pub_address,addition_info FROM shops WHERE title=:n");
+            $stmt->bindParam(':n', $name, PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){
+            die($e);
+            return false;
+        }
+        $res=$stmt->fetch(PDO::FETCH_ASSOC);
+        if(empty($res))return false;
+        else return $res;
+    }
     public function processSalerRequest($user,$shop){
-        //Обрабатывает запрос на создание Магазина, в рамках одной транзакции:
+        //Обрабатывает запрос на создание Магазина, в рамках одной транзакции, Возвращает сообщение с причиной отказа или false
     //1-проверить отсутствие заявок;
-        if(0!==$this->getUserAddRegFormCount($user))die('Заявка подана.');
-        //die($shop->payment['addition']);
+        if(0!==$this->getUserAddRegFormTime($user))return 'Заявка подана.';
+        if(false!==$this->getShopByTitle($shop->title))return 'Магазин с таким именем уже есть.';
         if(isset($shop->payment['addition']))$p=$shop->payment['addition'];
         else $p=NULL;
         if(isset($shop->shiping['addition']))$s=$shop->shiping['addition'];
@@ -370,8 +393,30 @@ class DB{
             $this->_pdo->commit();
         }catch(PDOException $e){
             $this->_pdo->rollBack();
-            die($e);
+            return $e;
         }
+        return false;
+    }
+    public function confirmSalerRequest($r_id){
+        //Одобрение заявки на открытие магазина.
+        //Возвращает текст ошибки/false
+        try{
+            $this->_pdo->beginTransaction();
+            //Открыть Магазин
+            $stmt=$this->_pdo->prepare("UPDATE shops SET open_time=:t WHERE respons_person=(SELECT user_id FROM saler_requests WHERE id=:r_id)");
+            $stmt->bindParam(':t',(time()),PDO::PARAM_INT);
+            $stmt->bindParam(':r_id',$r_id,PDO::PARAM_INT);
+            $stmt->execute();
+            //Удалить заявку
+            $stmt=$this->_pdo->prepare("DELETE FROM saler_requests WHERE id=:r_id");
+            $stmt->bindParam(':r_id',$r_id,PDO::PARAM_INT);
+            $stmt->execute();
+            $this->_pdo->commit();
+        }catch(PDOException $e){
+            $this->_pdo->rollBack();
+            return $e;
+        }
+        return false;
     }
     public function createTestDB(){
         // Creates a test database

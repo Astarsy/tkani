@@ -1,0 +1,27 @@
+{% extends"admin/base.twig.html" %}
+{% block content %}
+<h3>Запросы на открытие магазина.</h3>
+<p>Всего заявок {{this.requsts_count}}</p>
+<table>
+<tr>
+    <th>№</th>
+    <th>id заявки</th>
+    <th>подал</th>
+    <th>дата подачи</th>
+    <th>доп. способы оплаты</th>
+    <th>доп. способы доставки</th>    
+    <th></th>
+</tr>
+{% for req in this.requests %}
+<tr>
+    <td>{{loop.index}}</td>
+    <td>{{req.id}}</td>
+    <td>{{req.name}}</td>
+    <td>{{req. reg_time|date("d.m.Y")}}</td>
+    <td>{{req.add_payment}}</td>
+    <td>{{req. add_shiping}}</td>
+    <td><form method='post'><button type='submit' name='request_id' value='{{req.id}}'>одобрить</button></form></td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
