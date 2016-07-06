@@ -68,4 +68,24 @@ class AdminController extends BaseController{
             'this'=>$this
             ,)));
     }
+    public function edit_requestMethod(){
+        //Подробно показывает/редактирует/одобряет одну Заявку
+        $fc=AppController::getInstance();
+        $args=$fc->getArgsNum();
+        if(!isset($args[0]))die('Отсутсвует необходимый параметр');
+        $id=Globals\clearUInt($args[0]);
+        $this->request=$this->_db->getSalerRequestById($id);
+        $this->user=$this->_db->getUserByIdFull($this->request['user_id']);
+        $this->shop=$this->_db->getShopOfUser($this->request['user_id']);
+        if($_SERVER['REQUEST_METHOD']=='POST'){
+            //Одобрение заявки
+            if(!(isset($_POST['confirm'])&&isset($_POST['save'])))die('Нет ожидаемого поля');
+            if($err=$request=$this->_db->confirmSalerRequest($id))die($err);
+            header('Location:'.$_SERVER['REQUESR_URI']);
+        }
+        var_dump($this->user);
+        $fc->setContent($fc->render('admin/edit_request.twig.html',array(
+            'this'=>$this
+            ,)));
+    }
 }

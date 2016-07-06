@@ -52,6 +52,16 @@ class DB{
         while($r=$stmt->fetch(PDO::FETCH_NUM))$res[(int)($r[0])]=$r[1];
         return $res;
     }
+    public function getSalerRequestById($id){
+        //Ret a saler request as ASSOC_ARRAY
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT id,user_id,reg_time,add_payment,add_shiping FROM saler_requests WHERE id=:id");
+            $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }catch(PDOException $e){die($e);}
+    }
     public function getAllSalerRequests(){
         //Ret all saler requests as ASSOC_ARRAY
         try{
@@ -71,29 +81,26 @@ class DB{
             return (int)($stmt->fetch(PDO::FETCH_NUM)[0]);
         }catch(PDOException $e){die($e);}
     }
-    public function getShopOfUser($u_id,$s_id){
+    public function getShopOfUser($u_id){
         //Returns the shop of the user as an array or false
         try{
-            $stmt=$this->_pdo->prepare("SELECT id,slug,title,logo,respons_person FROM shops WHERE respons_person=:u_id AND id=:s_id");
+            $stmt=$this->_pdo->prepare("SELECT id,slug,open_time,respons_person,title,logo,(SELECT name FROM owner_forms WHERE id=shops.owner_form) as owner_form,descr,pub_phone,pub_address,addition_info FROM shops WHERE respons_person=:u_id");
             $stmt->bindParam(':u_id',$u_id,PDO::PARAM_INT);
-            $stmt->bindParam(':s_id',$s_id,PDO::PARAM_INT);
             $stmt->execute();
-        }catch(PDOException $e){
-            return false;
-        }
+        }catch(PDOException $e){die($e);}
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function getShopsOfUserById($u_id){
-        //Returns an array of arrays of shops
-        try{
-            $stmt=$this->_pdo->prepare("SELECT id,slug,title,logo,respons_person FROM shops WHERE respons_person=:u_id");
-            $stmt->bindParam(':u_id',$u_id,PDO::PARAM_INT);
-            $stmt->execute();
-        }catch(PDOException $e){
-            die($e);
-        }
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    // public function getShopsOfUserById($u_id){
+    //     //Returns an array of arrays of shops
+    //     try{
+    //         $stmt=$this->_pdo->prepare("SELECT id,slug,title,logo,respons_person FROM shops WHERE respons_person=:u_id");
+    //         $stmt->bindParam(':u_id',$u_id,PDO::PARAM_INT);
+    //         $stmt->execute();
+    //     }catch(PDOException $e){
+    //         die($e);
+    //     }
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
     public function getUserByMail($mail,$fetch=PDO::FETCH_OBJ){
         // Returms Object of user or false
         //Adds a shops fied, conteints count of shops
@@ -119,6 +126,16 @@ class DB{
             return false;
         }
         return $stmt->fetch($fetch);
+    }
+    public function getUserByIdFull($id){
+        // Returms a user as Assoc array
+        //дополнительно заполняет поля внешних ключей
+        try{
+            $stmt=$this->_pdo->prepare("SELECT users.id,users.slug,users.name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,countries.name as country,job_title,active FROM users LEFT JOIN countries ON countries.id=users.country WHERE users.id=:id");
+            $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }catch(PDOException $e){die($e);}
     }
     protected function getSubjPermByName($subj){
         //Returns a permition code for subject

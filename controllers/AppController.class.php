@@ -2,7 +2,8 @@
 class AppController{
 	static protected $_instance;
 	protected $_content,$_controller,$_method;
-	protected $_args=array();
+	protected $_argsAssocArr=array();
+    protected $_argsNumArr=array();
 
 	static public function getInstance(){
 		if(!(self::$_instance instanceof self))self::$_instance=new self();
@@ -30,6 +31,7 @@ class AppController{
             $this->_method=$rc->getMethod('Method');
 		}
 		$this->_controller=$rc->newInstance();
+        $this->_argsNumArr=$strs;
         $ks=$vs=array();
         if(!empty($strs[0])){
             for($i=0,$c=count($strs);$i<$c;$i++){
@@ -40,7 +42,7 @@ class AppController{
             $vs[]=$strs[$i];
             }
             if(count($ks)>count($vs))$vs[]='';
-            $this->_args=array_combine($ks,$vs);
+            $this->_argsAssocArr=array_combine($ks,$vs);
         }	    
 	}
 
@@ -58,8 +60,10 @@ class AppController{
 	public function setContent($c){
 		$this->_content=$c;
 	}
-
     public function getArgs(){
-        return $this->_args;
+        return $this->_argsAssocArr;
+    }
+    public function getArgsNum(){
+        return $this->_argsNumArr;
     }
 }

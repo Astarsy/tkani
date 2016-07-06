@@ -1,0 +1,73 @@
+{% extends"admin/base.twig.html" %}
+{% block content %}
+<h3>Рассмотрение запроса на открытие магазина.</h3>
+<table>
+<caption>Данные заявки</caption>
+<tr>
+    <th>id</th>
+    <th>дата подачи</th>
+    <th>доп. оплата</th>
+    <th>доп. доставка</th>
+</tr>
+<tr>
+    <td>{{this.request.id}}</td>
+    <td>{{this.request.reg_time|date("d.m.Y")}}</td>
+    <td>{{this.request.add_payment}}</td>
+    <td>{{this.request.add_shiping}}</td>
+</tr>
+</table>
+<table>
+<caption>Данные пользователя</caption>
+<tr>
+    <th>Имя</th>
+    <th>Пол</th>
+    <th>E-mail</th>
+    <th>Alt-mail</th>
+    <th>Мобильный тел.</th>
+    <th>Телефон</th>
+    <th>Факс</th>
+    <th>Адрес</th>
+    <th>Должность</th>
+    <th></th>
+</tr>
+<tr>
+    <td>{{this.user.name}}</td>
+    <td>{% if 0==this.user.gender %}муж.{% else %}жен.{% endif %}</td>
+    <td>{{this.user.mail}}</td>
+    <td>{{this.user.alt_mail}}</td>
+    <td>{{this.user.mobile}}</td>
+    <td>{{this.user.tel}}</td>
+    <td>{{this.user.fax}}</td>
+    <td>{{this.user.zip}}, {{this.user.country}}, {{this.user.city}}, {{this.user.street}}</td>
+    <td>{{this.user.job_title}}</td>
+    <td>{% if 1==this.user.active %}активен{% else %}не активен{% endif %}</td>
+</tr>
+</table>
+<table>
+<caption>Данные магазина</caption>
+<tr>
+    <th>Название</th>
+    <th>Логотип</th>
+    <th>Форма соб.</th>
+    <th>Описание</th>
+    <th>Телефон</th>
+    <th>Адрес</th>
+    <th>Доп. ин-я</th>
+    <th>Открытие</th>
+</tr>
+<tr>
+    <td>{{this.shop.title}}</td>
+    <td>{{this.shop.logo}}</td>
+    <td>{{this.shop.owner_form}}</td>
+    <td>{{this.shop.descr}}</td>
+    <td>{{this.shop.pub_phone}}</td>
+    <td>{{this.shop.pub_address}}</td>
+    <td>{{this.shop.addition_info}}</td>
+    <td>{% if false!=this.shop.open_time %}{{this.shop.open_time|date("d.m.Y")}}{% else %}закрыт{% endif %}</td>
+</tr>
+</table>
+<from method='post'>
+    <button type='submit' name='confirm'>Сохранить и одобрить</button>
+    <button type='submit' name='save'>Сохранить не одобряя</button>
+</from>
+{% endblock %}
