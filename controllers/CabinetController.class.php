@@ -17,7 +17,6 @@ class CabinetController extends BaseController{
         $title=Msg::decode($title);
         $user=$this->_logger->getUser();
         $user->add_reg_form_time=$this->_db->getUserSalerRequestTime($user);
-print_r($user->add_reg_form_time);
         $cabinet=new Cabinet($user);
         $countries=$this->_db->getCountries();
         $fn=get_class($cabinet->getForm()).'.html';
@@ -56,6 +55,26 @@ print_r($user->add_reg_form_time);
         $fc->setContent($fc->render('shop_register.twig.html',array(
             'this'=>$this,
             )));
+    }
+    public function shopMethod(){
+        //Редактирует Магазин Продавца
+        $fc=AppController::getInstance();
+        $args=$fc->getArgsNum();
+        if(!isset($args[0]))header('Location:/error');
+        $s_id=(int)$args[0];        
+        if(!($this->shop=new ShopForm($this->_user->id,$s_id)))header('Location:/error');
+        $fc->setContent($fc->render('saler/edit.twig.html',array('this'=>$this)));
+    }
+    public function shopsMethod(){
+        //Выводит все магазины Продавца
+        if($this->_user->shops_count==0){
+            header('Location:/error');
+            exit;
+        }
+        $fc=AppController::getInstance();
+        //This is a Saler
+        $this->shops=$this->_db->getShopsOfUser($this->_user);
+        $fc->setContent($fc->render('saler/shops.twig.html',array('this'=>$this)));
     }
     public function restoreMethod(){
         //ссылка с кодом подтверждения восстановления пароля

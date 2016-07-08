@@ -42,6 +42,7 @@ CREATE TABLE shipings(
 CREATE TABLE shops(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				slug VARCHAR(20) NOT NULL UNIQUE,
+				create_time INT NOT NULL,
 				open_time INT NULL,
 				respons_person INT NOT NULL,
 				title VARCHAR(80) NOT NULL UNIQUE,

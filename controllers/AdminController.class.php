@@ -76,11 +76,13 @@ class AdminController extends BaseController{
         $id=Globals\clearUInt($args[0]);
         if(!$this->request=$this->_db->getSalerRequestById($id))die('Заявка не найдена');
         if(!$this->user=$this->_db->getUserByIdFull($this->request['user_id']))die('Пользователь нен найден');
-        if(!$this->shop=$this->_db->getShopOfUser($this->request['user_id']))die('Магазин не найден');;
+        if(!$this->shop=$this->_db->getUnactiveShopOfUser($this->user))die('Магазин не найден');
         if($_SERVER['REQUEST_METHOD']=='POST'){
             if(isset($_POST['confirm'])){
                 //Одобрение заявки
                 if($err=$this->_db->confirmSalerRequest($id))die($err);
+                header('Location:/admin/requests');
+                exit;
 
             }elseif(isset($_POST['reject'])&&isset($_POST['reject_reason'])){
                 //Отклонение заявки

@@ -81,11 +81,30 @@ class DB{
             return (int)($stmt->fetch(PDO::FETCH_NUM)[0]);
         }catch(PDOException $e){die($e);}
     }
-    public function getShopOfUser($u_id){
+    public function getShopsOfUser($user){
+        //Возвращяет массив Магазинов П-ля как массивы
+        try{
+            $stmt=$this->_pdo->prepare("SELECT id,slug,open_time,respons_person,title,logo,owner_form,descr,pub_phone,pub_address,addition_info FROM shops WHERE respons_person=:u_id");
+            $stmt->bindParam(':u_id', $user->id, PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getShopOfUser($s_id,$user){
         //Returns the shop of the user as an array or false
         try{
-            $stmt=$this->_pdo->prepare("SELECT id,slug,open_time,respons_person,title,logo,(SELECT name FROM owner_forms WHERE id=shops.owner_form) as owner_form,descr,pub_phone,pub_address,addition_info FROM shops WHERE respons_person=:u_id");
-            $stmt->bindParam(':u_id',$u_id,PDO::PARAM_INT);
+            $stmt=$this->_pdo->prepare("SELECT id,slug,open_time,respons_person,title,logo,(SELECT name FROM owner_forms WHERE id=shops.owner_form) as owner_form,descr,pub_phone,pub_address,addition_info FROM shops WHERE respons_person=:u_id AND id=:s_id");
+            $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
+            $stmt->bindParam(':s_id',$s_id,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function getUnactiveShopOfUser($user){
+        //Возвращает неактивный магазин как массив
+        try{
+            $stmt=$this->_pdo->prepare("SELECT id,slug,open_time,respons_person,title,logo,(SELECT name FROM owner_forms WHERE id=shops.owner_form) as owner_form,descr,pub_phone,pub_address,addition_info FROM shops WHERE respons_person=:u_id AND open_time IS NULL");
+            $stmt->bindParam(':u_id',$user['id'],PDO::PARAM_INT);
             $stmt->execute();
         }catch(PDOException $e){die($e);}
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -105,7 +124,7 @@ class DB{
         // Returms Object of user or false
         //Adds a shops fied, conteints count of shops
         try{
-            $stmt=$this->_pdo->prepare("SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active,(SELECT COUNT(id) FROM shops WHERE respons_person=(SELECT id FROM users WHERE mail=:mail) AND open_time!=NULL)as shops FROM users WHERE mail=:mail");
+            $stmt=$this->_pdo->prepare("SELECT id,slug,name,mail,alt_mail,gender,mobile,tel,fax,zip,street,city,country,job_title,active,(SELECT COUNT(id) FROM shops WHERE respons_person IN(SELECT id FROM users WHERE mail=:mail) AND open_time IS NOT NULL)as shops_count FROM users WHERE mail=:mail");
             $stmt->bindParam(':mail',$mail,PDO::PARAM_STR);
             $stmt->execute();
         }catch(PDOException $e){
@@ -376,10 +395,12 @@ class DB{
             $stmt->execute();
 
     //3-создать неактивный магазин;
-            $stmt=$this->_pdo->prepare("INSERT INTO shops(slug,open_time,respons_person,title,logo,owner_form,descr,pub_phone,pub_address,addition_info)
-            VALUES(:sl,NULL,:rp,:t,NULL,(SELECT id FROM owner_forms WHERE name=:of),:d,:pp,:pa,:ai)");
-            $sl='sh_'.time();
+            $stmt=$this->_pdo->prepare("INSERT INTO shops(slug,create_time,open_time,respons_person,title,logo,owner_form,descr,pub_phone,pub_address,addition_info)
+            VALUES(:sl,:ct,NULL,:rp,:t,NULL,(SELECT id FROM owner_forms WHERE name=:of),:d,:pp,:pa,:ai)");
+            $time=time();
+            $sl='sh_'.$time;
             $stmt->bindParam(':sl',$sl,PDO::PARAM_STR);
+            $stmt->bindParam(':ct',$time,PDO::PARAM_INT);
             $stmt->bindParam(':rp',$user->id,PDO::PARAM_STR);
             $stmt->bindParam(':t',$shop->title,PDO::PARAM_STR);
             $stmt->bindParam(':of',$shop->owner_form,PDO::PARAM_STR);
@@ -446,9 +467,9 @@ class DB{
             $stmt->bindParam(':r_id',$r_id,PDO::PARAM_INT);
             $stmt->execute();
             //Удалить заявку
-            // $stmt=$this->_pdo->prepare("DELETE FROM saler_requests WHERE id=:r_id");
-            // $stmt->bindParam(':r_id',$r_id,PDO::PARAM_INT);
-            // $stmt->execute();
+            $stmt=$this->_pdo->prepare("DELETE FROM saler_requests WHERE id=:r_id");
+            $stmt->bindParam(':r_id',$r_id,PDO::PARAM_INT);
+            $stmt->execute();
             $this->_pdo->commit();
         }catch(PDOException $e){
             $this->_pdo->rollBack();
