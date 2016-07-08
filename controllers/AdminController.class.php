@@ -74,16 +74,23 @@ class AdminController extends BaseController{
         $args=$fc->getArgsNum();
         if(!isset($args[0]))die('Отсутсвует необходимый параметр');
         $id=Globals\clearUInt($args[0]);
-        $this->request=$this->_db->getSalerRequestById($id);
-        $this->user=$this->_db->getUserByIdFull($this->request['user_id']);
-        $this->shop=$this->_db->getShopOfUser($this->request['user_id']);
+        if(!$this->request=$this->_db->getSalerRequestById($id))die('Заявка не найдена');
+        if(!$this->user=$this->_db->getUserByIdFull($this->request['user_id']))die('Пользователь нен найден');
+        if(!$this->shop=$this->_db->getShopOfUser($this->request['user_id']))die('Магазин не найден');;
         if($_SERVER['REQUEST_METHOD']=='POST'){
-            //Одобрение заявки
-            if(!(isset($_POST['confirm'])&&isset($_POST['save'])))die('Нет ожидаемого поля');
-            if($err=$request=$this->_db->confirmSalerRequest($id))die($err);
+            if(isset($_POST['confirm'])){
+                //Одобрение заявки
+                if($err=$this->_db->confirmSalerRequest($id))die($err);
+
+            }elseif(isset($_POST['reject'])&&isset($_POST['reject_reason'])){
+                //Отклонение заявки
+                $reason=Globals\clearStr($_POST['reject_reason']);
+                if($err=$this->_db->rejectSalerRequestById($id,$reason))die($err);
+            }
             header('Location:'.$_SERVER['REQUESR_URI']);
+            exit;
         }
-        var_dump($this->user);
+        //var_dump($this->user);
         $fc->setContent($fc->render('admin/edit_request.twig.html',array(
             'this'=>$this
             ,)));

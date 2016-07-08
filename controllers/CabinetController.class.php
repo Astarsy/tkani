@@ -16,7 +16,7 @@ class CabinetController extends BaseController{
         else $msg='';
         $title=Msg::decode($title);
         $user=$this->_logger->getUser();
-        $user->add_reg_form_time=$this->_db->getUserAddRegFormTime($user);
+        $user->add_reg_form_time=$this->_db->getUserSalerRequestTime($user);
 print_r($user->add_reg_form_time);
         $cabinet=new Cabinet($user);
         $countries=$this->_db->getCountries();

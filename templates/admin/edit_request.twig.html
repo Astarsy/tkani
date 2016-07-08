@@ -8,12 +8,14 @@
     <th>дата подачи</th>
     <th>доп. оплата</th>
     <th>доп. доставка</th>
+    <th>Состояние</th>
 </tr>
 <tr>
     <td>{{this.request.id}}</td>
     <td>{{this.request.reg_time|date("d.m.Y")}}</td>
     <td>{{this.request.add_payment}}</td>
     <td>{{this.request.add_shiping}}</td>
+    <td>{% if this.request.reject_reason %}Отклонена по причине: {{this.request.reject_reason}}{% else %}не рассмотрена{% endif %}</td>
 </tr>
 </table>
 <table>
@@ -43,8 +45,9 @@
     <td>{% if 1==this.user.active %}активен{% else %}не активен{% endif %}</td>
 </tr>
 </table>
+{% if not this.request.reject_reason %}
 <table>
-<caption>Данные магазина</caption>
+<caption>Данные проекта магазина</caption>
 <tr>
     <th>Название</th>
     <th>Логотип</th>
@@ -53,7 +56,7 @@
     <th>Телефон</th>
     <th>Адрес</th>
     <th>Доп. ин-я</th>
-    <th>Открытие</th>
+    <th>Состояние</th>
 </tr>
 <tr>
     <td>{{this.shop.title}}</td>
@@ -66,8 +69,8 @@
     <td>{% if false!=this.shop.open_time %}{{this.shop.open_time|date("d.m.Y")}}{% else %}закрыт{% endif %}</td>
 </tr>
 </table>
-<from method='post'>
-    <button type='submit' name='confirm'>Сохранить и одобрить</button>
-    <button type='submit' name='save'>Сохранить не одобряя</button>
-</from>
+{% endif %}
+<form method='post'>{% if not this.request.reject_reason %}
+    <button type='submit' name='confirm'>Oдобрить</button><label>Отклонить по причине<input type="text" name="reject_reason"><button type='submit' name='reject'>Отклонить</button>{% endif %}</label>
+</form>
 {% endblock %}

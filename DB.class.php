@@ -56,7 +56,7 @@ class DB{
         //Ret a saler request as ASSOC_ARRAY
         try{
             $stmt=$this->_pdo->prepare(
-            "SELECT id,user_id,reg_time,add_payment,add_shiping FROM saler_requests WHERE id=:id");
+            "SELECT id,user_id,reg_time,add_payment,add_shiping,reject_reason FROM saler_requests WHERE id=:id");
             $stmt->bindParam(':id',$id,PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -66,12 +66,12 @@ class DB{
         //Ret all saler requests as ASSOC_ARRAY
         try{
             $stmt=$this->_pdo->prepare(
-            "SELECT saler_requests.id,user_id,users.name,reg_time,add_payment,add_shiping FROM saler_requests LEFT JOIN users ON users.id=user_id");
+            "SELECT saler_requests.id,user_id,users.name,reg_time,add_payment,add_shiping,reject_reason FROM saler_requests LEFT JOIN users ON users.id=user_id");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }catch(PDOException $e){die($e);}
     }
-    public function getUserAddRegFormTime($user){
+    public function getUserSalerRequestTime($user){
         //Возвращает время подачи заявки на открытие Магазина у данного П-ля или false
         try{
             $stmt=$this->_pdo->prepare(
@@ -358,7 +358,7 @@ class DB{
     public function processSalerRequest($user,$shop){
         //Обрабатывает запрос на создание Магазина, в рамках одной транзакции, Возвращает сообщение с причиной отказа или false
     //1-проверить отсутствие заявок;
-        if(0!==$this->getUserAddRegFormTime($user))return 'Заявка подана.';
+        if(0!==$this->getUserSalerRequestTime($user))return 'Заявка подана.';
         if(false!==$this->getShopByTitle($shop->title))return 'Магазин с таким именем уже есть.';
         if(isset($shop->payment['addition']))$p=$shop->payment['addition'];
         else $p=NULL;
@@ -414,6 +414,27 @@ class DB{
         }
         return false;
     }
+    public function rejectSalerRequestById($id,$reason){
+        //Отклоняет заявку по причине, Удаляет Магазин
+        //Возвращает текст ошибки/false
+        try{
+            //Пометить заявку Указанием причины отклонения
+            $this->_pdo->beginTransaction();
+            $stmt=$this->_pdo->prepare("UPDATE saler_requests SET reject_reason=:reason WHERE id=:id");
+            $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+            $stmt->bindParam(':reason',$reason,PDO::PARAM_STR);
+            $stmt->execute();
+            //Удалить Магазин
+            $stmt=$this->_pdo->prepare("DELETE FROM shops WHERE respons_person=(SELECT user_id FROM saler_requests WHERE id=:id)");
+            $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+            $stmt->execute();
+            $this->_pdo->commit();
+        }catch(PDOException $e){
+            $this->_pdo->rollBack();
+            return $e;
+        }
+        return false;
+    }
     public function confirmSalerRequest($r_id){
         //Одобрение заявки на открытие магазина.
         //Возвращает текст ошибки/false
@@ -425,9 +446,9 @@ class DB{
             $stmt->bindParam(':r_id',$r_id,PDO::PARAM_INT);
             $stmt->execute();
             //Удалить заявку
-            $stmt=$this->_pdo->prepare("DELETE FROM saler_requests WHERE id=:r_id");
-            $stmt->bindParam(':r_id',$r_id,PDO::PARAM_INT);
-            $stmt->execute();
+            // $stmt=$this->_pdo->prepare("DELETE FROM saler_requests WHERE id=:r_id");
+            // $stmt->bindParam(':r_id',$r_id,PDO::PARAM_INT);
+            // $stmt->execute();
             $this->_pdo->commit();
         }catch(PDOException $e){
             $this->_pdo->rollBack();

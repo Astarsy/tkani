@@ -58,7 +58,7 @@ CREATE TABLE payments_of_shops(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				shop_id INT NOT NULL,
 				payment_id INT NOT NULL,
-				FOREIGN KEY(shop_id) REFERENCES shops(id),
+				FOREIGN KEY(shop_id) REFERENCES shops(id) ON DELETE CASCADE,
 				FOREIGN KEY(payment_id) REFERENCES payments(id)
 				);
 CREATE TABLE shipings_of_shops(
@@ -66,7 +66,7 @@ CREATE TABLE shipings_of_shops(
 				shiping_id INT NOT NULL,
 				price INT NULL,
 				PRIMARY KEY (shop_id,shiping_id),
-				FOREIGN KEY(shop_id) REFERENCES shops(id),
+				FOREIGN KEY(shop_id) REFERENCES shops(id) ON DELETE CASCADE,
 				FOREIGN KEY(shiping_id) REFERENCES shipings(id)
 				);
 CREATE TABLE admins(
@@ -93,6 +93,7 @@ CREATE TABLE saler_requests(
 				reg_time INT NOT NULL,
 				add_payment VARCHAR(400) NULL,
 				add_shiping VARCHAR(400) NULL,
+				reject_reason VARCHAR(400) NULL,
 				FOREIGN KEY(user_id) REFERENCES users(id)
 				);
 
