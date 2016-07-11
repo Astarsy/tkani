@@ -62,7 +62,24 @@ class CabinetController extends BaseController{
         $args=$fc->getArgsNum();
         if(!isset($args[0]))header('Location:/error');
         $s_id=(int)$args[0];        
-        if(!($this->shop=new ShopForm($this->_user->id,$s_id)))header('Location:/error');
+        if(!($this->shop=new EditShopForm(array('owner_form'=>true,'desc'=>false,'pub_phone'=>true,'pub_address'=>true,'payment'=>true,'shiping'=>true,'addition_info'=>false,),$this->_user,$s_id)))header('Location:/error');
+        if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['save'])){
+            //Save button was pressed
+            $this->shop->validate();
+            if(!empty($this->shop->err_msgs))$this->err_msgs=$this->shop->err_msgs;
+            if(empty($this->shop->_err_fields)){
+                //Save a form fields to DB
+                $this->error=$this->_db->saveShop($this->_user,$this->shop);
+                if(false===$this->error){
+                    //TODO: header('Location:'.$_SERVER['REQUEST_URI']);
+                    echo'Данные успешно сохранены';
+                }
+            }
+        }
+        $this->shiping=$this->_db->getAllShipingNames();
+        $this->payment=$this->_db->getAllPaymentNames();
+        $this->owner_forms=$this->_db->getAllOwnerFormNames();
+        //var_dump($this->shiping);
         $fc->setContent($fc->render('saler/edit.twig.html',array('this'=>$this)));
     }
     public function shopsMethod(){

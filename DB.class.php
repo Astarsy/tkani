@@ -90,8 +90,30 @@ class DB{
         }catch(PDOException $e){die($e);}
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getShipingsOfShop($s_id){
+        //Returns all Payments of the shop as numeric array
+        try{
+            $stmt=$this->_pdo->prepare("SELECT name FROM shipings WHERE id IN(SELECT shiping_id FROM shipings_of_shops WHERE shop_id=:s_id)");
+            $stmt->bindParam(':s_id',$s_id,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $arr=array();
+        while($r=$stmt->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
+        return $arr;
+    }
+    public function getPaymentsOfShop($s_id){
+        //Returns all Payments of the shop as numeric array
+        try{
+            $stmt=$this->_pdo->prepare("SELECT name FROM payments WHERE id IN(SELECT payment_id FROM payments_of_shops WHERE shop_id=:s_id)");
+            $stmt->bindParam(':s_id',$s_id,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $arr=array();
+        while($r=$stmt->fetch(PDO::FETCH_NUM)[0])$arr[]=$r;
+        return $arr;
+    }
     public function getShopOfUser($s_id,$user){
-        //Returns the shop of the user as an array or false
+        //Returns the shop of the user as an array
         try{
             $stmt=$this->_pdo->prepare("SELECT id,slug,open_time,respons_person,title,logo,(SELECT name FROM owner_forms WHERE id=shops.owner_form) as owner_form,descr,pub_phone,pub_address,addition_info FROM shops WHERE respons_person=:u_id AND id=:s_id");
             $stmt->bindParam(':u_id',$user->id,PDO::PARAM_INT);
@@ -373,6 +395,56 @@ class DB{
         $res=$stmt->fetch(PDO::FETCH_ASSOC);
         if(empty($res))return false;
         else return $res;
+    }
+    public function saveShop($user,$shop){
+        //Saves a changes of the shop within the one transaction
+        try{
+            $this->_pdo->beginTransaction();
+    // - update the shop table
+            $stmt=$this->_pdo->prepare("UPDATE shops SET title=:t,owner_form=(SELECT id FROM owner_forms WHERE name=:of),descr=:d,pub_phone=:pp,pub_address=:pa,addition_info=:ai WHERE id=:id");
+            $stmt->bindParam(':id',$shop->id,PDO::PARAM_INT);
+            $stmt->bindParam(':t',$shop->title,PDO::PARAM_STR);
+            $stmt->bindParam(':of',$shop->owner_form,PDO::PARAM_STR);
+            $stmt->bindParam(':d',$shop->desc,PDO::PARAM_STR);
+            $stmt->bindParam(':pp',$shop->pub_phone,PDO::PARAM_STR);
+            $stmt->bindParam(':pa',$shop->pub_address,PDO::PARAM_STR);
+            $stmt->bindParam(':ai',$shop->addition_info,PDO::PARAM_STR);
+            $stmt->execute();
+
+    // - update the payments_of_shops table
+            $arr=array();
+            foreach($shop->payment as $pm)$arr[]=$this->_pdo->quote($pm);
+            $p_ns=implode(',',$arr);
+    //  - delete payments
+            $stmt=$this->_pdo->prepare("DELETE FROM payments_of_shops WHERE shop_id=:id");
+            $stmt->bindParam(':id',$shop->id,PDO::PARAM_INT);
+            $stmt->execute();
+    //  - insert payments
+            $stmt=$this->_pdo->prepare("INSERT INTO payments_of_shops(shop_id,payment_id)
+            SELECT :id,id FROM payments WHERE name IN($p_ns)");
+            $stmt->bindParam(':id',$shop->id,PDO::PARAM_INT);
+            $stmt->execute();
+
+    // - update the shipings_of_shops table
+            $arr=array();
+            foreach($shop->shiping as $sm)$arr[]=$this->_pdo->quote($sm);
+            $s_ns=implode(',',$arr);
+    //  - delete shipings
+            $stmt=$this->_pdo->prepare("DELETE FROM shipings_of_shops WHERE shop_id=:id");
+            $stmt->bindParam(':id',$shop->id,PDO::PARAM_INT);
+            $stmt->execute();
+    //  - insert shipings
+            $stmt=$this->_pdo->prepare("INSERT INTO shipings_of_shops(shop_id,shiping_id)
+            SELECT :id,id FROM shipings WHERE name IN($s_ns)");
+            $stmt->bindParam(':id',$shop->id,PDO::PARAM_STR);
+            $stmt->execute();
+
+            $this->_pdo->commit();
+        }catch(PDOException $e){
+            $this->_pdo->rollBack();
+            die($e);
+        }
+        return false;
     }
     public function processSalerRequest($user,$shop){
         //Обрабатывает запрос на создание Магазина, в рамках одной транзакции, Возвращает сообщение с причиной отказа или false

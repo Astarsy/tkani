@@ -2,7 +2,39 @@
 {% block title %}Редактирование магазина{% endblock %}
 {% block content %}
 <h2>Редактирование магазина</h2>
-{% for k,v in this.shop.shop %}
-    <div>{{k}}-{{v}}</div>
+<label class="{{this.shop._err_fields['title']}}">Название магазина {{this.shop.title}}
+</label>
+<form method='post'>
+<label class="{{this.shop._err_fields['owner_form']}}" for='owner_form'>Форма собственности предприятия
+        <select name='owner_form'>
+{% for k,v in this.owner_forms %}
+{% if this.shop.owner_form==v %}
+    {% set ch='selected' %}
+{% else %}
+    {% set ch='' %}
+{% endif %}
+            <option {{ch}}>{{v}}</option>
 {% endfor %}
+        </select></label><label class="{{this.shop._err_fields['desc']}}">Описание магазина<input type="text" name="desc" value="{{this.shop.desc}}"><span>публикуемое</span></label>
+    <label class="{{this.shop._err_fields['pub_phone']}}">Телефон для связи<input type="text" name="pub_phone" value="{{this.shop.pub_phone}}"><span>публикуемое</span></label>
+    <label class="{{this.shop._err_fields['pub_address']}}">Адрес магазина или предприятия<input type="text" name="pub_address" value="{{this.shop.pub_address}}"><span>публикуемое</span></label>
+<div class="{{this.shop._err_fields['payment']}}">Доступные способы оплаты<span>публикуемое</span><div>{{this.err_msgs['payment']}}</div>
+{% for k,v in this.payment %}
+    <label><input type="checkbox" name="payment[{{k}}]" value="{{v}}"
+    {% for spk,spv in this.shop.payment %}
+    {% if spv==v %} checked{% endif %}
+    {% endfor %}>{{v}}</label>
+{% endfor %}<input type="hidden" name="payment[addition]">
+</div>
+<div class="{{this.shop._err_fields['shiping']}}">Доступные способы доставки<span>публикуемое</span><div>{{this.err_msgs['shiping']}}</div>
+{% for k,v in this.shiping %}
+    <label><input type="checkbox" name="shiping[{{k}}]" value='{{v}}'
+    {% for ssk,ssv in this.shop.shiping %}
+    {% if ssv==v %} checked{% endif %}
+    {% endfor %}>{{v}}</label>
+{% endfor %}<input type="hidden" name="shiping[addition]">
+</div>
+<label class="{{this.shop._err_fields['addition_info']}}">Дополнительная информация<input type="text" name="addition_info" value="{{this.shop.addition_info}}"><span>публикуемое</span></label>
+    <button type='submit' name='save'>Сохранить изменения</button>
+</form>
 {% endblock %}

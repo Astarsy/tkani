@@ -13,7 +13,7 @@ class RegShopForm{
         //проверить, что получены все поля и проверить пoля
         $rc=new ReflectionClass($this);        
         foreach($this->_used_fields as $f_n=>$v){
-            if(!isset($_POST[$f_n]))die($f_n);//exit(header('Location:/error'));
+            if(!isset($_POST[$f_n]))die('не найдено поле '.$f_n);//exit(header('Location:/error'));
             //вызвать соотв валидатор namefieldValidator
             if($rc->hasMethod($f_n.'Validator'))$validator=$rc->getMethod($f_n.'Validator');
             else $validator=$rc->getMethod('defaultValidator');
