@@ -4,7 +4,7 @@ define('IMG_BIG_PATH',$_SERVER['DOCUMENT_ROOT'].'/'.'logos/big/');
 const FILE_FIELD_NAME='user_file';
 const MINI_WIDTH=400; const MINI_HEIGHT=115;
 const MAXI_WIDTH=728; const MAXI_HEIGHT=210;
-const MAX_IMAGEFILE_SIZE=300000000;
+const MAX_IMAGEFILE_SIZE=30000000;
 
 class ImgProc{
     public static function processLoadedImage($file_name){
@@ -29,6 +29,8 @@ class ImgProc{
         $mini_path=IMG_MINI_PATH.$file_name;
         move_uploaded_file($_FILES[FILE_FIELD_NAME]['tmp_name'],$path);
         list($width,$height)=getimagesize($path);
+        //
+        if(false===$source_img=@imagecreatefromjpeg($path))die('Файл изображения повреждён');
         // if($width< MAXI_WIDTH OR $height< MAXI_HEIGHT){
         //     echo'Изображение слишком мало';
         //     return false;
@@ -43,7 +45,6 @@ class ImgProc{
         }
         $x_s=($width-$w_big)/2;
         $y_s=($height-$h_big)/2;
-        $source_img=imagecreatefromjpeg($path);
         $big_img=imagecreatetruecolor(MAXI_WIDTH,MAXI_HEIGHT);
         imagecopyresampled($big_img,$source_img,0,0,$x_s,$y_s,MAXI_WIDTH,MAXI_HEIGHT,$w_big,$h_big);
         //imagecopy($big_img, $source_img, 0, 0, $x_s, $y_s, $w_big, $h_big);

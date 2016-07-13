@@ -79,8 +79,8 @@ class CabinetController extends BaseController{
                 //Save a form fields to DB
                 $this->error=$this->_db->saveShop($this->_user,$this->shop);
                 if(false===$this->error){
-                    //TODO: header('Location:'.$_SERVER['REQUEST_URI']);
-                    echo'Данные успешно сохранены';
+                    TODO: header('Location:'.$_SERVER['REQUEST_URI']);
+                    //echo'Данные успешно сохранены';
                 }
             }
         }
