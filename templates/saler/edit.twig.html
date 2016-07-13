@@ -4,7 +4,10 @@
 <h2>Редактирование магазина</h2>
 <label class="{{this.shop._err_fields['title']}}">Название магазина {{this.shop.title}}
 </label>
-<form method='post'>
+<form method='post' enctype='multipart/form-data'>
+<div>{% if this.shop.logo %}<img src='/logos/big/{{this.shop.logo}}'></div>
+<label for='user_file'>Сменить изображение{% else %}</div>
+<label for='user_file'>Добавить изображение{% endif %}<input type='file' name='user_file'></label>
 <label class="{{this.shop._err_fields['owner_form']}}" for='owner_form'>Форма собственности предприятия
         <select name='owner_form'>
 {% for k,v in this.owner_forms %}
@@ -14,10 +17,10 @@
     {% set ch='' %}
 {% endif %}
             <option {{ch}}>{{v}}</option>
-{% endfor %}
-        </select></label><label class="{{this.shop._err_fields['desc']}}">Описание магазина<input type="text" name="desc" value="{{this.shop.desc}}"><span>публикуемое</span></label>
-    <label class="{{this.shop._err_fields['pub_phone']}}">Телефон для связи<input type="text" name="pub_phone" value="{{this.shop.pub_phone}}"><span>публикуемое</span></label>
-    <label class="{{this.shop._err_fields['pub_address']}}">Адрес магазина или предприятия<input type="text" name="pub_address" value="{{this.shop.pub_address}}"><span>публикуемое</span></label>
+{% endfor %}</select></label>
+<label class="{{this.shop._err_fields['desc']}}">Описание магазина<input type="text" name="desc" value="{{this.shop.desc}}"><span>публикуемое</span></label>
+<label class="{{this.shop._err_fields['pub_phone']}}">Телефон для связи<input type="text" name="pub_phone" value="{{this.shop.pub_phone}}"><span>публикуемое</span></label>
+<label class="{{this.shop._err_fields['pub_address']}}">Адрес магазина или предприятия<input type="text" name="pub_address" value="{{this.shop.pub_address}}"><span>публикуемое</span></label>
 <div class="{{this.shop._err_fields['payment']}}">Доступные способы оплаты<span>публикуемое</span><div>{{this.err_msgs['payment']}}</div>
 {% for k,v in this.payment %}
     <label><input type="checkbox" name="payment[{{k}}]" value="{{v}}"

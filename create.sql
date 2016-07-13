@@ -145,5 +145,7 @@ INSERT INTO subjects(id,slug,name,code)
 		(2,'d_subj_2','CabinetController',0),
 		(3,'d_subj_3','SalerController',2),
 		(4,'d_subj_4','DefaultController',0),		
-		(5,'d_subj_5','CabinetController/reg_shopMethod',1)
+		(5,'d_subj_5','CabinetController/reg_shopMethod',1),		
+		(6,'d_subj_6','CabinetController/shopMethod',1),		
+		(7,'d_subj_7','CabinetController/shopsMethod',1)
 		;

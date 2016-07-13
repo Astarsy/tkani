@@ -58,6 +58,8 @@ class CabinetController extends BaseController{
     }
     public function shopMethod(){
         //Редактирует Магазин Продавца
+        // var_dump($_FILES);
+        if(!($this->_db->getPermitions($this->_user->id,'CabinetController/shopMethod')))die('Недостаточно прав');
         $fc=AppController::getInstance();
         $args=$fc->getArgsNum();
         if(!isset($args[0]))header('Location:/error');
@@ -65,6 +67,12 @@ class CabinetController extends BaseController{
         if(!($this->shop=new EditShopForm(array('owner_form'=>true,'desc'=>false,'pub_phone'=>true,'pub_address'=>true,'payment'=>true,'shiping'=>true,'addition_info'=>false,),$this->_user,$s_id)))header('Location:/error');
         if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['save'])){
             //Save button was pressed
+            if(!empty($_FILES['user_file']['name'])){
+                $img_name=$this->shop->slug;
+                if(ImgProc::processLoadedImage($img_name)){
+                    $this->shop->logo=$img_name;
+                }else $this->shop->logo=NULL;
+            }
             $this->shop->validate();
             if(!empty($this->shop->err_msgs))$this->err_msgs=$this->shop->err_msgs;
             if(empty($this->shop->_err_fields)){
@@ -84,6 +92,7 @@ class CabinetController extends BaseController{
     }
     public function shopsMethod(){
         //Выводит все магазины Продавца
+        if(!($this->_db->getPermitions($this->_user->id,'CabinetController/shopsMethod')))die('Недостаточно прав');
         if($this->_user->shops_count==0){
             header('Location:/error');
             exit;

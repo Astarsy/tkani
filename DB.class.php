@@ -401,9 +401,10 @@ class DB{
         try{
             $this->_pdo->beginTransaction();
     // - update the shop table
-            $stmt=$this->_pdo->prepare("UPDATE shops SET title=:t,owner_form=(SELECT id FROM owner_forms WHERE name=:of),descr=:d,pub_phone=:pp,pub_address=:pa,addition_info=:ai WHERE id=:id");
+            $stmt=$this->_pdo->prepare("UPDATE shops SET title=:t,logo=:l,owner_form=(SELECT id FROM owner_forms WHERE name=:of),descr=:d,pub_phone=:pp,pub_address=:pa,addition_info=:ai WHERE id=:id");
             $stmt->bindParam(':id',$shop->id,PDO::PARAM_INT);
             $stmt->bindParam(':t',$shop->title,PDO::PARAM_STR);
+            $stmt->bindParam(':l',$shop->logo,PDO::PARAM_STR);
             $stmt->bindParam(':of',$shop->owner_form,PDO::PARAM_STR);
             $stmt->bindParam(':d',$shop->desc,PDO::PARAM_STR);
             $stmt->bindParam(':pp',$shop->pub_phone,PDO::PARAM_STR);
