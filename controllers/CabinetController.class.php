@@ -71,7 +71,7 @@ class CabinetController extends BaseController{
                 $img_name=$this->shop->slug;
                 if(ImgProc::processLoadedImage($img_name)){
                     $this->shop->logo=$img_name;
-                }else $this->shop->logo=NULL;
+                }
             }
             $this->shop->validate();
             if(!empty($this->shop->err_msgs))$this->err_msgs=$this->shop->err_msgs;

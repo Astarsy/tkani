@@ -1,6 +1,31 @@
 DROP DATABASE IF EXISTS gladkovdb;
 CREATE DATABASE gladkovdb;
 USE gladkovdb;
+CREATE TABLE forms(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				name VARCHAR(40) NOT NULL UNIQUE,
+				title VARCHAR(80) NULL
+				);
+CREATE TABLE fields(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				form INT NOT NULL,
+				type VARCHAR(20) NOT NULL,
+				name VARCHAR(40) NOT NULL,
+				title VARCHAR(80) NULL,
+				required BOOLEAN NOT NULL DEFAULT true,
+				FOREIGN KEY(form) REFERENCES forms(id)
+				);
+INSERT INTO forms(id,name,title)
+	VALUES
+		(1,'add_good','Форма добавления товара')
+		;
+INSERT INTO fields(id,form,type,name,title,required)
+	VALUES
+		(1,1,'Text','name','Название',true),
+		(2,1,'Text','price','Цена',true),
+		(3,1,'Text','manuf','Производитель',true),
+		(4,1,'Text','descr','Описание',false)
+		;
 CREATE TABLE countries(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				slug VARCHAR(20) NOT NULL UNIQUE,
@@ -132,9 +157,9 @@ INSERT INTO users(id,slug,name,mail,mobile,zip,street,city,country,active)
 		(3,'d_user_0002',NULL,'anonim@user.loc',NULL,NULL,NULL,NULL,NULL,false),
 		(4,'d_user_0004','guest','',NULL,NULL,NULL,NULL,2,true)
 		;
-INSERT INTO shops(id,slug,open_time,respons_person,title,logo,owner_form,descr,pub_phone,pub_address,addition_info)
+INSERT INTO shops(id,slug,create_time,open_time,respons_person,title,logo,owner_form,descr,pub_phone,pub_address,addition_info)
 	VALUES
-		(1,'d_shop_01',NULL,2,'International Textile Inc.',NULL,4,'Супер классный магазин.','+7 987 654 32 10','г.Мосвка проспект Ленина 1','У нас всё хорошее.')
+		(1,'d_shop_01',1468492577,1468493577,1,'International Textile Inc.',NULL,3,'Супер классный магазин.','+7 987 654 32 10','г.Мосвка проспект Ленина 1','У нас всё хорошее.')
 		;
 INSERT INTO admins(user_id)
 	VALUES(1)
@@ -147,5 +172,59 @@ INSERT INTO subjects(id,slug,name,code)
 		(4,'d_subj_4','DefaultController',0),		
 		(5,'d_subj_5','CabinetController/reg_shopMethod',1),		
 		(6,'d_subj_6','CabinetController/shopMethod',1),		
-		(7,'d_subj_7','CabinetController/shopsMethod',1)
+		(7,'d_subj_7','CabinetController/shopsMethod',1),
+		(8,'d_subj_8','GoodsController',2)
 		;
+
+
+CREATE TABLE fotos(
+			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			file VARCHAR(80) NOT NULL UNIQUE
+			);
+CREATE TABLE groups(
+			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			name VARCHAR(80) NOT NULL UNIQUE,
+			foto_id INT NULL,
+			FOREIGN KEY(foto_id) REFERENCES fotos(id)
+			);
+CREATE TABLE caths(
+			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			group_id INT NULL,
+			name VARCHAR(80) NOT NULL UNIQUE,
+			foto_id INT NULL,
+			FOREIGN KEY(foto_id) REFERENCES fotos(id),
+			FOREIGN KEY(group_id) REFERENCES groups(id)
+			);
+CREATE TABLE manufs(
+			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			name VARCHAR(80) NOT NULL UNIQUE
+			);
+CREATE TABLE goods(
+			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			slug VARCHAR(20) NOT NULL UNIQUE,
+			shop_id INT NOT NULL,
+			d_date INT NULL,
+			name VARCHAR(80) NOT NULL,
+			price INT NOT NULL,
+			descr VARCHAR(400) NULL,
+			manuf INT NOT NULL,
+			consist VARCHAR(80) NOT NULL,
+			width INT NOT NULL,
+			main_foto_id INT NOT NULL,
+			FOREIGN KEY(shop_id) REFERENCES shops(id),			
+			FOREIGN KEY(manuf) REFERENCES manufs(id),
+			FOREIGN KEY(main_foto_id) REFERENCES fotos(id)
+			);
+
+INSERT INTO fotos(id,file)
+	VALUES	(1,'IMG_2406.JPG');
+INSERT INTO groups(id,name,foto_id)
+	VALUES	(1,'jins',1);	
+INSERT INTO caths(id,name,foto_id)
+	VALUES	(1,'jins printed',1),
+			(2,'jins colored',1);
+INSERT INTO manufs(id,name)
+	VALUES	(1,'Италия'),
+			(2,'Китай');
+INSERT INTO goods(id,slug,shop_id,d_date,name,price,descr,manuf,consist,width,main_foto_id)
+	VALUES	(1,'g_001',1,1468496877,'jins #1',888,'Описание джинса номер один.',1,'хлопок 100%',140,1);

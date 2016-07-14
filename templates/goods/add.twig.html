@@ -1,0 +1,18 @@
+{% extends "base.twig.html" %}
+{% block title %}Добавление товара{% endblock %}
+{% block content %}
+<h2>Добавление товара</h2>
+<form method='post' enctype='multipart/form-data'>
+{% autoescape false %}{{this.form}}{% endautoescape %}
+<br>
+    <label>Цена<input type='text' name='price'></label>
+    <label>Описание<input type='text' name='descr'></label>
+    <label>Страна-производитель<select name='manuf'>{% for k,v in this.manufs %}<option>{{v}}</option>{% endfor %}</select></label>
+    <label>Состав<input type='text' name='consist'></label>
+    <label>Ширина<input type='text' name='width'></label>
+    <div>{% if this.good.foto %}<img src='/fotos/mini/{{this.good.foto}}'></div>
+    <label for='user_file'>Сменить изображение{% else %}</div>
+    <label for='user_file'>Добавить изображение{% endif %}<input type='file' name='user_file'></label>
+    <button type='submit' name='save'>Добавить</button>
+</form>
+{% endblock %}
