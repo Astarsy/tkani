@@ -1,7 +1,6 @@
 <?php
 class ValidableForm{
     //Общий абстрактный базвый класс форм
-    public $class=array();
     protected $_fields=array();
     protected $_err_msg;// текст сообщения об ошибке
 
@@ -16,6 +15,14 @@ class ValidableForm{
             }
         }
     }
+    public function save(){  
+        foreach($this->_fields as $field){
+            $field->save();
+            if($field->getErrMsg()){
+                $this->_err_msg='Не удалось сохранить данные формы.';
+            }
+        }
+    }
     public function __toString(){
         //выводит содержимое МЕЖДУ тегов form
         $res='';
@@ -23,5 +30,8 @@ class ValidableForm{
             $res.=$field;
         }
         return $res;
+    }
+    public function getErrMsg(){
+        return $this->_err_msg;
     }
 }

@@ -4,12 +4,10 @@ class GoodsController extends BaseController{
     public function addMethod(){
         //adds new good
         $fc=AppController::getInstance();
-        $this->manufs=$this->_db->getManufNames();
-        //TODO: передавать массив экземпляров полей!
-//        $this->form=new ValidableForm(array('name'=>true,'price'=>true,'descr'=>false,'manuf'=>true,'consist'=>true,'width'=>true));            
         $this->form=$this->_db->formFactory('add_good');
-        $this->form->validate();
         if($_SERVER['REQUEST_METHOD']=='POST'){
+            $this->form->validate();
+            if(!$this->form->getErrMsg())$this->form->save();
             // echo'<pre>';
             // var_dump($this->form);
         }

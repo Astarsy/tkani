@@ -552,16 +552,6 @@ class DB{
     }
 
 // Товарная часть приложения
-    public function getManufNames(){
-        //returns all manufs as numeric array
-        try{
-            $stmt=$this->_pdo->prepare("SELECT name FROM manufs");
-            $stmt->execute();
-        }catch(PDOException $e){die($e);}
-        $res=array();
-        while($r=$stmt->fetch(PDO::FETCH_NUM))$res[]=$r[0];
-        return $res;
-    }
 
     protected function getFieldsOfForm($name){
         //returns fields for forn as array of objects
@@ -572,15 +562,27 @@ class DB{
         }catch(PDOException $e){die($e);}
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+    protected function getOptionsOfField($name){
+        //returns options-items for the field as array
+        try{
+            $stmt=$this->_pdo->prepare("SELECT name FROM options WHERE field=(SELECT id FROM fields WHERE name=:n)");
+            $stmt->bindParam(':n',$name,PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $res=array();
+        while($r=$stmt->fetch(PDO::FETCH_NUM))$res[]=$r[0];
+        return $res;
+    }
     protected function fieldFactory($template){
         //Returns instance of an apropriate Field object
-        $c_n=$template->name.'Field';
+        $c_n=ucfirst($template->name).'Field';
         if(!class_exists($c_n)){
-            $c_n=$template->type.'Field';
+            $c_n=ucfirst($template->type).'Field';
             if(!class_exists($c_n))die('Нет класса поля '.$c_n);
         }
         $rc=new ReflectionClass($c_n);
         $field=$rc->newInstance($template);
+        $field->options=$this->getOptionsOfField($template->name);
         return $field;
     }
     public function formFactory($name){

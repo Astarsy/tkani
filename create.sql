@@ -15,17 +15,34 @@ CREATE TABLE fields(
 				required BOOLEAN NOT NULL DEFAULT true,
 				FOREIGN KEY(form) REFERENCES forms(id)
 				);
+CREATE TABLE options(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				name VARCHAR(40) NOT NULL,
+				field INT NOT NULL,
+				FOREIGN KEY(field) REFERENCES fields(id)
+				);
 INSERT INTO forms(id,name,title)
 	VALUES
 		(1,'add_good','Форма добавления товара')
 		;
 INSERT INTO fields(id,form,type,name,title,required)
 	VALUES
-		(1,1,'Text','name','Название',true),
-		(2,1,'Text','price','Цена',true),
-		(3,1,'Text','manuf','Производитель',true),
-		(4,1,'Text','descr','Описание',false)
+		(1,1,'text','name','Название',true),
+		(2,1,'text','price','Цена',true),
+		(3,1,'select','manuf','Производитель',true),
+		(4,1,'text','consist','Состав',true),
+		(5,1,'text','width','Ширина',true),
+		(6,1,'text','descr','Описание',false),
+		(7,1,'img','foto','Изображение',true)
 		;
+INSERT INTO options(id,field,name)
+	VALUES
+		(1,3,'Италия'),
+		(2,3,'Китай'),
+		(3,3,'Россия')
+		;
+
+
 CREATE TABLE countries(
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				slug VARCHAR(20) NOT NULL UNIQUE,
@@ -195,10 +212,6 @@ CREATE TABLE caths(
 			FOREIGN KEY(foto_id) REFERENCES fotos(id),
 			FOREIGN KEY(group_id) REFERENCES groups(id)
 			);
-CREATE TABLE manufs(
-			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-			name VARCHAR(80) NOT NULL UNIQUE
-			);
 CREATE TABLE goods(
 			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			slug VARCHAR(20) NOT NULL UNIQUE,
@@ -212,7 +225,7 @@ CREATE TABLE goods(
 			width INT NOT NULL,
 			main_foto_id INT NOT NULL,
 			FOREIGN KEY(shop_id) REFERENCES shops(id),			
-			FOREIGN KEY(manuf) REFERENCES manufs(id),
+			FOREIGN KEY(manuf) REFERENCES options(id),
 			FOREIGN KEY(main_foto_id) REFERENCES fotos(id)
 			);
 
@@ -223,8 +236,5 @@ INSERT INTO groups(id,name,foto_id)
 INSERT INTO caths(id,name,foto_id)
 	VALUES	(1,'jins printed',1),
 			(2,'jins colored',1);
-INSERT INTO manufs(id,name)
-	VALUES	(1,'Италия'),
-			(2,'Китай');
 INSERT INTO goods(id,slug,shop_id,d_date,name,price,descr,manuf,consist,width,main_foto_id)
-	VALUES	(1,'g_001',1,1468496877,'jins #1',888,'Описание джинса номер один.',1,'хлопок 100%',140,1);
+	VALUES	(1,'g_001',1,1468496877,'jins #1',888,'Описание джинса номер один.',2,'хлопок 100%',140,1);
