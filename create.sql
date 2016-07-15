@@ -86,7 +86,7 @@ CREATE TABLE shops(
 				slug VARCHAR(20) NOT NULL UNIQUE,
 				create_time INT NOT NULL,
 				open_time INT NULL,
-				respons_person INT NOT NULL,
+				respons_person INT NOT NULL UNIQUE,
 				title VARCHAR(80) NOT NULL UNIQUE,
 				logo VARCHAR(40) NULL UNIQUE,
 				owner_form INT NOT NULL,

@@ -553,6 +553,48 @@ class DB{
 
 // Товарная часть приложения
 
+    public function createGood($form,$u_id){
+        // Creates new good from form data, returns a slug of the good or false if failure
+        $slug='g_'.time();
+        try{
+            $this->_pdo->beginTransaction();
+            // insert new foto if it'd uploaded
+            if(NULL!==$f_n=$form->getFieldValue('foto')){
+                $stmt=$this->_pdo->prepare("INSERT INTO fotos SET file=:f");
+                $stmt->bindParam(':f',$form->getFieldValue('foto'),PDO::PARAM_STR);
+                $stmt->execute();
+            }
+            // insert new good
+            $stmt=$this->_pdo->prepare(
+            "INSERT INTO goods(slug,shop_id,d_date,name,price,descr,manuf,consist,width,main_foto_id) VALUES(:s,(SELECT id FROM shops WHERE respons_person=:uid),:d,:n,:p,:de,(SELECT id FROM options WHERE name=:m),:c,:w,(SELECT id FROM fotos WHERE file=:f))");
+            $stmt->bindParam(':s',$slug,PDO::PARAM_STR);
+            $stmt->bindParam(':uid',$u_id,PDO::PARAM_INT);
+            $stmt->bindParam(':d',(int)(time()),PDO::PARAM_INT);
+            $stmt->bindParam(':n',$form->getFieldValue('name'),PDO::PARAM_STR);
+            $stmt->bindParam(':p',$form->getFieldValue('price'),PDO::PARAM_INT);
+            $stmt->bindParam(':de',$form->getFieldValue('descr'),PDO::PARAM_STR);
+            $stmt->bindParam(':m',$form->getFieldValue('manuf'),PDO::PARAM_STR);
+            $stmt->bindParam(':c',$form->getFieldValue('consist'),PDO::PARAM_STR);
+            $stmt->bindParam(':w',$form->getFieldValue('width'),PDO::PARAM_INT);
+            $stmt->bindParam(':f',$form->getFieldValue('foto'),PDO::PARAM_STR);
+            $stmt->execute();
+            $this->_pdo->commit();
+        }catch(PDOException $e){
+            $this->_pdo->rollBack();
+            return false;
+        }
+        return $slug;
+    }
+    public function getGoodBySlug($slug){
+        //Возвращяет good as object
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT goods.id,slug,shop_id,d_date,goods.name,price,descr,options.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN options ON options.id=goods.manuf LEFT JOIN fotos ON fotos.id=goods.main_foto_id WHERE slug=:s");
+            $stmt->bindParam(':s',$slug,PDO::PARAM_STR);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
     protected function getFieldsOfForm($name){
         //returns fields for forn as array of objects
         try{
