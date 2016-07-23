@@ -1,4 +1,11 @@
 <?php
+// class MyVar{
+//     private $a="I'm A";
+//     public function __get($v){
+//         if(!isset($this->{$v}))die('Undefine prop '.$v);
+//         return $this->{$v};
+//     }
+// }
 class DefaultController extends BaseController{
     //Контроллер поумолчанию, выводит основной контент
     public function errorMethod(){
@@ -11,6 +18,8 @@ class DefaultController extends BaseController{
     public function Method(){
         // gladkov.loc
         $fc=AppController::getInstance();
+//        $v=new MyVar();
+//        die($v->b);
         $fc->setContent($fc->render('index.twig.html',array('logger'=>$this->_logger,)));
     }
     public function goodMethod(){
