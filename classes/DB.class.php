@@ -553,6 +553,17 @@ class DB{
 
 // Товарная часть приложения
 
+    public function getGoodsOfShopOfUserById($uid){
+        // Returns array of goods of the user
+        try{
+            $stmt=$this->_pdo->prepare("SELECT goods.id,slug,shop_id,d_date,name,price,descr,manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id WHERE shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
+            $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){
+            die($e);
+        }
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
     public function createGood($form,$u_id){
         // Creates new good from form data, returns a slug of the good or false if failure
         $slug='g_'.time();

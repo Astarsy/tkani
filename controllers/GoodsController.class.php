@@ -1,6 +1,13 @@
 <?php
 class GoodsController extends BaseController{
     //Контроллер Товарной части приложения
+    public function Method(){
+        // defualt method- shows all goods and a menu
+        $fc=AppController::getInstance();
+        $this->goods=$this->_db->getGoodsOfShopOfUserById($this->_user->id);
+        $this->goods_count=count($this->goods);
+        $fc->setContent($fc->render('goods/default.twig.html',array('this'=>$this)));
+    }
     public function addMethod(){
         //adds new good
         $fc=AppController::getInstance();
