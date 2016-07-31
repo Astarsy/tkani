@@ -17,7 +17,7 @@ namespace Globals{
 	define('MAIL','reg@'.$_SERVER['HTTP_HOST']);
 	const DB_NAME='gladkovdb';
 	const DB_USER='gladkov';
-	const DB_PASS='lk08d16ex4';
+	const DB_PASS='123';
 	const USER_SESNAME='user_data';
 	define('USERS_FILENAME','.htpasswd');//учетные данные поль-лей
     

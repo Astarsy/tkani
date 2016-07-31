@@ -8,11 +8,15 @@ class GoodsController extends BaseController{
         if($_SERVER['REQUEST_METHOD']=='POST'){
             $this->form->validate();
             if(!$this->form->getErrMsg()){
-                if(false!==$good_slug=$this->_db->createGood($this->form,$this->_user->id)){
-                    $this->form->save();
-                    if(!$this->form->getErrMsg())exit(header('Location:/goods/edit/'.$good_slug));
+                $this->form->save();
+                if(false===$err=$this->form->getErrMsg()){
+                    if(false!==$good_slug=$this->_db->createGood($this->form,$this->_user->id)){
+                        exit(header('Location:/goods/edit/'.$good_slug));
+                    }else{
+                        $this->errMsg='Ошибка при создании записи БД.';
+                    }
                 }else{
-                    $this->errMsg='Не удалось добавить товар';
+                    $this->errMsg='Ошибка при сохранении формы '.$err;
                 }
             }
             // echo'<pre>';

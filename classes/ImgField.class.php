@@ -14,9 +14,15 @@ class ImgField extends ValidableField{
         //Сохраняет состояние
         if(!empty($_FILES[$this->_name]['name'])){
             $foto_name='f_'.time().'.jpg';
-            if($this->_err_msg=ImgProc::processGoodFoto($this->_name,$foto_name))return;
-            $this->_value=$foto_name;
-            return;
+            if(false===$this->_err_msg=ImgProc::processGoodFoto($this->_name,$foto_name)){
+                // image was saved succesfully
+                $this->_value=$foto_name;
+                return;
+            }else{
+                // error while saving image
+                $this->_err_msg='ошибка при сохранении изображения';
+                return;
+            }
         }else{
             if($this->_required==true){
                 // отсутстует обязательное значение

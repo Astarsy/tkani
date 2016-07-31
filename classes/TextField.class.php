@@ -11,7 +11,6 @@ class TextField extends ValidableField{
             $this->_err_msg='необходимо заполнить данное поле';
             return;
         }
-        $this->_err_msg=false;
         $this->_value=$val;
     }
 }

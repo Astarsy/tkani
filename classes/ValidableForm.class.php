@@ -18,8 +18,9 @@ class ValidableForm{
     public function save(){  
         foreach($this->_fields as $field){
             $field->save();
-            if($field->getErrMsg()){
-                $this->_err_msg='Не удалось сохранить данные формы.';
+            if(NULL!==$err=$field->getErrMsg()){
+                $this->_err_msg=$err;
+                return;
             }
         }
     }
@@ -38,7 +39,7 @@ class ValidableForm{
     public function getFieldValue($name){
         // Returns a value of the field by name
         foreach($this->_fields as $f){
-            if($f->_name==$name)return $f->_value;
+            if($f->getName()==$name)return $f->getValue();
         }
         return NULL;
     }

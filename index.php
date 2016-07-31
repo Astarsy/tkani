@@ -1,6 +1,7 @@
 <?php
+//die($_SERVER['DOCUMENT_ROOT']);
 session_start();
-require_once'classes/globals.php';
+require_once'classes/globals.class.php';
 require_once'controllers/AppController.class.php';
 require_once'vendor/Twig/lib/Twig/Autoloader.php';
 
