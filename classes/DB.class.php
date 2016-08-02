@@ -556,7 +556,7 @@ class DB{
     public function getGoodsOfShopOfUserById($uid){
         // Returns array of goods of the user
         try{
-            $stmt=$this->_pdo->prepare("SELECT goods.id,slug,shop_id,d_date,name,price,descr,manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id WHERE shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
+            $stmt=$this->_pdo->prepare("SELECT goods.id,slug,shop_id,d_date,goods.name,price,descr,options.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN options ON options.id=manuf WHERE shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
             $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
             $stmt->execute();
         }catch(PDOException $e){
@@ -614,8 +614,8 @@ class DB{
         }catch(PDOException $e){die($e);}
         return $stmt->fetch(PDO::FETCH_OBJ);
     }
-    protected function getFieldsOfForm($name){
-        //returns fields for forn as array of objects
+    public function getFieldsOfForm($name){
+        //returns fields for form as array of objects
         try{
             $stmt=$this->_pdo->prepare("SELECT type,name,title,required FROM fields WHERE form=(SELECT id FROM forms WHERE name=:n)");
             $stmt->bindParam(':n',$name,PDO::PARAM_STR);
@@ -634,7 +634,7 @@ class DB{
         while($r=$stmt->fetch(PDO::FETCH_NUM))$res[]=$r[0];
         return $res;
     }
-    protected function fieldFactory($template){
+    public function fieldFactory($template){
         //Returns instance of an apropriate Field object
         $c_n=ucfirst($template->name).'Field';
         if(!class_exists($c_n)){
@@ -648,12 +648,9 @@ class DB{
     }
     public function formFactory($name){
         // Factory of forms. Returns instance of Form
-        $field_templates=$this->getFieldsOfForm($name);
-        $fields=array();
-        foreach($field_templates as $t){
-            $fields[]=$this->fieldFactory($t);
-        }
-        $form=new ValidableForm($fields);
+        if(!class_exists($name))die('Нет класса формы '.$name);
+        $rc=new ReflectionClass($name);
+        $form=$rc->newInstance($this);
         return $form;
     }
 

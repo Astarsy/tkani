@@ -23,7 +23,7 @@ CREATE TABLE options(
 				);
 INSERT INTO forms(id,name,title)
 	VALUES
-		(1,'add_good','Форма добавления товара')
+		(1,'AddGoodForm','Форма добавления товара')
 		;
 INSERT INTO fields(id,form,type,name,title,required)
 	VALUES

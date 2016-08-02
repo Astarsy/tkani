@@ -11,7 +11,7 @@ class GoodsController extends BaseController{
     public function addMethod(){
         //adds new good
         $fc=AppController::getInstance();
-        $this->form=$this->_db->formFactory('add_good');
+        $this->form=$this->_db->formFactory('AddGoodForm');
         if($_SERVER['REQUEST_METHOD']=='POST'){
             $this->form->validate();
             if(!$this->form->getErrMsg()){
@@ -37,8 +37,10 @@ class GoodsController extends BaseController{
         $args=$fc->getArgsNum();
         if(!isset($args[0]))header('Location:/error');
         if(!$good=$this->_db->getGoodBySlug($args[0]))exit(header('Location:/error'));
-        die('<pre>'.var_dump($good));
-        $this->form=$this->_db->formFactory('add_good');
+        //die('<pre>'.var_dump($good));
+
+        //сначала создать э-р addFotm, затем,на её основе создать э-р EditGoodField с иниц-ей полей
+        $this->form=$this->_db->formFactory('EditGoodForm');
         if($_SERVER['REQUEST_METHOD']=='POST'){
             $this->form->validate();
             if(!$this->form->getErrMsg()){
@@ -52,6 +54,6 @@ class GoodsController extends BaseController{
             // echo'<pre>';
             // var_dump($this->form);
         }
-        $fc->setContent($fc->render('goods/add.twig.html',array('this'=>$this)));
+        $fc->setContent($fc->render('goods/edit.twig.html',array('this'=>$this)));
     }
 }
