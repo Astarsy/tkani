@@ -11,13 +11,12 @@ class ImgField extends ValidableField{
         }      
     }
     public function save(){
-        //Сохраняет состояние
+        //Сохраняет изображение либо под существующим именем либо под новым
         if(!empty($_FILES[$this->_name]['name'])){
             // есть загруженный файл
-            $foto_name='f_'.time().'.jpg';
-            if(NULL===$this->_err_msg=ImgProc::processGoodFoto($this->_name,$foto_name)){
+            if(empty($this->_value))$this->_value='f_'.time().'.jpg';
+            if(NULL===$this->_err_msg=ImgProc::processGoodFoto($this->_name,$this->_value)){
                 // image was saved succesfully
-                $this->_value=$foto_name;
                 return;
             }else{
                 // error while saving image

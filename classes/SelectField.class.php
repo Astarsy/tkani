@@ -11,7 +11,9 @@ class SelectField extends TextField{
         }
         $options_str='';
         foreach($this->options as $k=>$v){
-            $options_str.="<option>$v</option>";
+            if($this->_value==$v)$selected=' selected';
+            else $selected='';
+            $options_str.="<option{$selected} value='$v'>$v</option>";
         }
         $res="<label $cl>$this->_title<select type='$this->_type' name='$this->_name'>$options_str</select></label>$msg
 ";
