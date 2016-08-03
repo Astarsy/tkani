@@ -15,7 +15,7 @@ class ValidableForm{
             }
         }
     }
-    public function save(){  
+    public function save(){
         foreach($this->_fields as $field){
             $field->save();
             if(NULL!==$err=$field->getErrMsg()){

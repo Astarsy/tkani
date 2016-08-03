@@ -56,13 +56,12 @@ class ImgProc{
     }
     public static function processGoodFoto($field_name,$file_name){
         //Обрабатывает файл изображения Товара.
-        //Возвращает false/error
+        //Возвращает NULL/error
         if($err=self::checkFileField($field_name))return $err;
         if(false===@imagecreatefromjpeg($_FILES[$field_name]['tmp_name']))return'Файл изображения повреждён';
         $big_path=GOOD_FOTO_BIG_PATH.$file_name;
         $mini_path=GOOD_FOTO_MINI_PATH.$file_name;
         if($err=self::processImages($field_name,$big_path,$mini_path,Globals\GOOD_FOTO_BIG_WIDTH,Globals\GOOD_FOTO_BIG_HEIGHT,Globals\GOOD_FOTO_MINI_WIDTH,Globals\GOOD_FOTO_MINI_HEIGHT))return $err;
-        return false;
     }
     public static function processLoadedImage($file_name){
         //Обрабатывает полученный файл изображения:

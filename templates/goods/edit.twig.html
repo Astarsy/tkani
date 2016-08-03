@@ -1,0 +1,10 @@
+{% extends "base.twig.html" %}
+{% block title %}Добавление товара{% endblock %}
+{% block content %}
+<h2>Редакторование товара</h2>
+{% if this.errMsg %}<div class='page_err_msg'>{{this.errMsg}}</div>{% endif %}
+<form method='post' enctype='multipart/form-data'>
+{% autoescape false %}{{this.form}}{% endautoescape %}
+    <button type='submit' name='save'>Сохранить</button>
+</form>
+{% endblock %}

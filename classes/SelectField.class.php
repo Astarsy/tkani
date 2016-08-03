@@ -17,4 +17,8 @@ class SelectField extends TextField{
 ";
         return $res;
     }
+    public function setValue($v){
+        // TODO: Приверить, что полученный параметр есть среди options
+        $this->_value=Globals\clearStr($v);
+    }
 }

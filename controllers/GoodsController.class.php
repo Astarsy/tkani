@@ -39,20 +39,25 @@ class GoodsController extends BaseController{
         if(!$good=$this->_db->getGoodBySlug($args[0]))exit(header('Location:/error'));
         //die('<pre>'.var_dump($good));
 
-        //сначала создать э-р addFotm, затем,на её основе создать э-р EditGoodField с иниц-ей полей
+        //создать э-р EditGoodField с иниц-ей полей
         $this->form=$this->_db->formFactory('EditGoodForm');
+        $this->form->init($good);
         if($_SERVER['REQUEST_METHOD']=='POST'){
             $this->form->validate();
-            if(!$this->form->getErrMsg()){
-                if($good_slug=$this->_db->createGood($this->form)){
-                    $this->form->save();
-                    if(!$this->form->getErrMsg())exit(header('Location:/goods/edit/'.$good_slug));
+            if(NULL===$err=$this->form->getErrMsg()){
+                $this->form->save();
+                if(NULL===$err=$this->form->getErrMsg()){
+                    if(NULL===$err=$this->_db->saveGood($this->form,$this->_user->id,$good->id)){
+                        exit(header('Location:/goods/edit/'.$good->slug));
+                    }else{
+                        $this->errMsg='Ошибка при создании записи БД. '.$err;
+                    }
                 }else{
-                    $this->errMsg='Не удалось добавить товар';
+                    $this->errMsg='Ошибка при сохранении формы '.$err;
                 }
+            }else{
+                $this->errMsg='Ошибка валидации формы. '.$err;
             }
-            // echo'<pre>';
-            // var_dump($this->form);
         }
         $fc->setContent($fc->render('goods/edit.twig.html',array('this'=>$this)));
     }

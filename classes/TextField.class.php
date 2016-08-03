@@ -13,4 +13,7 @@ class TextField extends ValidableField{
         }
         $this->_value=$val;
     }
+    public function setValue($v){
+        $this->_value=Globals\clearStr($v);
+    }
 }

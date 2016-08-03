@@ -604,6 +604,44 @@ class DB{
         }
         return $slug;
     }
+    public function saveGood($form,$uid,$gid){
+        // Saves changes for good to the DB
+        // Returns false/error
+        try{
+            $this->_pdo->beginTransaction();
+            // update foto
+            $stmt=$this->_pdo->prepare("UPDATE fotos SET file=:f WHERE id=(SELECT main_foto_id FROM goods WHERE id=:gid AND shop_id=(SELECT id FROM shops WHERE respons_person=:uid))");
+            $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
+            $stmt->bindParam(':gid',$gid,PDO::PARAM_INT);
+            $fn=$form->getFieldValue('foto');
+            $stmt->bindParam(':f',$fn,PDO::PARAM_STR);
+            $stmt->execute();
+            // update the good
+            $stmt=$this->_pdo->prepare(
+            "UPDATE goods SET name=:n,price=:p,descr=:de,manuf=(SELECT id FROM options WHERE name=:m),consist=:c,width=:w,main_foto_id=(SELECT id FROM fotos WHERE file=:f) WHERE id=:gid AND shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
+            $stmt->bindParam(':gid',$gid,PDO::PARAM_INT);
+            $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
+            $n=$form->getFieldValue('name');
+            $stmt->bindParam(':n',$n,PDO::PARAM_STR);
+            $p=$form->getFieldValue('price');
+            $stmt->bindParam(':p',$p,PDO::PARAM_INT);
+            $de=$form->getFieldValue('descr');
+            $stmt->bindParam(':de',$de,PDO::PARAM_STR);
+            $m=$form->getFieldValue('manuf');
+            $stmt->bindParam(':m',$m,PDO::PARAM_STR);
+            $c=$form->getFieldValue('consist');
+            $stmt->bindParam(':c',$c,PDO::PARAM_STR);
+            $w=$form->getFieldValue('width');
+            $stmt->bindParam(':w',$w,PDO::PARAM_INT);
+            $f=$form->getFieldValue('foto');
+            $stmt->bindParam(':f',$f,PDO::PARAM_STR);
+            $stmt->execute();
+            $this->_pdo->commit();
+        }catch(PDOException $e){
+            $this->_pdo->rollBack();
+            return $e;
+        }
+    }
     public function getGoodBySlug($slug){
         //Возвращяет good as object
         try{

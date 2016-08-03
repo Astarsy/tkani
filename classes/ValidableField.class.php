@@ -19,7 +19,6 @@ class ValidableField{
         if(!isset($_POST[$this->_name])){
             // отсутсвует ожидаемое поле
             $this->_err_msg='отсутсвует ожидаемое поле '.$this->_name;
-            return;
         }
     }
     public function __toString(){
