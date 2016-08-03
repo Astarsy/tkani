@@ -1,7 +1,9 @@
 {% extends "base.twig.html" %}
 {% block title %}Добавление товара{% endblock %}
 {% block content %}
-<h2>Редакторование товара</h2>
+<h4><a href='/cabinet'>Кабинет</a></h4>
+<h4><a href='/goods'>Товары в магазине</a></h4>
+<h2>Редактирование товара</h2>
 {% if this.errMsg %}<div class='page_err_msg'>{{this.errMsg}}</div>{% endif %}
 <form method='post' enctype='multipart/form-data'>
 {% autoescape false %}{{this.form}}{% endautoescape %}

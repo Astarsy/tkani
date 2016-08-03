@@ -2,10 +2,9 @@
 {% block title %}Добавление товара{% endblock %}
 {% block content %}
 <h4><a href='/cabinet'>Кабинет</a></h4>
-<h2>Товары в магазине</h2>
-<h4><a href='/goods/add'>Добавить товар</a></h4>
+<h4><a href='/goods'>Товары в магазине</a></h4>
+<h2>Подтвердите удаление товара</h2>
 {% if this.errMsg %}<div class='page_err_msg'>{{this.errMsg}}</div>{% endif %}
-<p>Всего товаров {{this.goods_count}}</p>
 <table>
 <tr>
     <th>Дата</th>
@@ -16,10 +15,7 @@
     <th>Состав</th>
     <th>Ширина</th>
     <th>Фото</th>
-    <th></th>
-    <th></th>
 </tr>
-{% for good in this.goods %}
 <tr>
     <td>{{good.d_date|date("d.m.y")}}</td>
     <td>{{good.name}}</td>
@@ -29,9 +25,10 @@
     <td>{{good.consist}}</td>
     <td>{{good.width}}</td>
     <td><img src='/fotos/mini/{{good.foto}}' alt='Фото товара'></td>
-    <td><a href='/goods/edit/{{good.slug}}'>изменить</a></td>
-    <td><a href='/goods/delete/{{good.slug}}'>удалить</a></td>
 </tr>
-{% endfor %}
 </table>
+<form method="post">
+    <button type='submit' name='yes'>Удалить</button>
+    <button type='submit' name='no'>Отменить</button>
+</form>
 {% endblock %}

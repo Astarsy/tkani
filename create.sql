@@ -226,7 +226,7 @@ CREATE TABLE goods(
 			main_foto_id INT NOT NULL,
 			FOREIGN KEY(shop_id) REFERENCES shops(id),			
 			FOREIGN KEY(manuf) REFERENCES options(id),
-			FOREIGN KEY(main_foto_id) REFERENCES fotos(id)
+			FOREIGN KEY(main_foto_id) REFERENCES fotos(id) ON DELETE CASCADE
 			);
 
 INSERT INTO fotos(id,file)

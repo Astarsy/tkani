@@ -564,6 +564,28 @@ class DB{
         }
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+    public function deleteGoodOfUserShop($gid,$uid){
+        // Deletes thr good by id for user by id
+        // Returns NULL/error
+        try{
+            $this->_pdo->beginTransaction();
+            // delete foto
+            // $stmt=$this->_pdo->prepare("DELETE FROM fotos WHERE id=(SELECT main_foto_id FROM goods WHERE id=:gid AND shop_id=(SELECT id FROM shops WHERE respons_person=:uid))");
+            // $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
+            // $stmt->bindParam(':gid',$gid,PDO::PARAM_INT);
+            // $stmt->execute();
+            // delete the good
+            $stmt=$this->_pdo->prepare(
+            "DELETE FROM goods WHERE id=:gid AND shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
+            $stmt->bindParam(':gid',$gid,PDO::PARAM_INT);
+            $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
+            $stmt->execute();
+            $this->_pdo->commit();
+        }catch(PDOException $e){
+            $this->_pdo->rollBack();
+            return $e;
+        }        
+    }
     public function createGood($form,$u_id){
         // Creates new good from form data, returns a slug of the good or false if failure
         $slug='g_'.time();
@@ -606,7 +628,7 @@ class DB{
     }
     public function saveGood($form,$uid,$gid){
         // Saves changes for good to the DB
-        // Returns false/error
+        // Returns NULL/error
         try{
             $this->_pdo->beginTransaction();
             // update foto
