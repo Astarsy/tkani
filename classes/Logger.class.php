@@ -57,8 +57,8 @@ class Logger{
     }
     public function __toString(){
         //возвращает имя файла шаблона формы для подключения в шаблоне страниц
-        if($this->_user->name=='guest')return 'logger_in_form.html';
-        else return 'logger_out_form.html';
+        if($this->_user->name=='guest')return 'logger/logger_in_form.html';
+        else return 'logger/logger_out_form.html';
     }
     protected function clearMail($mail){
         return Globals\clearMail($mail);

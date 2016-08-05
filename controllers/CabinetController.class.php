@@ -4,6 +4,15 @@ class CabinetController extends BaseController{
     public function Method(){
         // gladkov.loc/cabinet
         $fc=AppController::getInstance();
+        if($this->_user->name=='guest')exit(header('Location:/cabinet/profile'));
+        $this->_user->add_reg_form_time=$this->_db->getUserSalerRequestTime($this->_user);
+        $fc->setContent($fc->render('cabinet/default.twig.html',array(
+            'this'=>$this,
+            )));
+    }
+    public function profileMethod(){
+        // gladkov.loc/cabinet/profile
+        $fc=AppController::getInstance();
 
         if(isset(array_keys($fc->getArgs())[0]))$title=array_keys($fc->getArgs())[0];
         else $title='Сообщение';
@@ -19,10 +28,10 @@ class CabinetController extends BaseController{
         $user->add_reg_form_time=$this->_db->getUserSalerRequestTime($user);
         $cabinet=new Cabinet($user);
         $countries=$this->_db->getCountries();
-        $fn=get_class($cabinet->getForm()).'.html';
-        $fc->setContent($fc->render('cabinet.twig.html',array(
+        $template_name='cabinet/'.get_class($cabinet->getForm()).'.html';
+        $fc->setContent($fc->render('cabinet/profile.twig.html',array(
             'msg'=>$msg,
-            'form_name'=>$fn,
+            'template_name'=>$template_name,
             'user'=>$user,
             'classes'=>$cabinet->getForm()->getClasses(),
             'fields'=>$cabinet->getForm()->getFields(),
@@ -52,7 +61,7 @@ class CabinetController extends BaseController{
         $this->shiping=$this->_db->getAllShipingNames();
         $this->payment=$this->_db->getAllPaymentNames();
         $this->owner_forms=$this->_db->getAllOwnerFormNames();
-        $fc->setContent($fc->render('shop_register.twig.html',array(
+        $fc->setContent($fc->render('cabinet/shop_register.twig.html',array(
             'this'=>$this,
             )));
     }
@@ -68,7 +77,7 @@ class CabinetController extends BaseController{
         if($_SERVER['REQUEST_METHOD']=='POST'&&isset($_POST['save'])){
             //Save button was pressed
             if(!empty($_FILES['user_file']['name'])){
-                $img_name=$this->shop->slug;
+                $img_name=$this->shop->slug.'.jpg';
                 if(ImgProc::processLoadedImage($img_name)){
                     $this->shop->logo=$img_name;
                 }
@@ -134,7 +143,7 @@ class CabinetController extends BaseController{
                 header('Location:/msg/'.Msg::encode('Восстановление пароля').'/'.Msg::encode('Пароль успешно изменён. Вы можете войти на сайт используя свои e-mail и пароль.'));
             }
         }
-        $fc->setContent($fc->render('enter_new_passwd.twig.html',array(
+        $fc->setContent($fc->render('cabinet/enter_new_passwd.twig.html',array(
             'msg'=>$msg,
             )));
     }
@@ -173,7 +182,7 @@ class CabinetController extends BaseController{
                     Msg::encode('Отправлено письмо').'/'.
                     Msg::encode('На указанный Вами e-mail отправлено письмо, содержащее ссылку для восстановление пароля.'));
         }
-        $fc->setContent($fc->render('forget_password.twig.html'));
+        $fc->setContent($fc->render('cabinet/forget_password.twig.html'));
     }
     public function confirmMethod(){
         //подтверждение регистрации

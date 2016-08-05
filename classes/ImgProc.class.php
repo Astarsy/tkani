@@ -115,7 +115,7 @@ class ImgProc{
         return true;
     }
     public static function deleteFotos($fn){
-        // Deletes image files
+        // Deletes foto files
         $big_path=GOOD_FOTO_BIG_PATH.$fn;
         $mini_path=GOOD_FOTO_MINI_PATH.$fn;
         if(!(unlink($big_path)&unlink($mini_path)))return 'Не удалось удалить файл изображения';

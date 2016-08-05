@@ -1,11 +1,12 @@
 {% extends "base.twig.html" %}
 {% block title %}{% if this._user.shops>1 %}Ваши магазины{% else %}Ваш магазин{% endif %}{% endblock %}
 {% block content %}
+<h4><a href='/cabinet'>Кабинет пользователя</a></h4>
 <h2>{% if this._user.shops>1 %}Ваши магазины{% else %}Ваш магазин{% endif %}</h2>
 {% for shop in this.shops %}
     {% for k,v in shop %}
         <div>{{k}}-{{v}}</div>
     {% endfor %}
-    <a href='/cabinet/shop/{{shop.id}}'>редактировать</a>
+    <h4><a href='/cabinet/shop/{{shop.id}}'>редактировать</a></h4>
 {% endfor %}
 {% endblock %}

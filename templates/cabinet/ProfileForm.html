@@ -1,13 +1,5 @@
-<h3>Профиль пользователя {{user.name}}</h3>
-<form action='/cabinet' class='profile' method='post'>
-{% if user.shops_count>0 %}
-	<a href='/cabinet/shops'>Профиль магазина</a><a href='/goods'>Товары в магазине</a>{% else %}
-{% if user.add_reg_form_time==false %}
-	<a href='/cabinet/reg_shop'>Открыть магазин</a>
-	{% else %}
-	<p>Ваша заявка на открытие магазина от {{user.add_reg_form_time|date("d.m.Y")}} находится на рассмотрении.</p>
-{% endif %}{% endif %}
-	<h4>Личные данные</h4>
+<h2>Личные данные пользователя {{user.name}}</h2>
+<form class='profile' method='post'>
 	<p>e-mail: {{user.mail}}</p>
 	<label class='{{classes.alt_mail}}' for='alt_mail'>запасной e-mail<input type='text' name='alt_mail' value='{{fields.alt_mail}}'></label>
 	<label class='{{classes.name}}' for='name'>Имя<input type='text' name='name' value='{{fields.name}}'></label>

@@ -1,0 +1,14 @@
+{% extends "base.twig.html" %}
+
+{% block title %}Кабинет пользователя{% endblock %}
+{% block content %}
+<h2>Кабинет пользователя</h2>
+<h4><a href='/cabinet/profile'>Редакировать личные данные</a></h4>
+{% if this._user.shops_count>0 %}
+    <h4><a href='/cabinet/shops'>Профиль магазина</a></h4><h4><a href='/goods'>Товары в магазине</a></h4>{% else %}
+{% if this._user.add_reg_form_time==false %}
+    <h4><a href='/cabinet/reg_shop'>Открыть магазин</a></h4>
+    {% else %}
+    <p>Ваша заявка на открытие магазина от {{user.add_reg_form_time|date("d.m.Y")}} находится на рассмотрении.</p>
+{% endif %}{% endif %}
+{% endblock %}
