@@ -16,7 +16,7 @@ class GoodsController extends BaseController{
             $this->form->validate();
             if(!$this->form->getErrMsg()){
                 $this->form->save();
-                if(false===$err=$this->form->getErrMsg()){
+                if(NULL===$err=$this->form->getErrMsg()){
                     if(false!==$good_slug=$this->_db->createGood($this->form,$this->_user->id)){
                         exit(header('Location:/goods/edit/'.$good_slug));
                     }else{

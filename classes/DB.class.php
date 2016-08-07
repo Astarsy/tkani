@@ -556,7 +556,7 @@ class DB{
     public function getGoodsOfShopOfUserById($uid){
         // Returns array of goods of the user
         try{
-            $stmt=$this->_pdo->prepare("SELECT goods.id,slug,shop_id,d_date,goods.name,price,descr,options.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN options ON options.id=manuf WHERE shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
+            $stmt=$this->_pdo->prepare("SELECT goods.id,slug,shop_id,caths.name as cath,d_date,goods.name,price,descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=manuf LEFT JOIN caths ON goods.cath_id=caths.id WHERE shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
             $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
             $stmt->execute();
         }catch(PDOException $e){
@@ -594,13 +594,16 @@ class DB{
             // insert new foto if it'd uploaded
             if(NULL!==$f_n=$form->getFieldValue('foto')){
                 $stmt=$this->_pdo->prepare("INSERT INTO fotos SET file=:f");
-                $stmt->bindParam(':f',$form->getFieldValue('foto'),PDO::PARAM_STR);
+                $f=$form->getFieldValue('foto');
+                $stmt->bindParam(':f',$f,PDO::PARAM_STR);
                 $stmt->execute();
             }
             // insert new good
             $stmt=$this->_pdo->prepare(
-            "INSERT INTO goods(slug,shop_id,d_date,name,price,descr,manuf,consist,width,main_foto_id) VALUES(:s,(SELECT id FROM shops WHERE respons_person=:uid),:d,:n,:p,:de,(SELECT id FROM options WHERE name=:m),:c,:w,(SELECT id FROM fotos WHERE file=:f))");
+            "INSERT INTO goods(slug,shop_id,cath_id,d_date,name,price,descr,manuf,consist,width,main_foto_id) VALUES(:s,(SELECT id FROM shops WHERE respons_person=:uid),(SELECT id FROM caths WHERE name=:cn),:d,:n,:p,:de,(SELECT id FROM manufs WHERE name=:m),:c,:w,(SELECT id FROM fotos WHERE file=:f))");
             $stmt->bindParam(':s',$slug,PDO::PARAM_STR);
+            $cn=$form->getFieldValue('cath');
+            $stmt->bindParam(':cn',$cn,PDO::PARAM_STR);
             $stmt->bindParam(':uid',$u_id,PDO::PARAM_INT);
             $now=time();
             $stmt->bindParam(':d',$now,PDO::PARAM_INT);
@@ -622,6 +625,7 @@ class DB{
             $this->_pdo->commit();
         }catch(PDOException $e){
             $this->_pdo->rollBack();
+            die($e);
             return false;
         }
         return $slug;
@@ -640,11 +644,13 @@ class DB{
             $stmt->execute();
             // update the good
             $stmt=$this->_pdo->prepare(
-            "UPDATE goods SET name=:n,price=:p,descr=:de,manuf=(SELECT id FROM options WHERE name=:m),consist=:c,width=:w,main_foto_id=(SELECT id FROM fotos WHERE file=:f) WHERE id=:gid AND shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
+            "UPDATE goods SET name=:n,price=:p,descr=:de,manuf=(SELECT id FROM manufs WHERE name=:m),consist=:c,width=:w,main_foto_id=(SELECT id FROM fotos WHERE file=:f),cath_id=(SELECT id FROM caths WHERE name=:cn) WHERE id=:gid AND shop_id=(SELECT id FROM shops WHERE respons_person=:uid)");
             $stmt->bindParam(':gid',$gid,PDO::PARAM_INT);
             $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
             $n=$form->getFieldValue('name');
             $stmt->bindParam(':n',$n,PDO::PARAM_STR);
+            $cn=$form->getFieldValue('cath');
+            $stmt->bindParam(':cn',$cn,PDO::PARAM_STR);
             $p=$form->getFieldValue('price');
             $stmt->bindParam(':p',$p,PDO::PARAM_INT);
             $de=$form->getFieldValue('descr');
@@ -668,7 +674,7 @@ class DB{
         //Возвращяет good as object
         try{
             $stmt=$this->_pdo->prepare(
-            "SELECT goods.id,slug,shop_id,d_date,goods.name,price,descr,options.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN options ON options.id=goods.manuf LEFT JOIN fotos ON fotos.id=goods.main_foto_id WHERE slug=:s");
+            "SELECT goods.id,slug,shop_id,caths.name as cath,d_date,goods.name,price,descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN caths ON caths.id=goods.cath_id WHERE slug=:s");
             $stmt->bindParam(':s',$slug,PDO::PARAM_STR);
             $stmt->execute();
         }catch(PDOException $e){die($e);}
@@ -677,17 +683,16 @@ class DB{
     public function getFieldsOfForm($name){
         //returns fields for form as array of objects
         try{
-            $stmt=$this->_pdo->prepare("SELECT type,name,title,required FROM fields WHERE form=(SELECT id FROM forms WHERE name=:n)");
+            $stmt=$this->_pdo->prepare("SELECT type,name,title,required,options FROM fields WHERE form=(SELECT id FROM forms WHERE name=:n)");
             $stmt->bindParam(':n',$name,PDO::PARAM_STR);
             $stmt->execute();
         }catch(PDOException $e){die($e);}
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-    protected function getOptionsOfField($name){
+    protected function getOptionsOfField($tbl_name){
         //returns options-items for the field as array
         try{
-            $stmt=$this->_pdo->prepare("SELECT name FROM options WHERE field=(SELECT id FROM fields WHERE name=:n)");
-            $stmt->bindParam(':n',$name,PDO::PARAM_STR);
+            $stmt=$this->_pdo->prepare("SELECT name FROM $tbl_name");
             $stmt->execute();
         }catch(PDOException $e){die($e);}
         $res=array();
@@ -703,7 +708,7 @@ class DB{
         }
         $rc=new ReflectionClass($c_n);
         $field=$rc->newInstance($template);
-        $field->options=$this->getOptionsOfField($template->name);
+        if(NULL!==$template->options)$field->options=$this->getOptionsOfField($template->options);
         return $field;
     }
     public function formFactory($name){
@@ -712,6 +717,23 @@ class DB{
         $rc=new ReflectionClass($name);
         $form=$rc->newInstance($this);
         return $form;
+    }
+    public function getAllCaths(){
+        // returns all caths as an array of objects
+        try{
+            $stmt=$this->_pdo->prepare("SELECT id,group_id,name,foto_id FROM caths");
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+    public function getCathsAsOptions(){
+        try{
+            $stmt=$this->_pdo->prepare("SELECT name FROM caths");
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        $res=array();
+        while($r=$stmt->fetch(PDO::FETCH_NUM))$res[]=$r[0];
+        return $res;
     }
 
     public function createTestDB(){

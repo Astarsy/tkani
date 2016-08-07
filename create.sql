@@ -13,33 +13,33 @@ CREATE TABLE fields(
 				name VARCHAR(40) NOT NULL,
 				title VARCHAR(80) NULL,
 				required BOOLEAN NOT NULL DEFAULT true,
+				options VARCHAR(40) NULL,
 				FOREIGN KEY(form) REFERENCES forms(id)
-				);
-CREATE TABLE options(
-				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				name VARCHAR(40) NOT NULL,
-				field INT NOT NULL,
-				FOREIGN KEY(field) REFERENCES fields(id)
 				);
 INSERT INTO forms(id,name,title)
 	VALUES
 		(1,'AddGoodForm','Форма добавления товара')
 		;
-INSERT INTO fields(id,form,type,name,title,required)
+INSERT INTO fields(id,form,type,name,title,required,options)
 	VALUES
-		(1,1,'text','name','Название',true),
-		(2,1,'text','price','Цена',true),
-		(3,1,'select','manuf','Производитель',true),
-		(4,1,'text','consist','Состав',true),
-		(5,1,'text','width','Ширина',true),
-		(6,1,'text','descr','Описание',false),
-		(7,1,'img','foto','Изображение',true)
+		(1,1,'text','name','Название',true,NULL),
+		(2,1,'text','price','Цена',true,NULL),
+		(3,1,'select','manuf','Производитель',true,'manufs'),
+		(4,1,'text','consist','Состав',true,NULL),
+		(5,1,'text','width','Ширина',true,NULL),
+		(6,1,'text','descr','Описание',false,NULL),
+		(7,1,'img','foto','Изображение',true,NULL),
+		(8,1,'cath','cath','Категория',true,'caths')
 		;
-INSERT INTO options(id,field,name)
+CREATE TABLE manufs(
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				name VARCHAR(40) NOT NULL
+				);
+INSERT INTO manufs(id,name)
 	VALUES
-		(1,3,'Италия'),
-		(2,3,'Китай'),
-		(3,3,'Россия')
+		(1,'Италия'),
+		(2,'Китай'),
+		(3,'Россия')
 		;
 
 
@@ -216,6 +216,7 @@ CREATE TABLE goods(
 			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			slug VARCHAR(20) NOT NULL UNIQUE,
 			shop_id INT NOT NULL,
+			cath_id INT NOT NULL,
 			d_date INT NULL,
 			name VARCHAR(80) NOT NULL,
 			price INT NOT NULL,
@@ -224,8 +225,9 @@ CREATE TABLE goods(
 			consist VARCHAR(80) NOT NULL,
 			width INT NOT NULL,
 			main_foto_id INT NOT NULL,
-			FOREIGN KEY(shop_id) REFERENCES shops(id),			
-			FOREIGN KEY(manuf) REFERENCES options(id),
+			FOREIGN KEY(shop_id) REFERENCES shops(id),		
+			FOREIGN KEY(cath_id) REFERENCES caths(id),	
+			FOREIGN KEY(manuf) REFERENCES manufs(id),
 			FOREIGN KEY(main_foto_id) REFERENCES fotos(id) ON DELETE CASCADE
 			);
 
@@ -233,8 +235,9 @@ INSERT INTO fotos(id,file)
 	VALUES	(1,'IMG_2406.JPG');
 INSERT INTO groups(id,name,foto_id)
 	VALUES	(1,'jins',1);	
-INSERT INTO caths(id,name,foto_id)
-	VALUES	(1,'jins printed',1),
-			(2,'jins colored',1);
-INSERT INTO goods(id,slug,shop_id,d_date,name,price,descr,manuf,consist,width,main_foto_id)
-	VALUES	(1,'g_001',1,1468496877,'jins #1',888,'Описание джинса номер один.',2,'хлопок 100%',140,1);
+INSERT INTO caths(id,name,group_id,foto_id)
+	VALUES	(1,'jins printed',1,1),
+			(2,'jins colored',1,1),
+			(3,'atlas',NULL,1);
+INSERT INTO goods(id,slug,shop_id,cath_id,d_date,name,price,descr,manuf,consist,width,main_foto_id)
+	VALUES	(1,'g_001',1,2,1468496877,'jins #1',888,'Описание джинса номер один.',2,'хлопок 100%',140,1);
