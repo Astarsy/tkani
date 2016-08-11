@@ -2,8 +2,8 @@
 {% block header %}
     <div class='hight_banner'><a href='' title='Открыть сайт рекламодателя'>Верхний баннер</a></div>
     <div class='hight_menu'>
-        <div class='logo'></div>
-        <div class='search'></div>
+        <div class='logo'><a href='/' title='{{ this.host }}'><img src='/logos/main.png' alt='Logo'></a></div>
+        <div class='search'>{% include this.search.getIcon() %}</div>
         <div class='basket'>{% include this.basket.getIcon() %}</div>
         <div class='logger'>{% include this.logger %}</div>
     </div>

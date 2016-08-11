@@ -1,14 +1,10 @@
 {% extends "shop.twig.html" %}
 {% block content %}
     <div class='left_panel'>
-        <div class='left_menu'></div>
+        <div class='left_menu'>{% include this.left_menu %}</div>
         <div class='news_bar'></div>
     </div>
-    <div class='main_banner_box'>
-        <div class='big_banner'></div>
-        <div class='litle_banner'></div>
+    <div class='showcase'>
+        {% block showcase %}{% endblock %}
     </div>
-    <div class='panel'></div>
-    <div class='new_goods'></div>
-    <div class='recomended_goods'></div>
 {% endblock %}

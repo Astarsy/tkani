@@ -7,11 +7,16 @@ class DefaultController{
         $this->_db=new ShopDB();
         $this->logger=new Logger();
         $this->basket=new Basket();
+        $this->search=new Search();
+        $this->host=$_SERVER['SERVER_NAME'];
     }
 
     public function Method(){
         // Главная Витрина
         $fc=AppController::getInstance();
+        $this->left_menu=new LeftMenu();
+        $this->new_goods=new NewGoods();
+        $this->recomended_goods=new RecomendedGoods();
         $fc->setContent($fc->render('index.twig.html',array('this'=>$this,)));
     }
     public function goodMethod(){
