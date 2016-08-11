@@ -1,36 +1,33 @@
 <?php
-// class MyVar{
-//     private $a="I'm A";
-//     public function __get($v){
-//         if(!isset($this->{$v}))die('Undefine prop '.$v);
-//         return $this->{$v};
-//     }
-// }
-class DefaultController extends BaseController{
-    //Контроллер поумолчанию, выводит основной контент
-    public function errorMethod(){
-        // запрос несуществующего метода Любого контроллера
-        $fc=AppController::getInstance();
-        //echo $_SERVER['REQUEST_URI'];
-        $fc->setContent($fc->render('error.twig.html'));
+class DefaultController{
+    // Контроллер поумолчанию, выводит основной контент.
+    // Не наследует BaseController, т.к. не нужна проверка прав.
+    // Использует собственный провайдер БД- ShopDB
+    public function __construct(){
+        $this->_db=new ShopDB();
+        $this->logger=new Logger();
+        $this->basket=new Basket();
     }
 
     public function Method(){
-        // gladkov.loc
+        // Главная Витрина
         $fc=AppController::getInstance();
-//        $v=new MyVar();
-//        die($v->b);
-        $fc->setContent($fc->render('index.twig.html',array('logger'=>$this->_logger,)));
+        $fc->setContent($fc->render('index.twig.html',array('this'=>$this,)));
     }
     public function goodMethod(){
         // gladkov.loc/good/3
         $fc=AppController::getInstance();
-        $fc->setContent($fc->render('show_good.twig.html'));
+        $fc->setContent($fc->render('show_good.twig.html',array('this'=>$this,)));
     }
     public function cathMethod(){
         // gladkov.loc/cath/3
         $fc=AppController::getInstance();
-        $fc->setContent($fc->render('show_cath.twig.html'));
+        $fc->setContent($fc->render('show_cath.twig.html',array('this'=>$this,)));
+    }
+    public function errorMethod(){
+        // Выводит страницу ошибки. Сюда идет переадресация из многих обработчиков ошибок
+        $fc=AppController::getInstance();
+        $fc->setContent($fc->render('error.twig.html'));
     }
     public function msgMethod(){
         //выводит сообщение формата:

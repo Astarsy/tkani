@@ -21,6 +21,16 @@ namespace Globals{
 	const USER_SESNAME='user_data';
 	define('USERS_FILENAME','.htpasswd');//учетные данные поль-лей
     
+    function getPDOInstance(){
+        // Возвращяет экз-р PDO для всех провайдеров данных
+        $pdo=new \PDO(
+            'mysql:host=localhost;dbname='.DB_NAME,
+            DB_USER,
+            DB_PASS);
+        if(DEBUG)$pdo->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
+        return $pdo;
+    }
+
 	function clearStr($str,$len=200){
 		return (string)substr(trim(strip_tags($str)),0,$len);
 	}

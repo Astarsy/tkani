@@ -3,11 +3,7 @@ class DB{
     protected static $_instance=null;
     protected $_pdo;
     private function __construct(){
-        $this->_pdo=new PDO(
-            'mysql:host=localhost;dbname='.Globals\DB_NAME,
-            Globals\DB_USER,
-            Globals\DB_PASS);
-        if(Globals\DEBUG)$this->_pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        $this->_pdo=Globals\getPDOInstance();
     }
     private function __clone(){}
     public function __destruct(){

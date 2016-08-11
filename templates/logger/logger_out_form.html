@@ -1,6 +1,9 @@
 <form class='logger' method='post'>
+    <div>
+        <span>{{this._logger.getUser().name}}</span>
+    </div>
 	<div>
-		<a href='/cabinet'>Кабинет</a>
+		<a href='/cabinet' title='Кабинет пользователя'>Кабинет</a>
 	</div>
 	<div>
 		<button name='logout'>Выйти</button>

@@ -1,0 +1,17 @@
+{% extends "base.twig.html" %}
+{% block header %}
+    <div class='hight_banner'><a href='' title='Открыть сайт рекламодателя'>Верхний баннер</a></div>
+    <div class='hight_menu'>
+        <div class='logo'></div>
+        <div class='search'></div>
+        <div class='basket'>{% include this.basket.getIcon() %}</div>
+        <div class='logger'>{% include this.logger %}</div>
+    </div>
+    <div class='crumbs'>Крошки ></div>
+    {% block order %}{% endblock %}
+    <hr>
+{% endblock %}
+{% block footer %}
+    <hr>
+    <h2>Footer of a Shop Section</h2>
+{% endblock %}

@@ -9,7 +9,16 @@
 	<link rel="stylesheet" href="/css/main.css" type="text/css">
 </head>
 <body>
-<a href='/'>Home</a>
-{% block content %}{% endblock %}
+<header>
+    <a href='/' title='На главную'>Home</a>
+    {% block header %}{% endblock %}
+</header>
+<content>
+    {% block content %}{% endblock %}
+</content>
+<footer>
+    {% block footer %}{% endblock %}
+    <div class='astarsy'><a href='astarsu.ru' title='Сайт разработчика'>Astarsy.ru 2015-{{ date()|date("Y") }}</a></div>
+</footer>
 </body>
 </html>
