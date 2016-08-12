@@ -10,13 +10,12 @@ class DefaultController{
         $this->search=new Search();
         $this->host=$_SERVER['SERVER_NAME'];
     }
-
     public function Method(){
         // Главная Витрина
         $fc=AppController::getInstance();
-        $this->left_menu=new LeftMenu();
-        $this->new_goods=new NewGoods();
-        $this->recomended_goods=new RecomendedGoods();
+        $this->left_menu=new LeftMenu($this->_db);
+        $this->new_goods=new NewGoods($this->_db);
+        $this->recomended_goods=new RecomendedGoods($this->_db);
 
         $this->left_menu->setHere('jins');
 

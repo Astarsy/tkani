@@ -1,1 +1,18 @@
-Новые товары
+<h2>Новые товары</h2>
+{% for item in this.new_goods.getItems() %}
+<div>
+    {{item.id}}
+    {{item.slug}}
+    {{item.shop}}
+    {{item.cath_id}}
+    {{item.d_date}}
+    {{item.name}}
+    {{item.price}}
+    {{item.descr}}
+    {{item.manuf}}
+    {{item.consist}}
+    {{item.width}}
+    {{item.foto}}
+</div>
+{% endfor %}
+<a href='/newgoods' title='Смотреть дольше новых товаров'>Ещё</a>

@@ -2,8 +2,7 @@
 class LeftMenu{
     // Текстовый писк
     protected $_items;//ассоц. массив элементов меню
-    public function __construct(){
-        $db=new ShopDB();
+    public function __construct($db){
         $this->_items=$db->getLeftMenuItems();
     }
     public function getItems(){
