@@ -3,12 +3,19 @@
     {% if item.group_id is defined %}
         {% set fl='c' %}
         {% set ref='cath' %}
+        {% set title='Смотреть категорию' %}
     {% else %}
         {% set fl='g' %}
         {% set ref='group' %}
+        {% set title='Смотреть группу' %}
     {% endif %}
-<li>
-<a href='/{{ref}}/{{item.id}}'>{{item.name}} ({{fl}})</a>
+    {% if item.here is defined %}
+        {% set here_class=" class='here'" %}
+    {% else %}
+        {% set here_class="" %}
+    {% endif %}
+<li{{here_class|raw}}>
+<a href='/{{ref}}/{{item.id}}' title='{{title}} {{item.name}}'>{{item.name}} ({{fl}})</a>
 </li>
 {% endfor %}
 </ul>

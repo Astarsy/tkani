@@ -17,6 +17,9 @@ class DefaultController{
         $this->left_menu=new LeftMenu();
         $this->new_goods=new NewGoods();
         $this->recomended_goods=new RecomendedGoods();
+
+        $this->left_menu->setHere('jins');
+
         $fc->setContent($fc->render('index.twig.html',array('this'=>$this,)));
     }
     public function goodMethod(){
