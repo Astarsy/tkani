@@ -6,6 +6,7 @@ class LeftMenu{
         $this->_items=$db->getLeftMenuItems();
     }
     public function getItems(){
+    //    var_dump($this->_items);
         return $this->_items;
     }
     public function __toString(){

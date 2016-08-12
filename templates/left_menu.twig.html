@@ -1,7 +1,14 @@
 <ul>
 {% for item in this.left_menu.getItems() %}
+    {% if item.group_id is defined %}
+        {% set fl='c' %}
+        {% set ref='cath' %}
+    {% else %}
+        {% set fl='g' %}
+        {% set ref='group' %}
+    {% endif %}
 <li>
-{{item.name}}{% if item.group_id is defined %}(c){% else %}(g){% endif %}
+<a href='/{{ref}}/{{item.id}}'>{{item.name}} ({{fl}})</a>
 </li>
 {% endfor %}
 </ul>
