@@ -1,1 +1,7 @@
-Left Menu
+<ul>
+{% for item in this.left_menu.getItems() %}
+<li>
+{{item.name}}{% if item.group_id is defined %}(c){% else %}(g){% endif %}
+</li>
+{% endfor %}
+</ul>

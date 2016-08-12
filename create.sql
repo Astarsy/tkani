@@ -234,10 +234,17 @@ CREATE TABLE goods(
 INSERT INTO fotos(id,file)
 	VALUES	(1,'IMG_2406.JPG');
 INSERT INTO groups(id,name,foto_id)
-	VALUES	(1,'jins',1);	
+	VALUES	(1,'jins',1),
+			(2,'empty group',NULL),
+			(3,'group whit empty cath',NULL);	
 INSERT INTO caths(id,name,group_id,foto_id)
 	VALUES	(1,'jins printed',1,1),
 			(2,'jins colored',1,1),
-			(3,'atlas',NULL,1);
+			(3,'alwais empty cath',NULL,NULL),
+			(4,'atlas',NULL,1),
+			(5,'cath for empty group',3,NULL);
 INSERT INTO goods(id,slug,shop_id,cath_id,d_date,name,price,descr,manuf,consist,width,main_foto_id)
-	VALUES	(1,'g_001',1,2,1468496877,'jins #1',888,'Описание джинса номер один.',2,'хлопок 100%',140,1);
+	VALUES	(1,'g_001',1,2,1468496877,'jins #1',888,'Описание джинса номер один.',2,'хлопок 100%',140,1),
+			(2,'g_002',1,4,1468497877,'atlas #1',1000,'Описание атласа номер один.',3,'хлопок 100%',140,1),
+			(3,'g_003',1,2,1468496977,'jins #2',888,'Описание джинса номер 2.',2,'хлопок 100%',140,1),
+			(4,'g_004',1,1,1468497077,'jins #3',888,'Описание джинса номер 3.',2,'хлопок 100%',140,1);
