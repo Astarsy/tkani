@@ -6,7 +6,7 @@ class DefaultController{
     public function __construct(){
         $this->_db=new ShopDB();
         $this->logger=new Logger();
-        $this->basket=new Basket();
+        $this->basket=new Basket($this->_db);
         $this->search=new Search();
         $this->host=$_SERVER['SERVER_NAME'];
     }

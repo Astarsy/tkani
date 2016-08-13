@@ -17,19 +17,17 @@ window.onload=function(){
     this.addEvent('btn_dec','click',dec);
     this.addEvent('btn_inc','click',inc);
     this.addEvent('length','change',calc);
-    this.addEvent('btn_to_basket','click',to_basket);
-//    this.addEvent('btn_clear','click',clear_basket);
-     
+    this.addEvent('btn_to_basket','click',to_basket);     
     //при загрузке вычислить и установить ИТОГО для всех
     this.i_d_bl=document.getElementsByClassName('inc_dec_block');   
     for(var i=0;i<i_d_bl.length;i++){
         set_length(i_d_bl[i]);
         set_sum(i_d_bl[i]);
     }
-    //и ИТОГО страницы
-    set_total();
     //при загрузке установить кол-во товаров в корзине
     set_basket_count(get_goods_count());
+    //и ИТОГО страницы
+    set_total();
 }
 function del(e){
     //Вызывается при нажатии 'btn_del', удаляет
@@ -62,23 +60,15 @@ function renumerate(){
 // }
 function to_basket(){
 //Добавляет товар в корзину и обновляет счетчик в значке корзины
-        // Удаление COOKIE
-        //var c_d=new Date();
-        //c_d.setTime(c_d.getTime()-1);
-        //document.cookie="v=;expires="+c_d.toGMTString()+";";
-        //----------------
     if(get_goods_count()<MAX_GOODS){
-        var art=document.getElementsByClassName('art')[0];
-        var len=art.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('length')[0];
-        var id=art.firstChild.nodeValue;
-        var b_s=getCookie(BASKET)+id+':'+len.value+'|';
+        var art=document.getElementsByClassName('art')[0].firstChild.nodeValue;
+        var len=document.getElementsByClassName('length')[0].value;
+        var price=document.getElementsByClassName('price')[0].firstChild.nodeValue;
+        var b_s=getCookie(BASKET);
+        if(b_s!='')b_s+='|';
+        b_s+=art+':'+len+':'+price;
         document.cookie=BASKET+'='+b_s+';';
-        //меняем значение const_basket_total
-        var sum=document.getElementsByClassName('sum')[0].firstChild.nodeValue;
-        var b_tot=document.getElementById('const_basket_total').firstChild.nodeValue;
-        var tot=parseFloat(sum)+parseFloat(b_tot);
-        document.getElementById('const_basket_total').firstChild.nodeValue=tot;
-        
+        set_total();
         set_basket_count(get_goods_count());
     }
 }
@@ -87,21 +77,13 @@ function set_basket_count(c){
 //и в эл-те 'basket_total'>
 //в зависимости от текущей страницы
     document.getElementsByClassName('basket_count')[0].firstChild.nodeValue=c;
-    try{//-мы в корзине
-        document.getElementsByClassName('basket_total')[0].firstChild.nodeValue=document.getElementsByClassName('tot_sum')[0].firstChild.nodeValue;
-    }catch(x){//-мы в GoodBig, или в каталоге        
-        // в этом случае значение ИТОГО в Корзине
-        // поставляется сервером в скрытом
-        //поле 'const_basket_total',ничего не //менять, только поместить значение
-        //скрытого поля в корзину
-        document.getElementsByClassName('basket_total')[0].firstChild.nodeValue=document.getElementById('const_basket_total').firstChild.nodeValue;
-    }
 }
 function get_goods_count(){
 //Возвращает кол-во id  в cookie BASKET
     var b_s=getCookie(BASKET);
+    if(b_s=="")return 0;
     var as=b_s.split('|');
-    return as.length-1;
+    return as.length;
 }
 function getCookie(name) {
 //Возвращает строку-значение куки по имени, или ''
@@ -216,20 +198,16 @@ function change_cookie(i_d_bl,l){
     document.cookie=BASKET+'='+coocka+';';
 }
 function set_total(){
-    //Подсчитывает и устанавливает поля tot_sum, tot_count
-    try{
-        var e_tot_sum=document.getElementsByClassName('tot_sum')[0];
-        var e_tot_count=document.getElementsByClassName('tot_count')[0];
-        var arr_sums=document.getElementsByClassName('sum');
-        var s=0;
-        var i=0;
-        for(i=0;i<arr_sums.length;i++){
-            s+=parseFloat(arr_sums[i].firstChild.nodeValue);
-        }
-        s=parseInt(s);
-        e_tot_sum.firstChild.nodeValue=s;
-        e_tot_count.firstChild.nodeValue=i;
-    }catch(x){}
+    //Подсчитывает и устанавливает basket_total
+    var as=getCookie(BASKET).split('|');
+    var sum=0;
+    for(var i=0;i<as.length;i++){
+        var item=as[i].split(':');
+        var l=parseFloat(item[1]);
+        var p=parseFloat(item[2]);
+        sum+=l*p;
+    }
+    document.getElementsByClassName('basket_total')[0].firstChild.nodeValue=sum;
 }
 function calc(e){
     //вызывается при необх. пересчитать ИТОГО, принимает событие,

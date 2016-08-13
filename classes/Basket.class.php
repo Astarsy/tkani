@@ -2,7 +2,11 @@
 class Basket{
     // Корзина пользователя.
     // Хранение- в куках.
-    public function __construct(){
+    protected $_rows;//строки art:length
+    public function __construct($db){
+        if(!isset($_COOKIE['basket']))$_COOKIE['basket']='';
+        $this->rows=explode('|',($_COOKIE['basket']));
+        var_dump($_COOKIE['basket']);
     }
     public function __toString(){
         //возвращает имя файла шаблона для отображения на странице /baket
@@ -14,9 +18,5 @@ class Basket{
     }
     public function getAddBlock(){
         return 'basket/add_block.twig.html';
-    }
-    public function getTotal(){
-        // Возвращяет текущее состояние ИТОГО в корзине
-        return (int)1000;
     }
 }
