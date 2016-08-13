@@ -12,4 +12,7 @@ class Basket{
         //возвращает имя шаблона для отображения в меню
         return 'basket/icon.twig.html';
     }
+    public function getAddBlock(){
+        return 'basket/add_block.twig.html';
+    }
 }

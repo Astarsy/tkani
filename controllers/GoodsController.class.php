@@ -35,7 +35,7 @@ class GoodsController extends BaseController{
         //edits the good by slug
         $fc=AppController::getInstance();
         $args=$fc->getArgsNum();
-        if(!isset($args[0]))header('Location:/error');
+        if(!isset($args[0]))exit(header('Location:/error'));
         if(!$good=$this->_db->getGoodBySlug($args[0]))exit(header('Location:/error'));
         //die('<pre>'.var_dump($good));
 

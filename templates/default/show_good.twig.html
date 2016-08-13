@@ -1,0 +1,20 @@
+{% extends "default/shop.twig.html" %}
+{% block title %}{{item.name}}{% endblock %}
+{% block content %}
+<div>
+    <img src='/fotos/big/{{item.foto}}' alt='Большое изображение товара {{item.name}} '>
+    <span>{{item.name|capitalize}}</span>
+    <span>арт. <span class='art'>{{item.slug}}</span></span>
+    <span>магазин {{item.shop}}</span>
+    <span>Описание: {{item.descr|capitalize}}</span>
+    <span>Сосотав: {{item.consist}}</span>
+    <span>Производитель: {{item.manuf}}</span>
+    <span>Ширина: {{item.width}}</span>
+    <span>Цена: <span class='price'>{{item.price}}</span> руб</span>
+    {% include this.basket.getAddBlock() %}
+</div>
+{% endblock %}
+{% block footer %}
+{{parent()}}
+<script type='text/javascript' src='/basket.js'></script>
+{% endblock %}

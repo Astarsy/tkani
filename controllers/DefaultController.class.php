@@ -19,17 +19,21 @@ class DefaultController{
 
         $this->left_menu->setHere('jins');
 
-        $fc->setContent($fc->render('index.twig.html',array('this'=>$this,)));
+        $fc->setContent($fc->render('default/index.twig.html',array('this'=>$this,)));
     }
     public function goodMethod(){
         // gladkov.loc/good/3
+        // Большая карта товара
         $fc=AppController::getInstance();
-        $fc->setContent($fc->render('show_good.twig.html',array('this'=>$this,)));
+        $args=$fc->getArgsNum();
+        if(!isset($args[0]))exit(header('Location:/error'));
+        if(!$item=$this->_db->getGoodById(Globals\clearUInt($args[0])))exit(header('Location:/error'));
+        $fc->setContent($fc->render('default/show_good.twig.html',array('this'=>$this,'item'=>$item,)));
     }
     public function cathMethod(){
         // gladkov.loc/cath/3
         $fc=AppController::getInstance();
-        $fc->setContent($fc->render('show_cath.twig.html',array('this'=>$this,)));
+        $fc->setContent($fc->render('default/show_cath.twig.html',array('this'=>$this,)));
     }
     public function errorMethod(){
         // Выводит страницу ошибки. Сюда идет переадресация из многих обработчиков ошибок

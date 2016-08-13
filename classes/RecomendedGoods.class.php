@@ -10,6 +10,6 @@ class RecomendedGoods{
     }
     public function __toString(){
         //возвращает имя файла шаблона для отображения на странице /baket
-        return 'recomended_goods.twig.html';
+        return 'default/recomended_goods.twig.html';
     }
 }

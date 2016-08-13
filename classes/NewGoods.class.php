@@ -10,6 +10,6 @@ class NewGoods{
     }
     public function __toString(){
         //возвращает имя файла шаблона для отображения на странице /baket
-        return 'new_goods.twig.html';
+        return 'default/new_goods.twig.html';
     }
 }

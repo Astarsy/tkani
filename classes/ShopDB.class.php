@@ -4,6 +4,16 @@ class ShopDB{
     public function __construct(){
         $this->_pdo=Globals\getPDOInstance();
     }
+    public function getGoodById($uid){
+        //Возвращяет good as object
+        try{
+            $stmt=$this->_pdo->prepare(
+            "SELECT goods.id,goods.slug,shops.title as shop,caths.name as cath,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN shops ON shops.id=goods.shop_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN caths ON caths.id=goods.cath_id WHERE goods.id=:uid");
+            $stmt->bindParam(':uid',$uid,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){die($e);}
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
     public function getGoods($order='d_date',$ofset=0,$limit=4){
         // Возвращяет массив объектов новых товаров
         $sql="SELECT goods.id,goods.slug,shops.title as shop,cath_id,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN shops ON shops.id=goods.shop_id ORDER BY $order DESC LIMIT $ofset,$limit";

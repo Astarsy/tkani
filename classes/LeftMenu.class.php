@@ -11,7 +11,7 @@ class LeftMenu{
     }
     public function __toString(){
         //возвращает имя файла шаблона для отображения на странице /search
-        return 'left_menu.twig.html';
+        return 'default/left_menu.twig.html';
     }
     public function setHere($name){
         // Устанавливает флаг навигации по имени item-a.
