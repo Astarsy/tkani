@@ -34,8 +34,8 @@ window.onload=function(){
 function del(e){
     //Вызывается при нажатии 'btn_del', удаляет
     //ел-т из DOM и куку
-    var rem=e.srcElement.parentNode.parentNode.parentNode;
-    var i_d_bl=e.srcElement.parentNode.parentNode.getElementsByClassName('inc_dec_block')[0];
+    var rem=e.target.parentNode.parentNode.parentNode;
+    var i_d_bl=e.target.parentNode.parentNode.getElementsByClassName('inc_dec_block')[0];
     change_cookie(i_d_bl,0);
     rem.parentNode.removeChild(rem);
     renumerate();
@@ -70,7 +70,7 @@ function to_basket(){
     if(get_goods_count()<MAX_GOODS){
         var art=document.getElementsByClassName('art')[0];
         var len=art.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('length')[0];
-        var id=parseInt(art.firstChild.nodeValue);
+        var id=art.firstChild.nodeValue;
         var b_s=getCookie(BASKET)+id+':'+len.value+'|';
         document.cookie=BASKET+'='+b_s+';';
         //меняем значение const_basket_total
@@ -112,12 +112,13 @@ function getCookie(name) {
 function inc(e){
     //Вызывается при нажатии на '+'    
     //-получаем inc_dec_block
-     var i_d_bl=e.srcElement.parentNode;
-     var id_js;
-     var l=toDiapason(get_length(i_d_bl)+STEP_LENGTH);
+    e=e||event;
+    var i_d_bl=e.target.parentNode;//srcElement=target
+    var id_js;
+    var l=toDiapason(get_length(i_d_bl)+STEP_LENGTH);
     try{
         //-если id_js есть- мы в корзине
-        isset=e.srcElement.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('id_js');
+        isset=e.target.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('id_js');
         change_cookie(i_d_bl,l);
     }catch(x){
         //-иначе- в GoodBig
@@ -132,12 +133,12 @@ function inc(e){
 }
 function dec(e){
     //Вызывается при нажатии на '-'
-     var i_d_bl=e.srcElement.parentNode;
+     var i_d_bl=e.target.parentNode;
      var id_js;
      var l=toDiapason(get_length(i_d_bl)-STEP_LENGTH);
     try{
         //-если id_js есть- мы в корзине
-        isset=e.srcElement.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('id_js');
+        isset=e.target.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('id_js');
         change_cookie(i_d_bl,l);
     }catch(x){
         //-иначе- в GoodBig
@@ -172,7 +173,6 @@ function set_sum(i_d_bl){
     //принимает один ел-т класса 'inc_dec_block',
     //пересчитывает ИТОГО, устанавливает поле ИТОГО
     var p=i_d_bl.parentNode.parentNode.getElementsByClassName('price')[0].firstChild.nodeValue;
-    console.dir(i_d_bl.parentNode.parentNode.getElementsByClassName('price')[0].firstChild.nodeValue);
     var l=get_length(i_d_bl);
     var e_s=i_d_bl.parentNode.getElementsByClassName('sum')[0];
     i_d_bl.getElementsByClassName('length')[0].value=String(l);
@@ -237,7 +237,7 @@ function calc(e){
     //вызывает change_cookie
     //e=e||event;
     try{
-        var i_d_bl=e.srcElement.parentNode;
+        var i_d_bl=e.target.parentNode;
     }catch(x){
         return;
     }
