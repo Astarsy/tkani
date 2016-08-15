@@ -2,22 +2,21 @@
 class Basket{
     // Корзина пользователя.
     // Хранение- в куках.
+    protected $_db;
     protected $_rows;//строки art:length
     public function __construct($db){
+        $this->_db=$db;
         if(!isset($_COOKIE['basket'])){
             $_COOKIE['basket']='';
             setcookie('basket','',0,'/');
         }
-        $this->rows=explode('|',($_COOKIE['basket']));
+        $this->_rows=explode('|',($_COOKIE['basket']));
         var_dump($_COOKIE['basket']);
     }
     public function getItems(){
         //Возвращяет массив массивов элементов в корзине
-        $arr=array(
-            );
-        $arr[]=array('name'=>'good1','price'=>'1000');
-        $arr[]=array('name'=>'good2','price'=>'2000');
-        return $arr;
+        $items=$this->_db->getBasketItems($this->_rows);
+        return $items;
     }
     public function __toString(){
         //возвращает имя файла шаблона для отображения на странице /baket
@@ -32,7 +31,11 @@ class Basket{
         return 'basket/content.twig.html';
     }
     public function getAddBlock(){
-        //возвращает имя шаблона блока inc/dec
+        //возвращает имя шаблона блока add_block
         return 'basket/add_block.twig.html';
+    }
+    public function getIncDecBlock(){
+        //возвращает имя шаблона блока add_block
+        return 'basket/inc_dec_block.twig.html';
     }
 }

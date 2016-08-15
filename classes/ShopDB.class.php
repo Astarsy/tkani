@@ -4,6 +4,21 @@ class ShopDB{
     public function __construct(){
         $this->_pdo=Globals\getPDOInstance();
     }
+    public function getBasketItems($rows){
+        //Возвращает массив массивов элементов корзины
+        $slugs_arr=array();
+        foreach($rows as $row){
+            $ids_arr[]=$this->_pdo->quote(Globals\clearStr(explode(':',$row)[0],30));
+        }
+        $slugs_str=implode(',', $ids_arr);
+        $sql="SELECT goods.id,goods.slug,shops.title as shop,caths.name as cath,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN shops ON shops.id=goods.shop_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN caths ON caths.id=goods.cath_id WHERE goods.slug IN($slugs_str)";
+        try{
+            $stmt=$this->_pdo->query($sql);
+        }catch(PDOException $e){
+            die($e);
+        }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function getGoodById($uid){
         //Возвращяет good as object
         try{
@@ -15,7 +30,7 @@ class ShopDB{
         return $stmt->fetch(PDO::FETCH_OBJ);
     }
     public function getGoods($order='d_date',$ofset=0,$limit=4){
-        // Возвращяет массив объектов новых товаров
+        // Возвращяет массив объектов товаров
         $sql="SELECT goods.id,goods.slug,shops.title as shop,cath_id,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN shops ON shops.id=goods.shop_id ORDER BY $order DESC LIMIT $ofset,$limit";
         try{
             $stmt=$this->_pdo->query($sql);

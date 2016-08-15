@@ -1,3 +1,15 @@
+<ul class='good_list'>
 {% for item in this.basket.getItems() %}
-<div>{{item.name}} | {{item.price}}</div>
+	<li>
+		<ul>
+		<li>{{item.id}}</li>
+		<li>{{item.slug}}</li>
+		<li>{{item.name}}</li>
+		<li>{{item.consist}}</li>		
+		<li>{{item.manuf}}</li>
+		<li>{{item.width}}</li>
+		<li class='price'>{{item.price}}</li>
+		<li>{% include this.basket.getIncDecBlock() %}<span class='sum'>0</span></li>
+		</ul>
+	</li>
 {% endfor %}
