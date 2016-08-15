@@ -67,7 +67,7 @@ function to_basket(){
         var b_s=getCookie(BASKET);
         if(b_s!='')b_s+='|';
         b_s+=art+':'+len+':'+price;
-        document.cookie=BASKET+'='+b_s+';';
+        document.cookie=BASKET+'='+b_s+"; path=/;";
         set_total();
         set_basket_count(get_goods_count());
     }

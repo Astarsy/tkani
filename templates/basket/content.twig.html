@@ -1,1 +1,3 @@
-Basket Content Page
+{% for item in this.basket.getItems() %}
+<div>{{item.name}} | {{item.price}}</div>
+{% endfor %}

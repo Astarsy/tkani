@@ -35,6 +35,11 @@ class DefaultController{
         $fc=AppController::getInstance();
         $fc->setContent($fc->render('default/show_cath.twig.html',array('this'=>$this,)));
     }
+    public function basketMethod(){
+        // gladkov.loc/basket
+        $fc=AppController::getInstance();
+        $fc->setContent($fc->render('default/basket.twig.html',array('this'=>$this,)));
+    }
     public function errorMethod(){
         // Выводит страницу ошибки. Сюда идет переадресация из многих обработчиков ошибок
         $fc=AppController::getInstance();
