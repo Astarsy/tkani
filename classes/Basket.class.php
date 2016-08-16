@@ -11,7 +11,6 @@ class Basket{
             setcookie('basket','',0,'/');
         }
         $this->_rows=explode('|',($_COOKIE['basket']));
-        var_dump($_COOKIE['basket']);
     }
     public function getItems(){
         //Возвращяет массив массивов элементов в корзине

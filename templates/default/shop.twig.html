@@ -7,7 +7,7 @@
         <div class='basket'>{% include this.basket.getIcon() %}</div>
         <div class='logger'>{% include this.logger %}</div>
     </div>
-    <div class='crumbs'>Крошки ></div>
+    <div class='crumbs'>{% include this.crumbs %}</div>
     {% block order %}{% endblock %}
     <hr>
 {% endblock %}

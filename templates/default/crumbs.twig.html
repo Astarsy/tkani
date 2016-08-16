@@ -1,0 +1,3 @@
+{% for item in this.crumbs.getItems() %}
+{% if item %}{% if loop.last %}{% set c_n='crumb_here' %}{% else %}{% set c_n='crumb_arrow' %}{% endif %}<div class='{{c_n}}'>{{item}}</div>{% endif %}
+{% endfor %}

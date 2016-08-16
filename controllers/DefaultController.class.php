@@ -8,6 +8,7 @@ class DefaultController{
         $this->logger=new Logger();
         $this->basket=new Basket($this->_db);
         $this->search=new Search();
+        $this->crumbs=new Crumbs();
         $this->host=$_SERVER['SERVER_NAME'];
     }
     public function Method(){
@@ -28,6 +29,7 @@ class DefaultController{
         $args=$fc->getArgsNum();
         if(!isset($args[0]))exit(header('Location:/error'));
         if(!$item=$this->_db->getGoodById(Globals\clearUInt($args[0])))exit(header('Location:/error'));
+        $this->crumbs->setLocation($item->group_name,$item->cath,$item->name);
         $fc->setContent($fc->render('default/show_good.twig.html',array('this'=>$this,'item'=>$item,)));
     }
     public function cathMethod(){
@@ -38,6 +40,7 @@ class DefaultController{
     public function basketMethod(){
         // gladkov.loc/basket
         $fc=AppController::getInstance();
+        $this->crumbs->setLocation('Корзина');
         $fc->setContent($fc->render('default/basket.twig.html',array('this'=>$this,)));
     }
     public function errorMethod(){

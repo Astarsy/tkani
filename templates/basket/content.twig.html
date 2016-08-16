@@ -1,17 +1,21 @@
 <ul class='good_list'>
-{% for item in this.basket.getItems() %}
-	<li>
-		<ul>
-		<li class='id_js'>{{loop.index0}}</li>
-		<li>{{item.id}}</li>
-		<li>{{item.slug}}</li>
-		<li>{{item.name}}</li>
-		<li>{{item.consist}}</li>		
-		<li>{{item.manuf}}</li>
-		<li>{{item.width}}</li>
-		<li class='price'>{{item.price}}</li>
-		<li>{% include this.basket.getIncDecBlock() %}<span class='sum'>0</span></li>
-		<li class-'del_block'><button class='btn_del'>Удалить</button></li>
-		</ul>
-	</li>
-{% endfor %}
+{% if not this.basket.getItems() %}
+Ваша корзина пока пуста.
+{% else %}
+	{% for item in this.basket.getItems() %}
+		<li>
+			<ul>
+			<li class='id_js'>{{loop.index0}}</li>
+			<li>{{item.id}}</li>
+			<li>{{item.slug}}</li>
+			<li>{{item.name}}</li>
+			<li>{{item.consist}}</li>		
+			<li>{{item.manuf}}</li>
+			<li>{{item.width}}</li>
+			<li class='price'>{{item.price}}</li>
+			<li>{% include this.basket.getIncDecBlock() %}<span class='sum'>0</span></li>
+			<li class-'del_block'><button class='btn_del'>Удалить</button></li>
+			</ul>
+		</li>
+	{% endfor %}
+{% endif %}
