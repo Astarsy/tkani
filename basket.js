@@ -32,6 +32,7 @@ window.onload=function(){
 function del(e){
     //Вызывается при нажатии 'btn_del', удаляет
     //ел-т из DOM и куку
+    e=e||event;
     var rem=e.target.parentNode.parentNode.parentNode;
     var i_d_bl=e.target.parentNode.parentNode.getElementsByClassName('inc_dec_block')[0];
     change_cookie(i_d_bl,0);
@@ -115,9 +116,10 @@ function inc(e){
 }
 function dec(e){
     //Вызывается при нажатии на '-'
-     var i_d_bl=e.target.parentNode;
-     var id_js;
-     var l=toDiapason(get_length(i_d_bl)-STEP_LENGTH);
+    e=e||event;
+    var i_d_bl=e.target.parentNode;
+    var id_js;
+    var l=toDiapason(get_length(i_d_bl)-STEP_LENGTH);
     try{
         //-если id_js есть- мы в корзине
         isset=e.target.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('id_js');
@@ -201,11 +203,13 @@ function set_total(){
     //Подсчитывает и устанавливает basket_total
     var as=getCookie(BASKET).split('|');
     var sum=0;
-    for(var i=0;i<as.length;i++){
-        var item=as[i].split(':');
-        var l=parseFloat(item[1]);
-        var p=parseFloat(item[2]);
-        sum+=l*p;
+    if(as!=''){
+        for(var i=0;i<as.length;i++){
+            var item=as[i].split(':');
+            var l=parseFloat(item[1]);
+            var p=parseFloat(item[2]);
+            sum+=l*p;
+        }
     }
     document.getElementsByClassName('basket_total')[0].firstChild.nodeValue=sum;
 }
