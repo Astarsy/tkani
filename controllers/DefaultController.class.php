@@ -29,7 +29,10 @@ class DefaultController{
         $args=$fc->getArgsNum();
         if(!isset($args[0]))exit(header('Location:/error'));
         if(!$item=$this->_db->getGoodById(Globals\clearUInt($args[0])))exit(header('Location:/error'));
-        $this->crumbs->setLocation($item->group_name,$item->cath,$item->name);
+        $this->crumbs->setLocation(array(
+                array($item->group_name,'/group/'.$item->group_id),
+                array($item->cath,'/cath/'.$item->cath_id),
+                array($item->name,'/good/'.$item->id)));
         $fc->setContent($fc->render('default/show_good.twig.html',array('this'=>$this,'item'=>$item,)));
     }
     public function cathMethod(){
