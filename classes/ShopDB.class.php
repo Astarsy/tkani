@@ -4,6 +4,15 @@ class ShopDB{
     public function __construct(){
         $this->_pdo=Globals\getPDOInstance();
     }
+    public function getNewsBarItems($length=88){
+        $sql="SELECT id,news_date,title,LEFT(content,$length)as content FROM news ORDER BY news_date DESC LIMIT 10";
+        try{
+            $stmt=$this->_pdo->query($sql);
+        }catch(PDOException $e){
+            die($e);
+        }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function getBasketItems($rows){
         //Возвращает массив массивов элементов корзины
         $slugs_arr=array();

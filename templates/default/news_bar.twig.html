@@ -1,0 +1,10 @@
+<ul>
+{% for item in this.news_bar.getItems() %}
+    <li>
+        <h4>{{item.title}}</h4>
+        <p>{{item.content}}</p>
+        <span>{{item.news_date|date("y/m/d")}}</span>
+        <a href='/news/{{item.id}}' title='Читать полностью'>>>></a>
+    </li>
+{% endfor %}
+</ul>

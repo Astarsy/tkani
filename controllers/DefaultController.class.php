@@ -15,6 +15,7 @@ class DefaultController{
         // Главная Витрина
         $fc=AppController::getInstance();
         $this->left_menu=new LeftMenu($this->_db);
+        $this->news_bar=new NewsBar($this->_db);
         $this->new_goods=new NewGoods($this->_db);
         $this->recomended_goods=new RecomendedGoods($this->_db);
 
