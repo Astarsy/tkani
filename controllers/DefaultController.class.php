@@ -18,10 +18,32 @@ class DefaultController{
         $this->news_bar=new NewsBar($this->_db);
         $this->new_goods=new NewGoods($this->_db);
         $this->recomended_goods=new RecomendedGoods($this->_db);
-
-        $this->left_menu->setHere('jins');
-
         $fc->setContent($fc->render('default/index.twig.html',array('this'=>$this,)));
+    }
+    public function groupMethod(){
+        // gladkov.loc/group/3
+        $fc=AppController::getInstance();
+        $args=$fc->getArgsNum();
+        if(!isset($args[0]))exit(header('Location:/error'));
+        $gid=Globals\clearUInt($args[0]);
+        if(!$this->group=$this->_db->getGroupById($gid))exit(header('Location:/error'));
+        $this->title=$this->group->name;
+        $this->caths=new CathsOfGroup($this->_db,$gid);
+        $this->left_menu=new LeftMenu($this->_db);
+        $this->news_bar=new NewsBar($this->_db);        
+        $this->new_goods=new NewGoodsOfGroup($this->_db,$gid);
+        $this->recomended_goods=new RecomendedGoodsOfGroup($this->_db,$gid);
+        $this->left_menu->setHere('jins');
+        $fc->setContent($fc->render('default/show_group.twig.html',array('this'=>$this,)));
+    }
+    public function cathMethod(){
+        // gladkov.loc/cath/3
+        $fc=AppController::getInstance();
+        $args=$fc->getArgsNum();
+        if(!isset($args[0]))exit(header('Location:/error'));
+        $cid=Globals\clearUInt($args[0]);
+        if(!$this->cath=$this->_db->getCathById($cid))exit(header('Location:/error'));
+        $fc->setContent($fc->render('default/show_cath.twig.html',array('this'=>$this,)));
     }
     public function goodMethod(){
         // gladkov.loc/good/3
@@ -35,11 +57,6 @@ class DefaultController{
                 array($item->cath,'/cath/'.$item->cath_id),
                 array($item->name,'/good/'.$item->id)));
         $fc->setContent($fc->render('default/show_good.twig.html',array('this'=>$this,'item'=>$item,)));
-    }
-    public function cathMethod(){
-        // gladkov.loc/cath/3
-        $fc=AppController::getInstance();
-        $fc->setContent($fc->render('default/show_cath.twig.html',array('this'=>$this,)));
     }
     public function basketMethod(){
         // gladkov.loc/basket

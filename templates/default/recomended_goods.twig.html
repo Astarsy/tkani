@@ -1,18 +1,5 @@
-<h2>Рекомендуемые товары</h2>
+<h2>Рекомендуем обратить внимание</h2>
 {% for item in this.recomended_goods.getItems() %}
-<div>
-    {{item.id}}
-    {{item.slug}}
-    {{item.shop}}
-    {{item.cath_id}}
-    {{item.d_date}}
-    {{item.name}}
-    {{item.price}}
-    {{item.descr}}
-    {{item.manuf}}
-    {{item.consist}}
-    {{item.width}}
-    {{item.foto}}
-</div>
+{% include "default/good_card_mini.twig.html" %}
 {% endfor %}
 <a href='/recomended' title='Смотреть больше рекомендуемых товаров'>Ещё</a>

@@ -1,0 +1,6 @@
+{% for item in this.caths.getItems() %}
+<a href='/cath/{{item.id}}' title='Смотреть {{item.name}}'>
+{{item.name}}
+{{item.file}}
+</a>
+{% endfor %}
