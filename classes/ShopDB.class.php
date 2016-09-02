@@ -69,7 +69,7 @@ class ShopDB{
         if(empty($arr=$stmt->fetchAll(PDO::FETCH_OBJ)))return array();
         return $arr;
     }
-    public function getGoods($order='d_date',$ofset=0,$limit=4){
+    public function getGoods($order,$ofset,$limit){
         // Возвращяет массив объектов товаров
         $sql="SELECT goods.id,goods.slug,shops.title as shop,cath_id,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN shops ON shops.id=goods.shop_id ORDER BY $order DESC LIMIT $ofset,$limit";
         try{

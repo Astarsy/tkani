@@ -3,6 +3,5 @@
 {% block showcase %}
     <h1>{{this.title}}</h1>
     <div class='caths'>{% include this.caths %}</div>
-    <div class='new_goods'>{% include this.new_goods %}</div> 
-    <div class='recomended_goods'>{% include this.recomended_goods %}</div>
+    {% include "default/goods.twig.html" %}
 {% endblock %}

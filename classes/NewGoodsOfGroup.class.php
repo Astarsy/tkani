@@ -1,5 +1,5 @@
 <?php
-class NewGoodsOfGroup extends NewGoods{
+class NewGoodsOfGroup extends Goods{
     // Секция Новые товары в данной Группе
     protected $_items;
     public function __construct($db,$id){

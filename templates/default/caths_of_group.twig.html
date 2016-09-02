@@ -1,3 +1,6 @@
+{% if this.caths.getItems()|length>1 %}
+<a href='/all/{{this.group.id}}' title='Смотреть все {{this.group.name}}'>Все {{this.group.name}}</a>
+{% endif %}
 {% for item in this.caths.getItems() %}
 <a href='/cath/{{item.id}}' title='Смотреть {{item.name}}'>
 {{item.name}}

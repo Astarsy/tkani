@@ -16,8 +16,9 @@ class DefaultController{
         $fc=AppController::getInstance();
         $this->left_menu=new LeftMenu($this->_db);
         $this->news_bar=new NewsBar($this->_db);
-        $this->new_goods=new NewGoods($this->_db);
-        $this->recomended_goods=new RecomendedGoods($this->_db);
+        $this->all_goods=array();
+        $this->all_goods['Новые']=new Goods($this->_db);
+        $this->all_goods['Рекомендуем обратить внимание']=new Goods($this->_db,'RAND()');
         $fc->setContent($fc->render('default/index.twig.html',array('this'=>$this,)));
     }
     public function groupMethod(){
@@ -30,20 +31,30 @@ class DefaultController{
         $this->title=$this->group->name;
         $this->caths=new CathsOfGroup($this->_db,$gid);
         $this->left_menu=new LeftMenu($this->_db);
-        $this->news_bar=new NewsBar($this->_db);        
-        $this->new_goods=new NewGoodsOfGroup($this->_db,$gid);
-        $this->recomended_goods=new RecomendedGoodsOfGroup($this->_db,$gid);
-        $this->left_menu->setHere('jins');
+        $this->news_bar=new NewsBar($this->_db); 
+        $this->all_goods=array();
+        $this->all_goods['Новые '.$this->group->name]=new GoodsOfGroup($this->_db,$gid);
+        $this->all_goods['Рекомендуем обратить внимание']=new GoodsOfGroup($this->_db,$gid,'RAND()');
+        $this->left_menu->setHere($this->group->name);
         $fc->setContent($fc->render('default/show_group.twig.html',array('this'=>$this,)));
     }
     public function cathMethod(){
-        // gladkov.loc/cath/3
+        // отобазить все товары в сатегории
         $fc=AppController::getInstance();
         $args=$fc->getArgsNum();
         if(!isset($args[0]))exit(header('Location:/error'));
         $cid=Globals\clearUInt($args[0]);
         if(!$this->cath=$this->_db->getCathById($cid))exit(header('Location:/error'));
         $fc->setContent($fc->render('default/show_cath.twig.html',array('this'=>$this,)));
+    }
+    public function allMethod(){
+        // отобразить все товары в Группе
+        $fc=AppController::getInstance();
+        $args=$fc->getArgsNum();
+        if(!isset($args[0]))exit(header('Location:/error'));
+        $gid=Globals\clearUInt($args[0]);
+        if(!$this->goods=$this->_db->getAllGoodsOfGroup($gid))exit(header('Location:/error'));
+        $fc->setContent($fc->render('default/show_all.twig.html',array('this'=>$this,)));
     }
     public function goodMethod(){
         // gladkov.loc/good/3

@@ -1,0 +1,6 @@
+{% for title,goods in this.all_goods %}
+<h2>{{title}}</h2>
+{% for item in goods.getItems() %}
+{% include "default/good_card_mini.twig.html" %}
+{% endfor %}
+{% endfor %}
