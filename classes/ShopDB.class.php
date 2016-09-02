@@ -90,6 +90,17 @@ class ShopDB{
         }
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+    public function getGoodsOfCath($cid,$order='d_date',$ofset=0,$limit=4){
+        // Возвращяет массив объектов товаров Категории
+        $stmt=$this->_pdo->prepare("SELECT goods.id,goods.slug,shops.title as shop,cath_id,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN shops ON shops.id=goods.shop_id WHERE goods.cath_id=:cid ORDER BY $order DESC LIMIT $ofset,$limit");
+        try{
+            $stmt->bindParam(':cid',$cid,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){
+            die($e);
+        }
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
     public function getLeftMenuItems(){
         // Возвращает массив эл-в LeftMenu
         $res=$this->getNotEmptyGroups();

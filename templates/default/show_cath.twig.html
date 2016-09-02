@@ -1,6 +1,4 @@
-{% extends "default/shop.twig.html" %}
-{% block title %}this.title{% endblock %}
+{% extends "default/shop_no_left_menu.twig.html" %}
 {% block showcase %}
-    <h1>{{this.title}}</h1>
-    <h3>Show/cath</h3>
+    {% include "default/goods.twig.html" %}
 {% endblock %}

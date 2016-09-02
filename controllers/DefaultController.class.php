@@ -39,12 +39,18 @@ class DefaultController{
         $fc->setContent($fc->render('default/show_group.twig.html',array('this'=>$this,)));
     }
     public function cathMethod(){
-        // отобазить все товары в сатегории
+        // отобазить все товары в категории
         $fc=AppController::getInstance();
         $args=$fc->getArgsNum();
         if(!isset($args[0]))exit(header('Location:/error'));
-        $cid=Globals\clearUInt($args[0]);
-        if(!$this->cath=$this->_db->getCathById($cid))exit(header('Location:/error'));
+        $gid=Globals\clearUInt($args[0]);
+        if(!$this->group=$this->_db->getGroupById($gid))exit(header('Location:/error'));
+        $this->title=$this->group->name;
+        $this->caths=new CathsOfGroup($this->_db,$gid);
+        $this->left_menu=new LeftMenu($this->_db);
+        $this->news_bar=new NewsBar($this->_db); 
+        $this->all_goods=array();
+        $this->all_goods['']=new GoodsOfCath($this->_db,$gid,$order='d_date',$ofset=0,$limit=8);
         $fc->setContent($fc->render('default/show_cath.twig.html',array('this'=>$this,)));
     }
     public function allMethod(){
