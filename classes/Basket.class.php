@@ -13,13 +13,24 @@ class Basket{
         $this->_rows=explode('|',($_COOKIE['basket']));
     }
     public function getItems(){
-        //Возвращяет массив массивов элементов в корзине
-        $items=$this->_db->getBasketItems($this->_rows);
+        //Возвращяет массив массивов элементов в корзине или NULL
+        if(!$this->_rows)return;
+        $slug_arr=array();
+        foreach($this->_rows as $row){
+            $slug_arr[]=Globals\clearStr(explode(':',$row)[0],30);
+        }
+        $slugs_str='"'.implode('","',$slug_arr).'"';
+        $goods=$this->_db->getGoodsBySlugs($slugs_str);
+        $items=array();
+        foreach($slug_arr as $slug){
+            if($good=$this->getGoodBySlug($slug,$goods))$items[]=$good;
+        }
         return $items;
     }
-    public function __toString(){
-        //возвращает имя файла шаблона для отображения на странице /baket
-        return 'basket/basket.twig.html';
+    private function getGoodBySlug($s,$goods){
+        foreach($goods as $good){
+            if($good->slug==$s)return $good;
+        }
     }
     public function getIcon(){
         //возвращает имя шаблона для отображения в меню

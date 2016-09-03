@@ -16,6 +16,7 @@ class DefaultController{
         $fc=AppController::getInstance();
         $this->left_menu=new LeftMenu($this->_db);
         $this->news_bar=new NewsBar($this->_db);
+        $this->title=$_SERVER['HTTP_HOST'].'-Ткани';
         $this->all_goods=array();
         $this->all_goods['Новые']=new Goods($this->_db);
         $this->all_goods['Рекомендуем обратить внимание']=new Goods($this->_db,'RAND()');
@@ -30,6 +31,8 @@ class DefaultController{
         if(!$this->group=$this->_db->getGroupById($gid))exit(header('Location:/error'));
         $this->title=$this->group->name;
         $this->caths=new CathsOfGroup($this->_db,$gid);
+        $this->crumbs->setLocation(array(
+                array($this->group->name,'/group/'.$this->group->id)));
         $this->left_menu=new LeftMenu($this->_db);
         $this->news_bar=new NewsBar($this->_db); 
         $this->all_goods=array();
@@ -43,15 +46,17 @@ class DefaultController{
         $fc=AppController::getInstance();
         $args=$fc->getArgsNum();
         if(!isset($args[0]))exit(header('Location:/error'));
-        $gid=Globals\clearUInt($args[0]);
-        if(!$this->group=$this->_db->getGroupById($gid))exit(header('Location:/error'));
-        $this->title=$this->group->name;
-        $this->caths=new CathsOfGroup($this->_db,$gid);
+        $cid=Globals\clearUInt($args[0]);
+        if(!$this->cath=$this->_db->getCathById($cid))exit(header('Location:/error'));
+        $this->title=$this->cath->name;
         $this->left_menu=new LeftMenu($this->_db);
-        $this->news_bar=new NewsBar($this->_db); 
+        $this->news_bar=new NewsBar($this->_db);
+        $this->crumbs->setLocation(array(
+                array($this->cath->group_name,'/group/'.$this->cath->group_id),
+                array($this->cath->name,'/cath/'.$this->cath->id)));
         $this->all_goods=array();
-        $this->all_goods['']=new GoodsOfCath($this->_db,$gid,$order='d_date',$ofset=0,$limit=8);
-        $fc->setContent($fc->render('default/show_cath.twig.html',array('this'=>$this,)));
+        $this->all_goods['']=new GoodsOfCath($this->_db,$cid,$order='d_date',$ofset=0,$limit=8);
+        $fc->setContent($fc->render('default/show_goods.twig.html',array('this'=>$this,)));
     }
     public function allMethod(){
         // отобразить все товары в Группе
@@ -59,8 +64,12 @@ class DefaultController{
         $args=$fc->getArgsNum();
         if(!isset($args[0]))exit(header('Location:/error'));
         $gid=Globals\clearUInt($args[0]);
-        if(!$this->goods=$this->_db->getAllGoodsOfGroup($gid))exit(header('Location:/error'));
-        $fc->setContent($fc->render('default/show_all.twig.html',array('this'=>$this,)));
+        if(!$this->group=$this->_db->getGroupById($gid))exit(header('Location:/error'));
+        $this->crumbs->setLocation(array(
+                array($this->group->name,'/group/'.$this->group->id)));
+        $this->all_goods=array();
+        $this->all_goods['']=new GoodsOfGroup($this->_db,$gid,$order='d_date',$ofset=0,$limit=8);
+        $fc->setContent($fc->render('default/show_goods.twig.html',array('this'=>$this,)));
     }
     public function goodMethod(){
         // gladkov.loc/good/3
@@ -78,7 +87,8 @@ class DefaultController{
     public function basketMethod(){
         // gladkov.loc/basket
         $fc=AppController::getInstance();
-        $this->crumbs->setLocation('Корзина');
+        $this->crumbs->setLocation(array(
+                array('Корзина','')));
         $fc->setContent($fc->render('default/basket.twig.html',array('this'=>$this,)));
     }
     public function errorMethod(){
