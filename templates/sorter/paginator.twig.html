@@ -1,20 +1,44 @@
+{% set br=this.sorter.getBaseRef() %}
+{% set so=this.sorter.getSortOrder() %}
 {% set p_count=this.sorter.getPageCount() %}
 {% set cur_page=this.sorter.getCurPage() %}
 <div class='paginator'>
-<a href='{{this.sorter.getBaseRef()}}/0/{{this.sorter.getSortOrder()}}' title='Смотреть первую станицу'><<</a>
-{% if cur_page<2 %}{% set fr=0 %}{% else %}{% set fr=cur_page-2 %}{% endif %}
+{% if cur_page>2 %}
+	<a href='{{br}}/0/{{so}}' title='Смотреть первую станицу'><<</a>
+{% endif %}
+{% if cur_page< 2 %}
+	{% set fr=0 %}
+{% else %}
+	{% set fr=cur_page-2 %}
+{% endif %}
 {% set to=cur_page %}
-{% if to<fr %}{% set to=fr %}{% endif %}
+{% if to< fr %}
+	{% set to=fr %}
+{% endif %}
 {% for p in fr..to %}
-	{% if loop.last %}[{{p}}]{% else %}{{p}}{% endif %}
+	{% if loop.last %}
+		<span>
+			{{p+1}}
+		</span>
+	{% else %}
+		<a href='{{br}}/{{p}}/{{so}}' title='Смотреть страницу {{p+1}}'>
+			{{p+1}}
+		</a>
+	{% endif %}
 {% endfor %}
 {% set fr=cur_page+1 %}
-{% set to=fr+2 %}
-{% if fr<p_count %}
-	{% if to>=p_count-1 %}{% set to=p_count-1 %}{% endif %}
+{% set to=fr+1 %}
+{% if fr< p_count %}
+	{% if to>=p_count-1 %}
+		{% set to=p_count-1 %}
+	{% endif %}
 	{% for p in fr..to %}
-		{{p}}
+		<a href='{{br}}/{{p}}/{{so}}' title='Смотреть страницу {{p+1}}'>
+			{{p+1}}
+		</a>
 	{% endfor %}
 {% endif %}
-<a href='{{this.sorter.getBaseRef()}}/{{p_count-1}}/{{this.sorter.getSortOrder()}}' title='Смотреть последнюю станицу'>>></a>
+{% if cur_page< p_count-3 %}
+	<a href='{{br}}/{{p_count-1}}/{{so}}' title='Смотреть последнюю станицу'>>></a>
+{% endif %}
 </div>

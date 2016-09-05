@@ -21,7 +21,7 @@ namespace Globals{
 	const USER_SESNAME='user_data';
 	define('USERS_FILENAME','.htpasswd');//учетные данные поль-лей
     
-    const GOODS_ON_PAGE=8;
+    const GOODS_ON_PAGE=3;
 
     function getPDOInstance(){
         // Возвращяет экз-р PDO для всех провайдеров данных
