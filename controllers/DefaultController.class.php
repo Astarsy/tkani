@@ -49,10 +49,11 @@ class DefaultController{
         if(!isset($args[0]))exit(header('Location:/error'));
         $cid=Globals\clearUInt($args[0]);
         if(!$this->cath=$this->_db->getCathById($cid))exit(header('Location:/error'));
+        $br='/cath/'.$cid;
         if(isset($args[1])&&isset($args[2]))
-            $this->sorter=new Sorter($args[1],$args[2],$this->cath->count);
+            $this->sorter=new Sorter($args[1],$args[2],$this->cath->count,$br);
         else 
-            $this->sorter=new Sorter($this->cath->count);
+            $this->sorter=new Sorter(0,0,$this->cath->count,$br);
         $this->title=$this->cath->name;
         $this->left_menu=new LeftMenu($this->_db);
         $this->news_bar=new NewsBar($this->_db);
