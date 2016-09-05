@@ -1,4 +1,6 @@
 {% extends "default/shop_no_left_menu.twig.html" %}
 {% block showcase %}
-    {% include "default/goods.twig.html" %}
+	{% include this.sorter.printSorter() %}
+	{% include "default/goods.twig.html" %}
+	{% include this.sorter.printPagenator() %}
 {% endblock %}

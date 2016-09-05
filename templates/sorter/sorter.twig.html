@@ -1,0 +1,10 @@
+<div class='sorter'>
+Сначала: 
+{% for index,name in this.sorter.getOrders() %}
+	{% if index==this.sorter.getSortOrder() %}
+		{{name}}
+	{% else %}
+		<a href='{{this.sorter.getBaseRef()}}/{{this.sorter.getCurPage()}}/{{index}}' title='Сначала {{name}}'>{{name}}</a>
+	{% endif %}
+{% endfor %}
+</div>

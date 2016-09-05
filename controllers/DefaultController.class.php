@@ -24,6 +24,7 @@ class DefaultController{
     }
     public function groupMethod(){
         // gladkov.loc/group/3
+        // отобразить кнопки выбора категории
         $fc=AppController::getInstance();
         $args=$fc->getArgsNum();
         if(!isset($args[0]))exit(header('Location:/error'));
@@ -48,6 +49,10 @@ class DefaultController{
         if(!isset($args[0]))exit(header('Location:/error'));
         $cid=Globals\clearUInt($args[0]);
         if(!$this->cath=$this->_db->getCathById($cid))exit(header('Location:/error'));
+        if(isset($args[1])&&isset($args[2]))
+            $this->sorter=new Sorter($args[1],$args[2],$this->cath->count);
+        else 
+            $this->sorter=new Sorter($this->cath->count);
         $this->title=$this->cath->name;
         $this->left_menu=new LeftMenu($this->_db);
         $this->news_bar=new NewsBar($this->_db);
@@ -55,7 +60,12 @@ class DefaultController{
                 array($this->cath->group_name,'/group/'.$this->cath->group_id),
                 array($this->cath->name,'/cath/'.$this->cath->id)));
         $this->all_goods=array();
-        $this->all_goods['']=new GoodsOfCath($this->_db,$cid,$order='d_date',$ofset=0,$limit=8);
+        $this->all_goods['']=new GoodsOfCath(
+            $this->_db,
+            $cid,
+            $this->sorter->getSortOrder(),
+            $this->sorter->getCurPage(),
+            Globals\GOODS_ON_PAGE);
         $fc->setContent($fc->render('default/show_goods.twig.html',array('this'=>$this,)));
     }
     public function allMethod(){

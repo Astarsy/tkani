@@ -27,7 +27,7 @@ class ShopDB{
         //Возвращяет cath as object
         try{
             $stmt=$this->_pdo->prepare(
-            "SELECT caths.id,caths.name,fotos.file as foto,groups.id as group_id,groups.name as group_name FROM caths LEFT JOIN groups ON caths.group_id=groups.id LEFT JOIN fotos ON caths.foto_id=fotos.id WHERE caths.id=:id");
+            "SELECT caths.id,caths.name,fotos.file as foto,groups.id as group_id,groups.name as group_name,(SELECT COUNT(id) FROM goods WHERE cath_id=:id) as count FROM caths LEFT JOIN groups ON caths.group_id=groups.id LEFT JOIN fotos ON caths.foto_id=fotos.id WHERE caths.id=:id");
             $stmt->bindParam(':id',$id,PDO::PARAM_INT);
             $stmt->execute();
         }catch(PDOException $e){die($e);}
@@ -85,9 +85,10 @@ class ShopDB{
         }
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-    public function getGoodsOfCath($cid,$order='d_date',$ofset=0,$limit=4){
+    public function getGoodsOfCath($cid,$sort,$page,$count){
         // Возвращяет массив объектов товаров Категории
-        $stmt=$this->_pdo->prepare("SELECT goods.id,goods.slug,shops.title as shop,cath_id,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN shops ON shops.id=goods.shop_id WHERE goods.cath_id=:cid ORDER BY $order DESC LIMIT $ofset,$limit");
+        $order_str=$this->createSortOrder($sort,$page,$count);
+        $stmt=$this->_pdo->prepare("SELECT goods.id,goods.slug,shops.title as shop,cath_id,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN shops ON shops.id=goods.shop_id WHERE goods.cath_id=:cid $order_str");
         try{
             $stmt->bindParam(':cid',$cid,PDO::PARAM_INT);
             $stmt->execute();
@@ -96,6 +97,37 @@ class ShopDB{
         }
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+    protected function createSortOrder($sort,$page,$count){
+        switch($sort){
+            case 1:
+            // дешевле
+                $by='price';
+                $or='ASC';
+                break;
+            case 2:
+            // дороже
+                $by='price';
+                $or='DESC';
+                break;
+            default:
+            // новые
+                $by='d_date';
+                $or='DESC';
+        }
+        $of=$page*$count;
+        $sql="ORDER BY $by $or LIMIT $of,".$count;
+        return $sql;
+    }
+    // public function getGoodsOfCathCount($cid){
+    //     // Возвращяет кол-во товаров в Категории
+    //     $sql="SELECT COUNT(id) FROM goods WHERE cath_id=$cid";
+    //     try{
+    //         $stmt=$this->_pdo->query($sql);
+    //     }catch(PDOException $e){
+    //         die($e);
+    //     }
+    //     return $stmt->fetch(PDO::FETCH_NUM)[0];
+    // }
     public function getLeftMenuItems(){
         // Возвращает массив эл-в LeftMenu
         $res=$this->getNotEmptyGroups();
