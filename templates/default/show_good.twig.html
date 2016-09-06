@@ -1,6 +1,7 @@
 {% extends "default/shop.twig.html" %}
 {% block title %}{{item.name}}{% endblock %}
 {% block content %}
+<div><a href='/prev/{{item.id}}' title='Cмотреть предыдущий товар'>Пред.</a><a href='/next/{{item.id}}' title='Cмотреть следующий товар'>След.</a></div>
 <div>
     <img src='/fotos/big/{{item.foto}}' alt='Большое изображение товара {{item.name}} '>
     <span>{{item.name|capitalize}}</span>

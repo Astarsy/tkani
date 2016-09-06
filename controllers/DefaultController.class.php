@@ -37,8 +37,8 @@ class DefaultController{
         $this->left_menu=new LeftMenu($this->_db);
         $this->news_bar=new NewsBar($this->_db); 
         $this->all_goods=array();
-        $this->all_goods['Новые '.$this->group->name]=new GoodsOfGroup($this->_db,$gid);
-        $this->all_goods['Рекомендуем обратить внимание']=new GoodsOfGroup($this->_db,$gid,'RAND()');
+        $this->all_goods['Новые '.$this->group->name]=new GoodsOfGroup($this->_db,$gid,0,0,4);
+        $this->all_goods['Рекомендуем обратить внимание']=new GoodsOfGroup($this->_db,$gid,3,0,4);
         $this->left_menu->setHere($this->group->name);
         $fc->setContent($fc->render('default/show_group.twig.html',array('this'=>$this,)));
     }
@@ -55,8 +55,6 @@ class DefaultController{
         else 
             $this->sorter=new Sorter(0,0,$this->cath->count,$br);
         $this->title=$this->cath->name;
-        $this->left_menu=new LeftMenu($this->_db);
-        $this->news_bar=new NewsBar($this->_db);
         $this->crumbs->setLocation(array(
                 array($this->cath->group_name,'/group/'.$this->cath->group_id),
                 array($this->cath->name,'/cath/'.$this->cath->id)));
@@ -76,10 +74,21 @@ class DefaultController{
         if(!isset($args[0]))exit(header('Location:/error'));
         $gid=Globals\clearUInt($args[0]);
         if(!$this->group=$this->_db->getGroupById($gid))exit(header('Location:/error'));
+        $br='/all/'.$gid;
+        if(isset($args[1])&&isset($args[2]))
+            $this->sorter=new Sorter($args[1],$args[2],$this->group->count,$br);
+        else 
+            $this->sorter=new Sorter(0,0,$this->group->count,$br);
+        $this->title=$this->group->name;
         $this->crumbs->setLocation(array(
                 array($this->group->name,'/group/'.$this->group->id)));
         $this->all_goods=array();
-        $this->all_goods['']=new GoodsOfGroup($this->_db,$gid,$order='d_date',$ofset=0,$limit=8);
+        $this->all_goods['']=new GoodsOfGroup(
+            $this->_db,
+            $gid,
+            $this->sorter->getSortOrder(),
+            $this->sorter->getCurPage(),
+            Globals\GOODS_ON_PAGE);
         $fc->setContent($fc->render('default/show_goods.twig.html',array('this'=>$this,)));
     }
     public function goodMethod(){
@@ -94,6 +103,22 @@ class DefaultController{
                 array($item->cath,'/cath/'.$item->cath_id),
                 array($item->name,'/good/'.$item->id)));
         $fc->setContent($fc->render('default/show_good.twig.html',array('this'=>$this,'item'=>$item,)));
+    }
+    public function nextMethod(){
+        // перенаправить на Больш.карт. следующего товара
+        $fc=AppController::getInstance();
+        $args=$fc->getArgsNum();
+        if(!isset($args[0]))exit(header('Location:/error'));
+        $id=$this->_db->getNextGoodId(Globals\clearUInt($args[0]));
+        exit(header("Location:/good/$id"));
+    }
+    public function prevMethod(){
+        // перенаправить на Больш.карт. предыдущего товара
+        $fc=AppController::getInstance();
+        $args=$fc->getArgsNum();
+        if(!isset($args[0]))exit(header('Location:/error'));
+        $id=$this->_db->getPrevGoodId(Globals\clearUInt($args[0]));
+        exit(header("Location:/good/$id"));
     }
     public function basketMethod(){
         // gladkov.loc/basket

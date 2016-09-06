@@ -37,7 +37,7 @@ class ShopDB{
         //Возвращяет group as object
         try{
             $stmt=$this->_pdo->prepare(
-            "SELECT groups.id,name,fotos.file as foto FROM groups LEFT JOIN fotos ON groups.foto_id=fotos.id WHERE groups.id=:id");
+            "SELECT groups.id,name,fotos.file as foto,(SELECT COUNT(id) FROM goods WHERE cath_id IN(SELECT cath_id FROM caths WHERE group_id=:id)) as count FROM groups LEFT JOIN fotos ON groups.foto_id=fotos.id WHERE groups.id=:id");
             $stmt->bindParam(':id',$id,PDO::PARAM_INT);
             $stmt->execute();
         }catch(PDOException $e){die($e);}
@@ -74,9 +74,10 @@ class ShopDB{
         }
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-    public function getGoodsOfGroup($gid,$order='d_date',$ofset=0,$limit=4){
+    public function getGoodsOfGroup($gid,$sort,$page,$count){
         // Возвращяет массив объектов товаров Группы
-        $stmt=$this->_pdo->prepare("SELECT goods.id,goods.slug,shops.title as shop,cath_id,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN shops ON shops.id=goods.shop_id WHERE goods.cath_id IN(SELECT id FROM caths WHERE group_id=:gid)ORDER BY $order DESC LIMIT $ofset,$limit");
+        $order_str=$this->createSortOrder($sort,$page,$count);
+        $stmt=$this->_pdo->prepare("SELECT goods.id,goods.slug,shops.title as shop,cath_id,d_date,goods.name,price,goods.descr,manufs.name as manuf,consist,width,fotos.file as foto FROM goods LEFT JOIN fotos ON fotos.id=goods.main_foto_id LEFT JOIN manufs ON manufs.id=goods.manuf LEFT JOIN shops ON shops.id=goods.shop_id WHERE goods.cath_id IN(SELECT id FROM caths WHERE group_id=:gid) $order_str");
         try{
             $stmt->bindParam(':gid',$gid,PDO::PARAM_INT);
             $stmt->execute();
@@ -109,6 +110,11 @@ class ShopDB{
                 $by='price';
                 $or='DESC';
                 break;
+            case 3:
+            // дороже
+                $by='RAND()';
+                $or='';
+                break;
             default:
             // новые
                 $by='d_date';
@@ -118,16 +124,6 @@ class ShopDB{
         $sql="ORDER BY $by $or LIMIT $of,".$count;
         return $sql;
     }
-    // public function getGoodsOfCathCount($cid){
-    //     // Возвращяет кол-во товаров в Категории
-    //     $sql="SELECT COUNT(id) FROM goods WHERE cath_id=$cid";
-    //     try{
-    //         $stmt=$this->_pdo->query($sql);
-    //     }catch(PDOException $e){
-    //         die($e);
-    //     }
-    //     return $stmt->fetch(PDO::FETCH_NUM)[0];
-    // }
     public function getLeftMenuItems(){
         // Возвращает массив эл-в LeftMenu
         $res=$this->getNotEmptyGroups();
@@ -158,5 +154,13 @@ class ShopDB{
             die($e);
         }
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getNextGoodId($id){
+        // Возвращяет id следующего в группе или категории товара
+        return 8;
+    }
+    public function getPrevGoodId($id){
+        // Возвращяет id предыдущего в группе или категории товара
+        return 7;
     }
 }
