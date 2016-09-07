@@ -157,6 +157,15 @@ class ShopDB{
     }
     public function getNextGoodId($id){
         // Возвращяет id следующего в группе или категории товара
+        $stmt=$this->_pdo->prepare("SELECT id,d_date FROM goods WHERE cath_id IN(SELECT id FROM caths WHERE group_id=(SELECT group_id FROM caths WHERE id=(SELECT cath_id FROM goods WHERE id=:id))) UNION SELECT id,d_date FROM goods WHERE id=:id ORDER BY d_date DESC;");
+        try{
+            $stmt->bindParam(':id',$id,PDO::PARAM_INT);
+            $stmt->execute();
+        }catch(PDOException $e){
+            die($e);
+        }
+        $ids=$stmt->fetchAll(PDO::FETCH_NUM);
+        die(var_dump($ids));
         return 8;
     }
     public function getPrevGoodId($id){
