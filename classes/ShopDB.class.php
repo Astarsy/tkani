@@ -157,19 +157,36 @@ class ShopDB{
     }
     public function getNextGoodId($id){
         // Возвращяет id следующего в группе или категории товара
-        $stmt=$this->_pdo->prepare("SELECT id,d_date FROM goods WHERE cath_id IN(SELECT id FROM caths WHERE group_id=(SELECT group_id FROM caths WHERE id=(SELECT cath_id FROM goods WHERE id=:id))) UNION SELECT id,d_date FROM goods WHERE id=:id ORDER BY d_date DESC;");
+        $goods=$this->getGoodsOfCathOrGroupById($id);
+        $cur_ind=0;
+        foreach($goods as $ind=>$good){
+            if($good[0]==$id)$cur_ind=$ind;
+        }
+        if(isset($goods[$cur_ind+1]))$id=$goods[$cur_ind+1][0];
+        else $id=$goods[0][0];
+        return $id;
+    }
+    public function getPrevGoodId($id){
+        // Возвращяет id предыдущего в группе или категории товара
+        $goods=$this->getGoodsOfCathOrGroupById($id);
+        $cur_ind=0;
+        foreach($goods as $ind=>$good){
+            if($good[0]==$id)$cur_ind=$ind;
+        }
+        //var_dump($arr);
+        if(isset($goods[$cur_ind-1]))$id=$goods[$cur_ind-1][0];
+        else $id=$goods[count($goods)-1][0];
+        return $id;
+    }
+    protected function getGoodsOfCathOrGroupById($id){
+        // Служ. Выбирает все товары в Категории и Группе
+        $stmt=$this->_pdo->prepare("SELECT id,d_date FROM goods WHERE cath_id IN(SELECT id FROM caths WHERE group_id=(SELECT group_id FROM caths WHERE id=(SELECT cath_id FROM goods WHERE id=:id))) UNION SELECT id,d_date FROM goods WHERE id=:id ORDER BY d_date ASC;");
         try{
             $stmt->bindParam(':id',$id,PDO::PARAM_INT);
             $stmt->execute();
         }catch(PDOException $e){
             die($e);
         }
-        $ids=$stmt->fetchAll(PDO::FETCH_NUM);
-        die(var_dump($ids));
-        return 8;
-    }
-    public function getPrevGoodId($id){
-        // Возвращяет id предыдущего в группе или категории товара
-        return 7;
+        return $stmt->fetchAll(PDO::FETCH_NUM);
     }
 }
